@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | IO复用</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#socket%E7%BC%96%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">socket编程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">多进程模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">多线程模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">IO多路复用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#select-poll"><span class="toc-number">4.1.</span> <span class="toc-text">select&#x2F;poll</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#epoll"><span class="toc-number">4.2.</span> <span class="toc-text">epoll</span></a></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>IO复用</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<h1 id="socket编程"><a href="#socket编程" class="headerlink" title="socket编程"></a>socket编程</h1><ol>
+<li>服务端<ol>
+<li>首先调用socket函数创建网络协议与传输协议，如IPv4与TCP</li>
+<li>再使用bind函数绑定IP地址与端口</li>
+<li>调用listen函数进行监听</li>
+<li>服务端使用accept询问内核是否有来着客户端的连接请求，若否则<strong>阻塞（默认情况下）</strong> 等待客户端连接到来</li>
+</ol>
+</li>
+<li>客户端<ol>
+<li>调用socket函数</li>
+<li>使用connect函数发起连接</li>
+</ol>
+</li>
+<li>TCP连接中，服务器内核为每个Socket维护两个队列：TCP半连接队列（完成第一次握手但没完成三次握手的连接）、TCP全连接队列（完成三次握手且状态为established的连接）<ol>
+<li>服务端的accept函数从全连接队列中拿出一个已经完成连接的socket对象返回，后续传输都使用这个socket</li>
+<li>半连接队列的socket叫做监听socket</li>
+<li>全连接队列的socket叫已连接socket</li>
+</ol>
+</li>
+<li>上述描述的对象为同步阻塞模型</li>
+</ol>
+<h1 id="多进程模型"><a href="#多进程模型" class="headerlink" title="多进程模型"></a>多进程模型</h1><ol>
+<li>基于传统的TCP socket编程，如果服务器要建立多个客户端，则可以使用fork函数新建子进程![[Pasted image 20260219180010.png]]</li>
+<li><strong>子进程只需要已连接socket（父进程accept后使用fork传递），父进程只需要监听socket</strong></li>
+<li>当子进程退出后，内核仍然会保留对应的一些信息，因此需要调用wait与waitpid函数</li>
+<li>进程本身较为消耗资源，因此下介绍多线程模型</li>
+</ol>
+<h1 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h1><ol>
+<li>使用pthread_create()函数创建线程</li>
+<li>与多进程第二点一致</li>
+<li>为了尽可能减小系统开销，使用线程池来避免线程的频繁创建与销毁![[Pasted image 20260219180605.png]]<ul>
+<li>这个队列是全局的，需要避免多线程竞争</li>
+</ul>
+</li>
+<li>每来一个TCP连接，如果就分配一个进程或线程，当连接数足够大时，操作系统不可能同时维护如此巨大数量的进程&#x2F;线程</li>
+</ol>
+<h1 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h1><ol>
+<li>如果为每个连接请求都分配一个进程&#x2F;线程是不合适的，那么可以使用一个进程来维护多个socket，即用最少的资源管理大量的并发IO事件</li>
+<li>select&#x2F;poll&#x2F;epoll函数允许进程通过它们从内核中获取多个事件</li>
+</ol>
+<h2 id="select-poll"><a href="#select-poll" class="headerlink" title="select&#x2F;poll"></a>select&#x2F;poll</h2><ol>
+<li>select实现多路复用的方式是将已连接的socket都放在<strong>一个文件描述符集合</strong>，调用select时将这个集合<strong>拷贝</strong>到内核中，让内核通过<strong>遍历</strong>检查是否有网络事件产生<ul>
+<li>此时若有事件产生，则将此socket标记为可读或可写，再把整个集合<strong>拷贝</strong>到用户态，用户态再通过<strong>遍历</strong>找到可读或可写的socket</li>
+<li>所以，对于select来讲，需要遍历与拷贝两次文件描述符集合</li>
+<li>select使用固定长度的BitsMap，一般默认最大值为1024（即0-1023）</li>
+</ul>
+</li>
+<li>poll不再使用BitsMap进行存储，取而代之是使用<strong>动态数组</strong>，以链表形式组织，<strong>突破了select的文件描述符上限</strong></li>
+</ol>
+<h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><ol>
+<li>epoll在内核里使用<strong>红黑树</strong>跟踪进程所有待检测的文件描述字，吧需要监控的socket通过epoll_ctr函数加入红黑树</li>
+<li>epoll使用<strong>事件驱动</strong>的机制，内核里维护了一个<strong>链表</strong>来记录就绪事件，当某个 socket 有事件发生时，通过回调函数内核会将其加入到这个就绪事件列表中，<strong>当用户调用 epoll_wait() 函数时，只会返回有事件发生的文件描述符的个数</strong>，不需要像 select&#x2F;poll 那样轮询扫描整个 socket 集合，大大提高了检测的效率</li>
+</ol>
+<blockquote>
+<p>[!INFO] 注意<br>epoll本身仍需要将数据从内核拷贝到用户空间</p>
+</blockquote>
+<ol start="3">
+<li>epoll支持两种事件触发模式，分别是边缘触发（edge-triggered，ET）和水平触发（level-triggered，LT）<ol>
+<li>处于ET的情况下，当被监控的socket上有可读事件发生时，<strong>服务器端只会从epoll_wait中苏醒一次</strong>，即使进程没有调用 read 函数从内核读取数据，也依然只苏醒一次，因此我们程序要保证一次性将内核缓冲区的数据读取完</li>
+<li>处于LT的情况下，当被监控的 socket 上有可读事件发生时，<strong>服务器端不断地从 epoll_wait 中苏醒</strong>，直到内核缓冲区数据被 read 函数读完才结束，目的是告诉我们有数据需要读取</li>
+<li>ET一般与非阻塞IO搭配使用</li>
+</ol>
+</li>
+</ol>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/socket%E7%BC%96%E7%A8%8B/" class="tag-item">
+                    socket编程
+                </a>
+            
+                <a href="/tags/IO%E5%A4%8D%E7%94%A8/" class="tag-item">
+                    IO复用
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/%E8%AE%A1%E7%BD%91/" class="cate-item">
+                    计网
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">https://narciostyx.github.io/2026/01/18/IO多路复用/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/ADL%E4%B8%8ECPO/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">ADL与CPO</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/Reactor%E4%B8%8EProactor/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">Reactor与Proactor模型</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

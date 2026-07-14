@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | ADL与CPO</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ADL"><span class="toc-number">1.</span> <span class="toc-text">ADL</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CPO"><span class="toc-number">2.</span> <span class="toc-text">CPO</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>ADL与CPO</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<h1 id="ADL"><a href="#ADL" class="headerlink" title="ADL"></a>ADL</h1><ul>
+<li>实参依赖查找，即查找函数调用表达式中<strong>不限定函数名称的规则集，包括对重载运算符的隐式调用</strong></li>
+<li>如果常规的非限定查找已经找到<strong>下列任意一项，则跳过ADL</strong>：<ul>
+<li>类的成员声明</li>
+<li>块作用域内的函数声明</li>
+<li>任何非函数（模板）的声明（如变量、函数对象）</li>
+</ul>
+</li>
+<li>若触发ADL，则遍历<strong>每个实参，将其对应的关联命名空间与类</strong>加入集合：<ul>
+<li><strong>类类型</strong>：本身，直接&#x2F;间接基类，外围类（嵌套），最内层封闭命名空间<ul>
+<li><strong>若为类模板</strong>，则加入模板参数所属的命名空间与类（<strong>跳过非类型模板参数</strong>）</li>
+</ul>
+</li>
+<li><strong>枚举类型</strong>：加入定义该枚举的<strong>最内层封闭命名空间</strong>；若枚举是类成员，则同时加入该类</li>
+<li><strong>指针&#x2F;数组</strong>：递归检查其指向的类型 <code>T</code>（如 <code>T*</code> 或 <code>T[]</code>）</li>
+<li><strong>函数类型</strong>：递归检查其<strong>参数类型</strong>和<strong>返回类型</strong></li>
+<li><strong>成员指针</strong>：<ul>
+<li>指向数据成员：检查成员类型和所属类 <code>X</code></li>
+<li>指向成员函数：检查参数类型、返回类型和所属类 <code>X</code></li>
+</ul>
+</li>
+<li><strong>重载集&#x2F;取地址</strong>：检查重载集中的每个函数；若由模板标识符命名，额外检查其<strong>类型模板实参</strong>和<strong>模板模板实参</strong>（跳过非类型实参）</li>
+<li><strong>内联命名空间</strong>：若上述集合中的命名空间是内联的，则加入其外层命名空间；反之，若某个命名空间直接包含内联命名空间，则该内联命名空间也会被加入（实现双向传播）</li>
+</ul>
+</li>
+<li>最终与普通非限定查找结果合并，最终进行筛选（<strong>using指示被忽略，所有非函数（模板）的名称被忽略，友元函数通过ADL可见</strong>）</li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note</p>
+<ul>
+<li>ADL触发条件依赖于当前是函数调用，若非函数调用则不生效</li>
+<li>ADL本身即遍历当前函数参数的命名空间与类加入考虑范围，以及其相关的类与命名空间</li>
+<li>ADL也是泛型代码中交换两个对象（<code>swap(a,b)</code>）的核心原因，即考虑用户重载，也考虑用户不重载调用<code>std::swap(a,b)</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>ADL 可以找到完全在类或类模板中定义的友元函数（通常是重载运算符），即使它从未在命名空间级别声明过</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">number</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">number</span>(<span class="type">int</span>);</span><br><span class="line">    <span class="function"><span class="keyword">friend</span> number <span class="title">gcd</span><span class="params">(number x, number y)</span> </span>&#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;; </span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 除非显示声明一个匹配函数，否则gcd在当前命名空间不可见</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">g</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">number&lt;<span class="type">double</span>&gt; <span class="title">a</span><span class="params">(<span class="number">3</span>)</span>, <span class="title">b</span><span class="params">(<span class="number">4</span>)</span></span>;</span><br><span class="line">    <span class="comment">// 因为a，b是number结构体，考虑其类，查找到友元函数gcd，使其在命名空间内可见</span></span><br><span class="line">    a = <span class="built_in">gcd</span>(a, b); </span><br><span class="line"><span class="comment">//  b = gcd(3, 4); // Error; gcd is not visible</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 在当前全局命名空间中没有operator声明，因此执行ADL，因为operator&lt;&lt;(std::cout,const char*)左侧参数在std命名空间中，std命名空间加入考虑范围，查找到函数std::operator&lt;&lt;(std::ostream&amp;, const char*)</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Test\n&quot;</span>;</span><br><span class="line">    <span class="comment">//同理</span></span><br><span class="line">    <span class="keyword">operator</span>&lt;&lt;(std::cout, <span class="string">&quot;Test\n&quot;</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 下为一些特例</span></span><br><span class="line">    <span class="comment">// endl并未声明在该命名空间，直接报错，此处endl为变量而非函数调用</span></span><br><span class="line">    std::cout &lt;&lt; endl;</span><br><span class="line">    <span class="comment">// 执行成功，此处endl为函数调用，ADL检查参数std::cout的命名空间std查找到std::endl</span></span><br><span class="line">    <span class="built_in">endl</span>(std::cout); </span><br><span class="line">    <span class="comment">// 执行失败，(endl)不再被视为非限制性标识符（ADL仅针对非限定标识符，这里编译器抑制了ADL）</span></span><br><span class="line">    (endl)(std::cout);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="CPO"><a href="#CPO" class="headerlink" title="CPO"></a>CPO</h1><blockquote>
+<p>[!NOTE] semiregular<br><code>template&lt;class T&gt; concept semiregular = std::copyable&lt;T&gt; &amp;&amp; std::default_initializable&lt;T&gt;;</code><br>即可复制，也默认可构造，其行为类似内置类型（e.g. int）<br><strong>operator=&#x3D;未定义</strong></p>
+</blockquote>
+<ul>
+<li>其弥补了ADL的一些不足，比如swap函数内未使用<code>using std::swap</code>，而在CPO中，只需要调用<code>std::ranges::swap(a,b)</code><ul>
+<li>CPO是遮蔽了ADL的复杂性，其内部实现可以依赖ADL</li>
+<li>如<code>std::ranges::swap(a,b)</code>内部可能存在<code>using std::swap</code></li>
+</ul>
+</li>
+<li>定制点对象，C++20定义，其为一个<strong>const函数对象，无状态，行为一致，SFINAE友好</strong><ul>
+<li>其类型是一个字面量（constexpr）且满足semiregular概念的类类型</li>
+<li>所有实例都相等，且可以自由复制，其副本可以交换使用</li>
+<li>无论通过左值、右值还是const&#x2F;非const实例调用，效果均相同</li>
+<li>如果参数不满足要求，CPO的<code>operator()</code>会从重载决议中移除</li>
+</ul>
+</li>
+<li>给定一组类型 <code>Args...</code>，如果std::declval&lt;Args&gt;()… 满足上面 <code>cpo</code> 的参数要求，则 <code>___cpo_fn_</code> 遵循以下要求，否则，<code>___cpo_fn_</code> 的任何函数调用运算符都不参与重载决议</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">std::invocable&lt;__cpo_fn, Args...&gt;,</span><br><span class="line">std::invocable&lt;const __cpo_fn, Args...&gt;,</span><br><span class="line">std::invocable&lt;__cpo_fn&amp;, Args...&gt;，以及</span><br><span class="line">std::invocable&lt;const __cpo_fn&amp;, Args...&gt;.  </span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/ADL/" class="tag-item">
+                    ADL
+                </a>
+            
+                <a href="/tags/CPO/" class="tag-item">
+                    CPO
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/ADL%E4%B8%8ECPO/">https://narciostyx.github.io/2026/01/18/ADL与CPO/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/C++20%20concepts/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++20 concepts</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">IO复用</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

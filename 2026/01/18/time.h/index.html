@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | time头文件</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">1.</span> <span class="toc-text">结构体</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#e-g"><span class="toc-number">3.</span> <span class="toc-text">e.g.</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>time头文件</h1>
+    </section>
+    <section class="article">
+        <p>&lt;time.h&gt;中常见的结构体以及函数</p>
+<span id="more"></span>
+
+<h1 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h1><ul>
+<li>time_t表示日历时间，存储时间点，自1970.1.1 0：0：0的秒数，本质是int64数据类型</li>
+<li>tm表示分解的日历时间，包含年、月、日、时、分、秒</li>
+<li>timespec与timeval表示绝对时间或时间间隔，前者包含成员tv_sec与tv_nsec，秒数与纳秒数，后者则将tv_nsec变为tv_usec微秒数</li>
+</ul>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><ul>
+<li>time_t time(time_t*)，返回当前时间戳</li>
+</ul>
+<hr>
+<ul>
+<li>tm* localtime(const time_t*)，返回表示本地时间的tm结构体指针</li>
+<li>tm* gmtime(const time_t*)，返回表示UTC时间的tm结构体指针</li>
+</ul>
+<hr>
+<ul>
+<li>time_t mktime(const tm*)，将tm转换成time_t时间戳</li>
+<li>char* asctime(const tm*)与char* ctime(const time_t*)，返回可读字符串时间格式，如<code>Sun Sep 16 01:03:52 1973\n\0</code></li>
+</ul>
+<hr>
+<ul>
+<li>size_t strftime(char*,size_t,const char*,const tm*)，参数各为：执行存储结构的字符串指针，缓冲区大小，格式化字符串，tm结构体指针，返回不包含<code>\0</code>的字符串长度，若为0则代表失败</li>
+<li>char* strptime(const char*,const char*,tm*)，参数各为：需要被解析的字符串指针，格式化字符串，tm结构体指针，返回指向字符串的第一个为解析字符指针，失败返回0</li>
+</ul>
+<hr>
+<ul>
+<li>int clock_settime(clockid_t,const timespec*)，根据时钟类型id（如：<code>CLOCK_REALTIME</code>）将时间赋值给timespec结构体，成功返回0，失败返回1</li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note</p>
+<ol>
+<li>获取时间有time函数与clock_settime函数，一般使用前者</li>
+</ol>
+<ul>
+<li>p.s. 使用定时器一般使用timespec或timeval，此时使用后者</li>
+</ul>
+<ol>
+<li>获取格式化时间字符串前，必须使用localtime或gmtime函数获取tm结构体，再使用strftime或strptime获取格式化字符串</li>
+</ol>
+</blockquote>
+<h1 id="e-g"><a href="#e-g" class="headerlink" title="e.g."></a>e.g.</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//返回当前时间戳</span><br><span class="line">time_t now=time(nullptr);</span><br><span class="line"></span><br><span class="line">//转化为tm结构体</span><br><span class="line">tm* local_time=localtime(&amp;now);</span><br><span class="line"></span><br><span class="line">char buffer[n];</span><br><span class="line">strftime(buffer,sizeof(buffer),&quot;%Y-%m-%d %H:%M:%S&quot;,local_time)</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/time-t/" class="tag-item">
+                    time_t
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/time.h/">https://narciostyx.github.io/2026/01/18/time.h/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/signal.h/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">signal函数及其信号集</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/socket.h/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">socket编程</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | epoll函数</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>epoll函数</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<ol>
+<li>提供IO多路复用技术的一个函数epoll，该函数使用事件驱动，主要使用三个函数epoll_create，epoll_ctl，epoll_wait</li>
+<li><code>EPOLL_EVENTS</code>，即epoll事件<strong>枚举</strong>类型，如：<ol>
+<li>EPOLLIN，读事件</li>
+<li>EPOLLOUT，写事件</li>
+<li>EPOLLRDHUP，套接字关闭或半关闭</li>
+<li>EPOLLPRI，紧急数据可读事件</li>
+</ol>
+</li>
+<li><code>epoll_data</code>，联合体类型，声明如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">typedef union epoll_data</span><br><span class="line">&#123;</span><br><span class="line">  void \*ptr;</span><br><span class="line">  int fd;</span><br><span class="line">  uint32_t u32;</span><br><span class="line">  uint64_t u64;</span><br><span class="line">&#125; epoll_data_t;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>epoll_event，保存当前监听的事件epoll_events以及其指向的epoll_data用户数据</li>
+<li><code>int epoll_create(int size)</code>，创建一个epoll对象并返回其fd，需要使用close关闭该描述符，<strong>size参数一般被忽略（仅要求其值大于0即可</strong>）<ul>
+<li>本质是创建一个eventpoll对象并初始化，大致为红黑树与双向链表、互斥锁的组合</li>
+</ul>
+</li>
+<li><code>int epoll_ctl (int __epfd, int __op, int __fd, struct epoll_event *__event) __THROW</code>，控制epoll实例，按参数顺序为：<ol>
+<li>epoll对象fd</li>
+<li>epoll操作，也即红黑树上的操作，即 EPOLL_CTL_ADD，EPOLL_CTL_DEL，EPOLL_CTL_MOD</li>
+<li>监听的socket的fd</li>
+<li>事件，这里指添加进的事件信息，一般为struct epoll_event</li>
+</ol>
+</li>
+<li><code>int epoll_wait (int __epfd, struct epoll_event *__events,int __maxevents, int __timeout)</code>，等待在epoll实例上发生的事件，__time指定等待事件，单位为毫秒，若为-1则一直阻塞，这里的事件一般是一个事件数组即struct epoll_event []</li>
+<li>e.g.</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">int epoll_fd,event_count,sd;</span><br><span class="line">struct epoll_event events[MAX_EVENTS],event;</span><br><span class="line"></span><br><span class="line">if ((epoll_fd = epoll_create(0)) == -1) </span><br><span class="line">&#123;</span><br><span class="line">    perror(&quot;epoll_create1 failed&quot;);</span><br><span class="line">    exit(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">event.events = EPOLLIN;</span><br><span class="line">event.data.fd = server_socket;</span><br><span class="line"></span><br><span class="line">if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &amp;event) == -1) </span><br><span class="line">&#123;</span><br><span class="line">    perror(&quot;epoll_ctl: server_socket&quot;);</span><br><span class="line">    exit(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">while(true)</span><br><span class="line">&#123;</span><br><span class="line">	event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);</span><br><span class="line">	if (event_count &lt; 0) </span><br><span class="line">	&#123;</span><br><span class="line">        perror(&quot;epoll_wait error&quot;);</span><br><span class="line">        exit(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    for(int i=0;i&lt;event_count;++i)</span><br><span class="line">    &#123;</span><br><span class="line">	    sd=events[i].data.fd;</span><br><span class="line">	    </span><br><span class="line">	    //连接请求</span><br><span class="line">	    if(sd==server_socket)</span><br><span class="line">	    &#123;</span><br><span class="line">		    ...</span><br><span class="line">		    event.events=EPOLLIN;</span><br><span class="line">		    //使用accept函数返回的新套接字</span><br><span class="line">		    event.data.fd=new_socket;</span><br><span class="line">		    </span><br><span class="line">		    //将与客户端建立的新连接添加到epoll实例进行监听</span><br><span class="line">		    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, new_socket, &amp;event) == -1) </span><br><span class="line">		    &#123;</span><br><span class="line">	            perror(&quot;epoll_ctl: new_socket&quot;);</span><br><span class="line">	            exit(EXIT_FAILURE);</span><br><span class="line">	        &#125;</span><br><span class="line">	    &#125;else</span><br><span class="line">	    //处理非连接请求</span><br><span class="line">	    &#123;...&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">close(epoll_fd);</span><br><span class="line">close(server_socket);</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/epoll/" class="tag-item">
+                    epoll
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/epoll.h/">https://narciostyx.github.io/2026/01/18/epoll.h/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/boost.asio/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">boost.asio</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/getopt.h/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">getopt以及getopt_long</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

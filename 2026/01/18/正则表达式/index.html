@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++正则表达式</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++正则表达式</h1>
+    </section>
+    <section class="article">
+        <p><regex>库</p>
+<span id="more"></span>
+
+<ol>
+<li>正则表达式&lt;regex&gt;包含以下类：<br>![[Pasted image 20260212170616.png]]</li>
+<li>包含下列算法：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>算法名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>regex_match</td>
+<td>尝试将正则表达式与整个字符序列匹配</td>
+</tr>
+<tr>
+<td>regex_search</td>
+<td>尝试将正则表达式与字符序列的任何部分匹配</td>
+</tr>
+<tr>
+<td>regex_replace</td>
+<td>用格式化的替换文本替换正则表达式的出现</td>
+</tr>
+<tr>
+<td>3. 函数regex_match与regex_search确定一个给定字符序列与一个给定regex是否匹配，如果整个输入序列都与之匹配，则前者返回true；如果输入序列中的一个子串与表达式匹配，则后者返回true</td>
+<td></td>
+</tr>
+</tbody></table>
+<pre><code>1. 参数为(seq,m,r,mft)或(seq,r,mft)
+2. m是一个match对象，保存匹配结果的相关细节
+3. mft是一个可选的regex_constants::match_flag_type的值，会影响匹配过程
+</code></pre>
+<ol start="4">
+<li><strong>regex</strong>表示一个正则表达式，如</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">string pattern(&quot;[^c]ei&quot;);</span><br><span class="line">pattern=&quot;[[:alpha:]]*&quot;+pattern+&quot;[[:alpha:]]*&quot;;</span><br><span class="line">regex r(pattern);</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>方法r.mark_count()返回r中子表达式的数目</li>
+<li>regex指定的标志常用的有：<ol>
+<li>icase，忽略大小写</li>
+<li>nosubs，不保存匹配的子表达式</li>
+<li>optimize，执行速度优先于构造速度</li>
+</ol>
+</li>
+<li><strong>sregex_iterator</strong>即使用<strong>regex_search来寻找所有匹配项</strong>，即不断从一个匹配位置跳到下一个匹配位置，如：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for(sregex_iterator it(file.begin(),file.end(),r),end_it;it!=end_it;++it)</span><br><span class="line">	cout&lt;&lt;it-&gt;str()&lt;endl;</span><br></pre></td></tr></table></figure>
+<pre><code>1. sregex_iterator拥有prefix与suffix
+2. 其中调用prefix与suffix返回ssub_match对象
+3. ssub_match有成员str与length，返回匹配的string及其大小
+4. 前缀prefix即当前匹配的smatch对象到上一个smatch对象中间的内容，后缀suffix以此类推
+5. 对此迭代器解引用返回smatch对象
+</code></pre>
+<p>![[Pasted image 20260224200907.png]]<br>8. 子表达式，即正则表达式中使用括号包含的部分，如<code>&quot;([[:alnum:]]+)\\.(cpp|cxx|cc)$&quot;</code>，前者匹配一个或多个字符的序列，后者匹配文件拓展名，子匹配是按位置来访问的，第一个子匹配位置为0，表示整个模式对应的匹配，后面是每个子表达式的匹配</p>
+<blockquote>
+<p>[!NOTE] ECMAScript<br>\{d}{n}表示一个n个数字的序列<br>点.在括号里没有特殊含义，如[-. ]匹配一个短横线或一个点，一个空格</p>
+</blockquote>
+<ol start="9">
+<li>对于一个smatch对象，拥有n个子表达式，则该smatch对象会包含n+1个ssub_match元素，<strong>因此可以将smatch对象理解成保存ssub_match的容器</strong>，运行通过上述第8条的下标访问，ssub_match操作：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>matched</td>
+<td>返回bool</td>
+</tr>
+<tr>
+<td>first，second</td>
+<td>指向匹配序列的首元素与尾后位置的迭代器，如果未匹配，则两者相等</td>
+</tr>
+<tr>
+<td>length</td>
+<td></td>
+</tr>
+<tr>
+<td>str</td>
+<td></td>
+</tr>
+</tbody></table>
+<ol start="10">
+<li>regex_replace<br>![[Pasted image 20260224201404.png]]</li>
+<li>e.g.:</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">//使用regex_match</span><br><span class="line"></span><br><span class="line">#include &lt;cstddef&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;regex&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    // Simple regular expression matching</span><br><span class="line">    const std::string fnames[] = &#123;&quot;foo.txt&quot;, &quot;bar.txt&quot;, &quot;baz.dat&quot;, &quot;zoidberg&quot;&#125;;</span><br><span class="line">    const std::regex txt_regex(&quot;[a-z]+\\.txt&quot;);</span><br><span class="line"> </span><br><span class="line">    for (const auto&amp; fname : fnames)</span><br><span class="line">        std::cout &lt;&lt; fname &lt;&lt; &quot;: &quot; &lt;&lt; std::regex_match(fname, txt_regex) &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line"> </span><br><span class="line">    // Extraction of a sub-match</span><br><span class="line">    const std::regex base_regex(&quot;([a-z]+)\\.txt&quot;);</span><br><span class="line">    std::smatch base_match;</span><br><span class="line"> </span><br><span class="line">    for (const auto&amp; fname : fnames)</span><br><span class="line">        if (std::regex_match(fname, base_match, base_regex))</span><br><span class="line">            // The first sub_match is the whole string; the next</span><br><span class="line">            // sub_match is the first parenthesized expression.</span><br><span class="line">            //[0]-&gt;整个匹配，[1]-&gt;文件名</span><br><span class="line">            if (base_match.size() == 2)</span><br><span class="line">            &#123;</span><br><span class="line">                std::ssub_match base_sub_match = base_match[1];</span><br><span class="line">                std::string base = base_sub_match.str();</span><br><span class="line">                std::cout &lt;&lt; fname &lt;&lt; &quot; has a base of &quot; &lt;&lt; base &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">    // Extraction of several sub-matches</span><br><span class="line">    const std::regex pieces_regex(&quot;([a-z]+)\\.([a-z]+)&quot;);</span><br><span class="line">    std::smatch pieces_match;</span><br><span class="line"> </span><br><span class="line">    for (const auto&amp; fname : fnames)</span><br><span class="line">        if (std::regex_match(fname, pieces_match, pieces_regex))</span><br><span class="line">        &#123;</span><br><span class="line">            std::cout &lt;&lt; fname &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">            for (std::size_t i = 0; i &lt; pieces_match.size(); ++i)</span><br><span class="line">            &#123;</span><br><span class="line">                std::ssub_match sub_match = pieces_match[i];</span><br><span class="line">                std::string piece = sub_match.str();</span><br><span class="line">                std::cout &lt;&lt; &quot;  submatch &quot; &lt;&lt; i &lt;&lt; &quot;: &quot; &lt;&lt; piece &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">//运行结果：</span><br><span class="line">foo.txt: 1</span><br><span class="line">bar.txt: 1</span><br><span class="line">baz.dat: 0</span><br><span class="line">zoidberg: 0</span><br><span class="line">foo.txt has a base of foo</span><br><span class="line">bar.txt has a base of bar</span><br><span class="line">foo.txt</span><br><span class="line">  submatch 0: foo.txt</span><br><span class="line">  submatch 1: foo</span><br><span class="line">  submatch 2: txt</span><br><span class="line">bar.txt</span><br><span class="line">  submatch 0: bar.txt</span><br><span class="line">  submatch 1: bar</span><br><span class="line">  submatch 2: txt</span><br><span class="line">baz.dat</span><br><span class="line">  submatch 0: baz.dat</span><br><span class="line">  submatch 1: baz</span><br><span class="line">  submatch 2: dat</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">//使用regex_search</span><br><span class="line"></span><br><span class="line">#include &lt;cstddef&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;regex&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    std::string lines[] = &#123;&quot;Roses are #ff0000&quot;,</span><br><span class="line">                           &quot;violets are #0000ff&quot;,</span><br><span class="line">                           &quot;all of my base are belong to you&quot;&#125;;</span><br><span class="line"> </span><br><span class="line">    std::regex color_regex(&quot;#([a-f0-9]&#123;2&#125;)&quot;</span><br><span class="line">                            &quot;([a-f0-9]&#123;2&#125;)&quot;</span><br><span class="line">                            &quot;([a-f0-9]&#123;2&#125;)&quot;);</span><br><span class="line"> </span><br><span class="line">    // simple match</span><br><span class="line">    for (const auto&amp; line : lines)</span><br><span class="line">        std::cout &lt;&lt; line &lt;&lt; &quot;: &quot; &lt;&lt; std::boolalpha</span><br><span class="line">                  &lt;&lt; std::regex_search(line, color_regex) &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">    std::cout &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line"> </span><br><span class="line">    // show contents of marked subexpressions within each match</span><br><span class="line">    std::smatch color_match;</span><br><span class="line">    for (const auto&amp; line : lines)</span><br><span class="line">        if (std::regex_search(line, color_match, color_regex))</span><br><span class="line">        &#123;</span><br><span class="line">            std::cout &lt;&lt; &quot;matches for &#x27;&quot; &lt;&lt; line &lt;&lt; &quot;&#x27;\n&quot;;</span><br><span class="line">            std::cout &lt;&lt; &quot;Prefix: &#x27;&quot; &lt;&lt; color_match.prefix() &lt;&lt; &quot;&#x27;\n&quot;;</span><br><span class="line">            for (std::size_t i = 0; i &lt; color_match.size(); ++i) </span><br><span class="line">                std::cout &lt;&lt; i &lt;&lt; &quot;: &quot; &lt;&lt; color_match[i] &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">            std::cout &lt;&lt; &quot;Suffix: &#x27;&quot; &lt;&lt; color_match.suffix() &lt;&lt; &quot;\&#x27;\n\n&quot;;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">    // repeated search (see also std::regex_iterator)</span><br><span class="line">    std::string log(R&quot;(</span><br><span class="line">        Speed:	366</span><br><span class="line">        Mass:	35</span><br><span class="line">        Speed:	378</span><br><span class="line">        Mass:	32</span><br><span class="line">        Speed:	400</span><br><span class="line">	Mass:	30)&quot;);</span><br><span class="line">    std::regex r(R&quot;(Speed:\t\d*)&quot;);</span><br><span class="line">    for (std::smatch sm; regex_search(log, sm, r);)</span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; sm.str() &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">        log = sm.suffix();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    // C-style string demo</span><br><span class="line">    std::cmatch cm;</span><br><span class="line">    if (std::regex_search(&quot;this is a test&quot;, cm, std::regex(&quot;test&quot;))) </span><br><span class="line">        std::cout &lt;&lt; &quot;\nFound &quot; &lt;&lt; cm[0] &lt;&lt; &quot; at position &quot;</span><br><span class="line">                  &lt;&lt; cm.prefix().length() &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">//运行结果：</span><br><span class="line">Roses are #ff0000: true</span><br><span class="line">violets are #0000ff: true</span><br><span class="line">all of my base are belong to you: false</span><br><span class="line"> </span><br><span class="line">matches for &#x27;Roses are #ff0000&#x27;</span><br><span class="line">Prefix: &#x27;Roses are &#x27;</span><br><span class="line">0: #ff0000</span><br><span class="line">1: ff</span><br><span class="line">2: 00</span><br><span class="line">3: 00</span><br><span class="line">Suffix: &#x27;&#x27;</span><br><span class="line"> </span><br><span class="line">matches for &#x27;violets are #0000ff&#x27;</span><br><span class="line">Prefix: &#x27;violets are &#x27;</span><br><span class="line">0: #0000ff</span><br><span class="line">1: 00</span><br><span class="line">2: 00</span><br><span class="line">3: ff</span><br><span class="line">Suffix: &#x27;&#x27;</span><br><span class="line"> </span><br><span class="line">Speed:	366</span><br><span class="line">Speed:	378</span><br><span class="line">Speed:	400</span><br><span class="line"> </span><br><span class="line">Found test at position 10</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//使用smatch的format方法</span><br><span class="line"></span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;regex&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    [std::string](https://cppreference.cn/w/cpp/string/basic_string) s = &quot;for a good time, call 867-5309&quot;;</span><br><span class="line">    [std::regex](https://cppreference.cn/w/cpp/regex/basic_regex) phone_regex(&quot;\\d&#123;3&#125;-\\d&#123;4&#125;&quot;);</span><br><span class="line">    [std::smatch](https://cppreference.cn/w/cpp/regex/match_results) phone_match;</span><br><span class="line"> </span><br><span class="line">    if ([std::regex_search](https://cppreference.cn/w/cpp/regex/regex_search)(s, phone_match, phone_regex))</span><br><span class="line">    &#123;</span><br><span class="line">        [std::string](https://cppreference.cn/w/cpp/string/basic_string) fmt_s = phone_match.format(</span><br><span class="line">            &quot;$`&quot;   // $` means characters before the match</span><br><span class="line">            &quot;[$&amp;]&quot; // $&amp; means the matched characters</span><br><span class="line">            &quot;$&#x27;&quot;); // $&#x27; means characters following the match</span><br><span class="line">        [std::cout](https://cppreference.cn/w/cpp/io/cout) &lt;&lt; fmt_s &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br><span class="line">//运行结果：for a good time, call [867-5309]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//使用regex_replace</span><br><span class="line"></span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;iterator&gt;</span><br><span class="line">#include &lt;regex&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    std::string text = &quot;Quick brown fox&quot;;</span><br><span class="line">    std::regex vowel_re(&quot;a|e|i|o|u&quot;);</span><br><span class="line"> </span><br><span class="line">    // write the results to an output iterator</span><br><span class="line">    std::regex_replace(std::ostreambuf_iterator&lt;char&gt;(std::cout),</span><br><span class="line">                       text.begin(), text.end(), vowel_re, &quot;*&quot;);</span><br><span class="line"> </span><br><span class="line">    // construct a string holding the results</span><br><span class="line">    std::cout &lt;&lt; &#x27;\n&#x27; &lt;&lt; std::regex_replace(text, vowel_re, &quot;[$&amp;]&quot;) &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">//运行结果：</span><br><span class="line">Q**ck br*wn f*x</span><br><span class="line">Q[u][i]ck br[o]wn f[o]x</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="tag-item">
+                    正则表达式
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">https://narciostyx.github.io/2026/01/18/正则表达式/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++常用类及其方法</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/%E9%9A%8F%E6%9C%BA%E6%95%B0/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++随机数</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

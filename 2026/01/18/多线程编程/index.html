@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++多线程编程</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#thread"><span class="toc-number">1.</span> <span class="toc-text">thread</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mutex"><span class="toc-number">2.</span> <span class="toc-text">mutex</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#condition-variable"><span class="toc-number">3.</span> <span class="toc-text">condition_variable</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Atomic"><span class="toc-number">4.</span> <span class="toc-text">Atomic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Future"><span class="toc-number">5.</span> <span class="toc-text">Future</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++多线程编程</h1>
+    </section>
+    <section class="article">
+        <p>C++中使用的多线程支持库</p>
+<span id="more"></span>
+
+<ul>
+<li>通常包含库&lt;thread&gt;，&lt;condition_variable&gt;，&lt;atomic&gt;，&lt;mutex&gt;，&lt;shared_mutex&gt;，&lt;future&gt;</li>
+</ul>
+<h1 id="thread"><a href="#thread" class="headerlink" title="thread"></a>thread</h1><ul>
+<li>包含一命名空间this_thread</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">namespace this_thread</span><br><span class="line">&#123;</span><br><span class="line">	get_id</span><br><span class="line">	yield（让出时间片）</span><br><span class="line">	sleep_for</span><br><span class="line">	sleep_until</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>类<ol>
+<li>thread，单个执行线程，允许多个函数并发执行，操作有join，detach，swap，native_handle（返回底层实现定义的线程句柄），joinable<ul>
+<li>thread必须在销毁前join，否则将引发异常</li>
+<li>不支持拷贝，支持移动</li>
+</ul>
+</li>
+<li>jthread，相较于thread，它会在析构时自动加入join，且支持外部请求终止<ul>
+<li>(头文件<stop_token>)使用stop_token类传递给该线程，线程内置的stop_source会自动把其停止令牌给stop_token</li>
+<li>内部的停止令牌操作：get_stop_source（返回与线程共享停止状态关联的 stop_source 对象），get_stop_token（返回与线程共享停止状态关联的 stop_token），request_stop（通过线程的共享停止状态请求停止执行）</li>
+<li>stop_callback，注册回调函数，当stop_token收到请求时会立即执行</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h1 id="mutex"><a href="#mutex" class="headerlink" title="mutex"></a>mutex</h1><ul>
+<li>包含类mutex，lock_guard，unique_guard，scope_lock</li>
+<li>全局命名空间包含函数try_lock，lock，call_once</li>
+</ul>
+<ol>
+<li>mutex包含lock，try_lock，unlock，native_handle</li>
+<li>unique_lock包含lock，try_lock（_for或_until），unlock，release（仅解除关联而非释放锁）</li>
+<li>scope_lock是互斥体包装器，如：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">void func(E&amp; e1,E&amp; e2)</span><br><span class="line">&#123;</span><br><span class="line">	&#123;</span><br><span class="line">		std::scoped_lock lock(e1.mx,e2.mx);</span><br><span class="line">		&#123;</span><br><span class="line">			xxx</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	//离开作用域被释放</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>递归锁recursive_mutex</li>
+<li>方法<code>call_once</code>，即使被多个线程调用，也只会调用一次</li>
+<li>共享锁<code>shared_mutex</code></li>
+</ol>
+<h1 id="condition-variable"><a href="#condition-variable" class="headerlink" title="condition_variable"></a>condition_variable</h1><ul>
+<li>包含类condition_variable与condition_variable_any，函数notify_all_at_thread_exit（当线程完全结束时调用noyify_all）</li>
+<li>condition_variable，通知线程有notify_one，notify_all，使线程等待有wait，wait_for与wait_until</li>
+<li>condition_variable_any是前者的泛化，因为前者仅适用于unique_lock，因为wait方法原型为</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template&lt; class Predicate &gt;</span><br><span class="line">void wait( std::unique_lock&lt;std::mutex&gt;&amp; lock, Predicate pred );</span><br></pre></td></tr></table></figure>
+<h1 id="Atomic"><a href="#Atomic" class="headerlink" title="Atomic"></a>Atomic</h1><ul>
+<li>原子类型，其操作为原子操作</li>
+</ul>
+<blockquote>
+<p>[!NOTE] CAS</p>
+<ul>
+<li>即Compare and Swap操作</li>
+<li>CAS操作需要输入两个数值，一个旧值（期望检查时应该为的值）与一个新值</li>
+<li>如果匹配旧值，则替换为新值，反之不替换</li>
+</ul>
+</blockquote>
+<ul>
+<li>方法有<code>load</code>（获取原子对象值），<code>store</code>（保存原子对象值），<code>exchange</code>，<code>wait，notify_one，notify_all</code>，第二个参数均为内存顺序</li>
+<li>RMW操作（读-修改-写操作）：<code>fetch_add，fetch_sub，fetch_max(\\min\\and\\or\\xor)</code>执行对应操作，再返回之前持有的值，其第二个参数均为内存顺序</li>
+<li>内存顺序：<ul>
+<li>即避免编译优化导致部分内存操作顺序与预想顺序不一致</li>
+<li>对于原子操作，其修改操作不可能同时进行，且<strong>所有线程均认可这个顺序</strong>，即若某个线程看到8先于9，则另外一个相同操作的线程也会看到8先于9</li>
+<li><code>happends_before</code>，若操作a在操作b之前发生，则操作a的结果对于操作b可见，<strong>但CPU或编译器并不一定会这样执行</strong></li>
+<li><code>squenced_before</code>，即单线程中，语句是按顺序执行的</li>
+<li><code>synchronizes_with</code>，即不同线程间实现<code>happends_before</code>，如果线程 1 中的操作 a “synchronizes-with” 线程 2 中的操作 b, 则操作 a “inter-thread happens-before” 操作 b，两者均具有传递性</li>
+</ul>
+<ol>
+<li><code>memory_order_relaxed</code>，不做任何同步与排序约束于其他读写，每个线程看到的修改顺序不一致</li>
+<li><code>memory_order_acquire</code>，针对load读操作，即acquire操作</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note</p>
+<ul>
+<li><strong>后续读&#x2F;写操作不会被重排到当前acquire操作之前</strong>，若另一个线程对同一个原子变量执行<em>release操作</em>，则两者<code>synchronizes-with</code>，<strong>保证release之前的所有发生的写入，在acquier操作之后都对当前线程可见（即传递给acquire操作）</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">std::atomic&lt;bool&gt; ready&#123;false&#125;;</span><br><span class="line">int data = 0;</span><br><span class="line">// 线程 1（生产者）</span><br><span class="line">void producer() &#123;</span><br><span class="line">	data = 42;                       // 普通写入</span><br><span class="line">	ready.store(true, std::memory_order_release);  // 释放操作</span><br><span class="line">&#125;</span><br><span class="line">// 线程 2（消费者）</span><br><span class="line">void consumer() &#123;</span><br><span class="line">	while (!ready.load(std::memory_order_acquire)); // 获取操作</span><br><span class="line">	assert(data == 42);              // 一定成立</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></blockquote>
+<pre><code>1. `memory_order_release`，针对store写操作，即release操作
+</code></pre>
+<blockquote>
+<p>[!NOTE] Note</p>
+<ul>
+<li>是RMW操作，则使用<code>memory_order_acq_rel</code></li>
+<li>若要建立明确的同步关系应该使用release与acquire配对</li>
+</ul>
+</blockquote>
+<pre><code>1. `memory_order_acq_rel`，即2与3的结合
+2. `memory_order_seq_cst`，顺序一致性
+</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">std::atomic&lt;bool&gt; x&#123;false&#125;, y&#123;false&#125;;</span><br><span class="line"></span><br><span class="line">void thread1() &#123;</span><br><span class="line">    x.store(true, std::memory_order_seq_cst); // (1)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void thread2() &#123;</span><br><span class="line">    y.store(true, std::memory_order_seq_cst); // (2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">std::atomic&lt;int&gt; z&#123;0&#125;;</span><br><span class="line"></span><br><span class="line">void read_x_then_y() &#123;</span><br><span class="line">    while (!x.load(std::memory_order_seq_cst)); // (3)</span><br><span class="line">    if (y.load(std::memory_order_seq_cst)) ++z; // (4)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void read_y_then_x() &#123;</span><br><span class="line">    while (!y.load(std::memory_order_seq_cst)); // (5)</span><br><span class="line">    if (x.load(std::memory_order_seq_cst)) ++z; // (6)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    std::thread a(thread1), b(thread2), c(read_x_then_y), d(read_y_then_x);</span><br><span class="line">    a.join(), b.join(), c.join(), d.join();</span><br><span class="line">    assert(z.load() != 0); // (7)</span><br><span class="line">&#125;</span><br><span class="line">//操作(1)可能先于操作(2)，也可能后于，但不论如论如何，所有线程看到的顺序是一致的，即均为(1)(2)或(2)(1)</span><br></pre></td></tr></table></figure>
+<h1 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h1><p>#future<br>#async<br>#promise</p>
+<ul>
+<li><code>std::future</code>提供了访问异步操作结果的机制</li>
+<li>在标准库中存在两种期望：<strong>唯一期望</strong>与<strong>共享期望</strong><ul>
+<li>唯一期望，即<code>std::future&lt;&gt;</code>只能与应该指定事件关联</li>
+<li>共享期望，即<code>std::shared_future&lt;&gt;</code>能关联多个事件</li>
+</ul>
+</li>
+<li><code>std::future</code>内部保存<strong>一个将来会被某个provider赋值的值</strong>，因此提供了一个访问该值的方法<code>get()</code>，但<strong>如果试图在该方法可用前调用，则会阻塞直到该值可用</strong><ul>
+<li><code>get()</code>方法只能调用一次，否则抛出异常</li>
+</ul>
+</li>
+<li>有效的<code>std::future</code>对象有以下三种Provider创建：<ul>
+<li><code>std::async</code></li>
+<li><code>std::promise::get_future</code></li>
+<li><code>std::packaged_task::get_future</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note<br>&lt;future&gt;头文件包含以下类与函数：</p>
+<ul>
+<li>provider类：<code>std::promise</code>与<code>std::package_task</code></li>
+<li>provider函数：<code>std::async</code></li>
+<li>其他类型：<code>std::future_error</code>，<code>std::future_errc</code>，<code>std::future_status</code>，<code>std::launch</code></li>
+</ul>
+</blockquote>
+<ul>
+<li><code>std::future</code>的拷贝操作是被禁止的<ul>
+<li>valid成员函数查看是否拥有<strong>共享状态</strong>，<strong>默认构造函数为false，移动后一般为true</strong></li>
+<li>get成员函数</li>
+<li>wait成员函数，等待共享标志为ready，在此之前一直阻塞</li>
+<li>wait_for，即前者带超时机制</li>
+<li>wait_until，与前者逻辑一致</li>
+<li>share成员函数，返回一个<code>shared_future</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>[!NOTE] shared_future<br>与<code>std::future</code>类似，但允许拷贝，以及<strong>允许多次get方法调用</strong></p>
+</blockquote>
+<blockquote>
+<p>[!NOTE] 返回值<br><code>wait_for</code>与<code>wait_until</code>的返回值为<code>future_status</code>，其标志位有<code>ready,timeout,deferred</code></p>
+</blockquote>
+<ul>
+<li><code>std::promise</code>保存某一类型T的值，该值可被future对象获取，因此其提供了一种线程同步手段，其构造时可与一个共享状态（一般<code>std::future</code>）相关联<ul>
+<li>可以使用<code>get_future</code>获取与之相关联的future对象</li>
+<li><strong>禁止拷贝</strong></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">std::promise&lt;int&gt; prom;</span><br><span class="line">std::future&lt;int&gt; fut=prom.get_future();</span><br><span class="line">//这里func是void(*)(std::future&lt;int&gt;&amp;)</span><br><span class="line">std::thread t(func,std::ref(fut));</span><br><span class="line">prom.set_value(10);//此处与线程t保持同步</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note<br><code>std::future</code>通常有三种方式获取，除了上面的<code>std::promise</code>，然后调用方法<code>set_value</code>外，还有：</p>
+<ul>
+<li><code>std::async</code>:</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int func(int x)&#123;return x*x;&#125;</span><br><span class="line">//std::launch::async强制在新线程异步执行</span><br><span class="line">//std::launch::deferred延迟执行，直到调用get()或wait()</span><br><span class="line">std::future&lt;int&gt; fut=std::async(std::launch::async,func,5);</span><br><span class="line">std::cout&lt;&lt;&quot;Result:&quot;&lt;&lt;fut.get();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>std::packaged_task</code></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;std::packaged_task&lt;int(int)&gt; task(func);</span><br><span class="line">&gt;std::future&lt;int&gt; fut = task.get_future();</span><br><span class="line">&gt;std::thread t(std::move(task), 5);</span><br><span class="line">&gt;int result = fut.get();</span><br><span class="line">&gt;t.join();</span><br></pre></td></tr></table></figure></blockquote>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="tag-item">
+                    多线程
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/">https://narciostyx.github.io/2026/01/18/多线程编程/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/%E6%A8%A1%E6%9D%BF%E5%B1%95%E5%BC%80/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++模板展开</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++常用类及其方法</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

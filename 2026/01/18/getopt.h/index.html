@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | getopt以及getopt_long</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#getopt"><span class="toc-number">1.</span> <span class="toc-text">getopt</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>getopt以及getopt_long</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<h1 id="getopt"><a href="#getopt" class="headerlink" title="getopt"></a>getopt</h1><ol>
+<li>getopt与getopt_long均为解析命令行参数的C库函数，前者处理短选项，后者还支持长选项，在头文件getopt.h下</li>
+<li>两个函数在解析过程中会设置以下外部变量：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>optarg</td>
+<td>如果当前选项需要参数，则该参数的值会被存储在这个变量中</td>
+</tr>
+<tr>
+<td>optind</td>
+<td>指向下一个要处理的命令行参数的索引</td>
+</tr>
+<tr>
+<td>opterr</td>
+<td>控制是否打印错误信息</td>
+</tr>
+<tr>
+<td>optopt</td>
+<td>如果发生错误，则该选项字符会被存储在这个变量中</td>
+</tr>
+<tr>
+<td>3. getopt函数原型<code>int getopt(int argc, char * const argv[], const char *optstring);</code>，其中optstring是包含所有短选项的字符串，每个选项字符后可以跟一个冒号 :，表示该选项需要一个参数；如果跟两个冒号 ::，表示该选项的参数是可选的</td>
+<td></td>
+</tr>
+<tr>
+<td>4. getopt_long函数原型<code>int getopt_long(int argc, char * const argv[], const char *optstring,const struct option *longopts, int *longindex);</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>[!NOTE] Option结构体<br>通常用来定义长命名行选项，通常与getopt_long函数共同使用，结构体包括以下成员：<br>name，has_arg，flag，val<br>p.s.:<br><em>flag: 如果不是 NULL，则 getopt_long 会将该选项的值（val 成员的值）存储在这里所指向的变量中。如果 flag 是 NULL，则 getopt_long 会返回 val 成员的值</em><br>e.g.:<br><code>{&quot;force&quot;,no_argument,&amp;force,1}</code>，代表长选项名为force，不需要传入参数，val&#x3D;1，<strong>同时getopt_long返回0，且force被置为1</strong><br><code> {&quot;time&quot;,required_argument,NULL,&#39;t&#39;}</code>，代表长选项名为time，短名称为t（flag为NULL且val&#x3D;’t’），需要传入参数，<strong>同时getopt_long返回val(‘t’)</strong></p>
+</blockquote>
+<ol start="5">
+<li>getopt跟getopt_long的处理流程为：<ol>
+<li>从argv[1]开始读取数据</li>
+<li>根据optstring识别选项，查看是否需要参数，若是，则optarg会被传入后面跟着的参数，若否，则下一步</li>
+<li>optind更新索引</li>
+<li>返回当前匹配的选项字符，若所有字符都处理完毕，则返回-1（长选项返回遵循上面option结构体内的规则）</li>
+</ol>
+</li>
+</ol>
+<blockquote>
+<p>[!NOTE] Note</p>
+<ol>
+<li>对于getopt_long函数来讲，最后一个参数一般不会使用，仅其内部当下标使用</li>
+<li>使用getopt_long函数前必须初始化option结构体数组，<strong>option结构体数组最后一个成员必须全为NULL</strong>（getopt_long函数本身不知道option结构体结束的位置，因此需要全NULL）</li>
+<li>有一个只处理长选项的函数<code>getopt_long_only</code>，一般较少使用</li>
+</ol>
+</blockquote>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/getopt/" class="tag-item">
+                    getopt
+                </a>
+            
+                <a href="/tags/getopt-long/" class="tag-item">
+                    getopt_long
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/getopt.h/">https://narciostyx.github.io/2026/01/18/getopt.h/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/epoll.h/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">epoll函数</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/makefile%E4%B8%8Ecmake/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C/C++ make与cmake</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

@@ -76,34 +76,214 @@
             <div class="article-item"> 
                 <div class="article-item-title">
                     <h1>
-                        <a href="/2026/07/14/hello-world/">
-                            Hello World
+                        <a href="/2026/01/18/C++20%20concepts/">
+                            C++20 concepts
                         </a>
                     </h1>
                     <div class="info">
                         
                         
                             <span>
-                                2026/07/14
+                                2026/01/18
                             </span>
                         
                     </div>
                 </div>
                 <div class="article-item-excerpt article">
                     <div>
-                        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+                        <p>C++20<concept>以及概念，requires关键字</p>
+                    </div>
+                </div>
+            </div>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/C++20%20concepts/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/ADL%E4%B8%8ECPO/">
+                            ADL与CPO
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<h1 id="ADL"><a href="#ADL" class="headerlink" title="ADL"></a>ADL</h1><ul>
+<li>实参依赖查找，即查找函数调用表达式中<strong>不限定函数名称的规则集，包括对重载运算符的隐式调用</strong></li>
+<li>如果常规的非限定查找已经找到<strong>下列任意一项，则跳过ADL</strong>：<ul>
+<li>类的成员声明</li>
+<li>块作用域内的函数声明</li>
+<li>任何非函数（模板）的声明（如变量、函数对象）</li>
+</ul>
+</li>
+<li>若触发ADL，则遍历<strong>每个实参，将其对应的关联命名空间与类</strong>加入集合：<ul>
+<li><strong>类类型</strong>：本身，直接&#x2F;间接基类，外围类（嵌套），最内层封闭命名空间<ul>
+<li><strong>若为类模板</strong>，则加入模板参数所属的命名空间与类（<strong>跳过非类型模板参数</strong>）</li>
+</ul>
+</li>
+<li><strong>枚举类型</strong>：加入定义该枚举的<strong>最内层封闭命名空间</strong>；若枚举是类成员，则同时加入该类</li>
+<li><strong>指针&#x2F;数组</strong>：递归检查其指向的类型 <code>T</code>（如 <code>T*</code> 或 <code>T[]</code>）</li>
+<li><strong>函数类型</strong>：递归检查其<strong>参数类型</strong>和<strong>返回类型</strong></li>
+<li><strong>成员指针</strong>：<ul>
+<li>指向数据成员：检查成员类型和所属类 <code>X</code></li>
+<li>指向成员函数：检查参数类型、返回类型和所属类 <code>X</code></li>
+</ul>
+</li>
+<li><strong>重载集&#x2F;取地址</strong>：检查重载集中的每个函数；若由模板标识符命名，额外检查其<strong>类型模板实参</strong>和<strong>模板模板实参</strong>（跳过非类型实参）</li>
+<li><strong>内联命名空间</strong>：若上述集合中的命名空间是内联的，则加入其外层命名空间；反之，若某个命名空间直接包含内联命名空间，则该内联命名空间也会被加入（实现双向传播）</li>
+</ul>
+</li>
+<li>最终与普通非限定查找结果合并，最终进行筛选（<strong>using指示被忽略，所有非函数（模板）的名称被忽略，友元函数通过ADL可见</strong>）</li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note</p>
+<ul>
+<li>ADL触发条件依赖于当前是函数调用，若非函数调用则不生效</li>
+<li>ADL本身即遍历当前函数参数的命名空间与类加入考虑范围，以及其相关的类与命名空间</li>
+<li>ADL也是泛型代码中交换两个对象（<code>swap(a,b)</code>）的核心原因，即考虑用户重载，也考虑用户不重载调用<code>std::swap(a,b)</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>ADL 可以找到完全在类或类模板中定义的友元函数（通常是重载运算符），即使它从未在命名空间级别声明过</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">number</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">number</span>(<span class="type">int</span>);</span><br><span class="line">    <span class="function"><span class="keyword">friend</span> number <span class="title">gcd</span><span class="params">(number x, number y)</span> </span>&#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;; </span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 除非显示声明一个匹配函数，否则gcd在当前命名空间不可见</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">g</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">number&lt;<span class="type">double</span>&gt; <span class="title">a</span><span class="params">(<span class="number">3</span>)</span>, <span class="title">b</span><span class="params">(<span class="number">4</span>)</span></span>;</span><br><span class="line">    <span class="comment">// 因为a，b是number结构体，考虑其类，查找到友元函数gcd，使其在命名空间内可见</span></span><br><span class="line">    a = <span class="built_in">gcd</span>(a, b); </span><br><span class="line"><span class="comment">//  b = gcd(3, 4); // Error; gcd is not visible</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 在当前全局命名空间中没有operator声明，因此执行ADL，因为operator&lt;&lt;(std::cout,const char*)左侧参数在std命名空间中，std命名空间加入考虑范围，查找到函数std::operator&lt;&lt;(std::ostream&amp;, const char*)</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Test\n&quot;</span>;</span><br><span class="line">    <span class="comment">//同理</span></span><br><span class="line">    <span class="keyword">operator</span>&lt;&lt;(std::cout, <span class="string">&quot;Test\n&quot;</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 下为一些特例</span></span><br><span class="line">    <span class="comment">// endl并未声明在该命名空间，直接报错，此处endl为变量而非函数调用</span></span><br><span class="line">    std::cout &lt;&lt; endl;</span><br><span class="line">    <span class="comment">// 执行成功，此处endl为函数调用，ADL检查参数std::cout的命名空间std查找到std::endl</span></span><br><span class="line">    <span class="built_in">endl</span>(std::cout); </span><br><span class="line">    <span class="comment">// 执行失败，(endl)不再被视为非限制性标识符（ADL仅针对非限定标识符，这里编译器抑制了ADL）</span></span><br><span class="line">    (endl)(std::cout);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="CPO"><a href="#CPO" class="headerlink" title="CPO"></a>CPO</h1><blockquote>
+<p>[!NOTE] semiregular<br><code>template&lt;class T&gt; concept semiregular = std::copyable&lt;T&gt; &amp;&amp; std::default_initializable&lt;T&gt;;</code><br>即可复制，也默认可构造，其行为类似内置类型（e.g. int）<br><strong>operator=&#x3D;未定义</strong></p>
+</blockquote>
+<ul>
+<li>其弥补了ADL的一些不足，比如swap函数内未使用<code>using std::swap</code>，而在CPO中，只需要调用<code>std::ranges::swap(a,b)</code><ul>
+<li>CPO是遮蔽了ADL的复杂性，其内部实现可以依赖ADL</li>
+<li>如<code>std::ranges::swap(a,b)</code>内部可能存在<code>using std::swap</code></li>
+</ul>
+</li>
+<li>定制点对象，C++20定义，其为一个<strong>const函数对象，无状态，行为一致，SFINAE友好</strong><ul>
+<li>其类型是一个字面量（constexpr）且满足semiregular概念的类类型</li>
+<li>所有实例都相等，且可以自由复制，其副本可以交换使用</li>
+<li>无论通过左值、右值还是const&#x2F;非const实例调用，效果均相同</li>
+<li>如果参数不满足要求，CPO的<code>operator()</code>会从重载决议中移除</li>
+</ul>
+</li>
+<li>给定一组类型 <code>Args...</code>，如果std::declval&lt;Args&gt;()… 满足上面 <code>cpo</code> 的参数要求，则 <code>___cpo_fn_</code> 遵循以下要求，否则，<code>___cpo_fn_</code> 的任何函数调用运算符都不参与重载决议</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">std::invocable&lt;__cpo_fn, Args...&gt;,</span><br><span class="line">std::invocable&lt;const __cpo_fn, Args...&gt;,</span><br><span class="line">std::invocable&lt;__cpo_fn&amp;, Args...&gt;，以及</span><br><span class="line">std::invocable&lt;const __cpo_fn&amp;, Args...&gt;.  </span><br></pre></td></tr></table></figure>
+                    </div>
+                </div>
+            </div>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/ADL%E4%B8%8ECPO/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
+                            IO复用
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<h1 id="socket编程"><a href="#socket编程" class="headerlink" title="socket编程"></a>socket编程</h1><ol>
+<li>服务端<ol>
+<li>首先调用socket函数创建网络协议与传输协议，如IPv4与TCP</li>
+<li>再使用bind函数绑定IP地址与端口</li>
+<li>调用listen函数进行监听</li>
+<li>服务端使用accept询问内核是否有来着客户端的连接请求，若否则<strong>阻塞（默认情况下）</strong> 等待客户端连接到来</li>
+</ol>
+</li>
+<li>客户端<ol>
+<li>调用socket函数</li>
+<li>使用connect函数发起连接</li>
+</ol>
+</li>
+<li>TCP连接中，服务器内核为每个Socket维护两个队列：TCP半连接队列（完成第一次握手但没完成三次握手的连接）、TCP全连接队列（完成三次握手且状态为established的连接）<ol>
+<li>服务端的accept函数从全连接队列中拿出一个已经完成连接的socket对象返回，后续传输都使用这个socket</li>
+<li>半连接队列的socket叫做监听socket</li>
+<li>全连接队列的socket叫已连接socket</li>
+</ol>
+</li>
+<li>上述描述的对象为同步阻塞模型</li>
+</ol>
+<h1 id="多进程模型"><a href="#多进程模型" class="headerlink" title="多进程模型"></a>多进程模型</h1><ol>
+<li>基于传统的TCP socket编程，如果服务器要建立多个客户端，则可以使用fork函数新建子进程![[Pasted image 20260219180010.png]]</li>
+<li><strong>子进程只需要已连接socket（父进程accept后使用fork传递），父进程只需要监听socket</strong></li>
+<li>当子进程退出后，内核仍然会保留对应的一些信息，因此需要调用wait与waitpid函数</li>
+<li>进程本身较为消耗资源，因此下介绍多线程模型</li>
+</ol>
+<h1 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h1><ol>
+<li>使用pthread_create()函数创建线程</li>
+<li>与多进程第二点一致</li>
+<li>为了尽可能减小系统开销，使用线程池来避免线程的频繁创建与销毁![[Pasted image 20260219180605.png]]<ul>
+<li>这个队列是全局的，需要避免多线程竞争</li>
+</ul>
+</li>
+<li>每来一个TCP连接，如果就分配一个进程或线程，当连接数足够大时，操作系统不可能同时维护如此巨大数量的进程&#x2F;线程</li>
+</ol>
+<h1 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h1><ol>
+<li>如果为每个连接请求都分配一个进程&#x2F;线程是不合适的，那么可以使用一个进程来维护多个socket，即用最少的资源管理大量的并发IO事件</li>
+<li>select&#x2F;poll&#x2F;epoll函数允许进程通过它们从内核中获取多个事件</li>
+</ol>
+<h2 id="select-poll"><a href="#select-poll" class="headerlink" title="select&#x2F;poll"></a>select&#x2F;poll</h2><ol>
+<li>select实现多路复用的方式是将已连接的socket都放在<strong>一个文件描述符集合</strong>，调用select时将这个集合<strong>拷贝</strong>到内核中，让内核通过<strong>遍历</strong>检查是否有网络事件产生<ul>
+<li>此时若有事件产生，则将此socket标记为可读或可写，再把整个集合<strong>拷贝</strong>到用户态，用户态再通过<strong>遍历</strong>找到可读或可写的socket</li>
+<li>所以，对于select来讲，需要遍历与拷贝两次文件描述符集合</li>
+<li>select使用固定长度的BitsMap，一般默认最大值为1024（即0-1023）</li>
+</ul>
+</li>
+<li>poll不再使用BitsMap进行存储，取而代之是使用<strong>动态数组</strong>，以链表形式组织，<strong>突破了select的文件描述符上限</strong></li>
+</ol>
+<h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><ol>
+<li>epoll在内核里使用<strong>红黑树</strong>跟踪进程所有待检测的文件描述字，吧需要监控的socket通过epoll_ctr函数加入红黑树</li>
+<li>epoll使用<strong>事件驱动</strong>的机制，内核里维护了一个<strong>链表</strong>来记录就绪事件，当某个 socket 有事件发生时，通过回调函数内核会将其加入到这个就绪事件列表中，<strong>当用户调用 epoll_wait() 函数时，只会返回有事件发生的文件描述符的个数</strong>，不需要像 select&#x2F;poll 那样轮询扫描整个 socket 集合，大大提高了检测的效率</li>
+</ol>
+<blockquote>
+<p>[!INFO] 注意<br>epoll本身仍需要将数据从内核拷贝到用户空间</p>
+</blockquote>
+<ol start="3">
+<li>epoll支持两种事件触发模式，分别是边缘触发（edge-triggered，ET）和水平触发（level-triggered，LT）<ol>
+<li>处于ET的情况下，当被监控的socket上有可读事件发生时，<strong>服务器端只会从epoll_wait中苏醒一次</strong>，即使进程没有调用 read 函数从内核读取数据，也依然只苏醒一次，因此我们程序要保证一次性将内核缓冲区的数据读取完</li>
+<li>处于LT的情况下，当被监控的 socket 上有可读事件发生时，<strong>服务器端不断地从 epoll_wait 中苏醒</strong>，直到内核缓冲区数据被 read 函数读完才结束，目的是告诉我们有数据需要读取</li>
+<li>ET一般与非阻塞IO搭配使用</li>
+</ol>
+</li>
+</ol>
 
                     </div>
                 </div>
@@ -111,7 +291,601 @@
 
             <div style="text-align: right;">
                 <button type="button" class="read-more">
-                    <a href="/2026/07/14/hello-world/">阅读更多</a>
+                    <a href="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/Reactor%E4%B8%8EProactor/">
+                            Reactor与Proactor模型
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<h1 id="网络通信模型"><a href="#网络通信模型" class="headerlink" title="网络通信模型"></a>网络通信模型</h1><h1 id="Reactor"><a href="#Reactor" class="headerlink" title="Reactor"></a>Reactor</h1><ol>
+<li>被动过程，当接收到来着客户端事件后，根据事件类型调用对应代码处理，因此也叫做Dispatch模式</li>
+<li><strong>同步</strong>非阻塞网络模型</li>
+<li>底层是IO多路复用与<strong>线程池</strong></li>
+<li>三事件<ol>
+<li>客户端向服务器发送连接请求（连接事件）</li>
+<li>客户端向服务器发送写（读）请求，服务器从请求内读取内容再写入（服务器中读取）（读事件、写事件），处理完成后返回值</li>
+<li>连接由acceptor处理</li>
+<li>连接后会创建handler，负责处理读写事件并响应</li>
+<li>reactor负责监听与分配事件</li>
+</ol>
+</li>
+</ol>
+<h2 id="三线程模型"><a href="#三线程模型" class="headerlink" title="三线程模型"></a>三线程模型</h2><h3 id="单Reactor单线程模型"><a href="#单Reactor单线程模型" class="headerlink" title="单Reactor单线程模型"></a>单Reactor单线程模型</h3><ol>
+<li>连接请求、业务处理、响应请求都在一个线程中</li>
+<li>工作流程<ol>
+<li>reactor监听请求后，通过dispatch分发给acceptor或handler</li>
+<li>如果是来着客户端的连接请求，则分发给acceptor并创建一个对应的handler</li>
+<li>如果是来着客户端的读写请求，则reactor调用对应的handler处理</li>
+<li>handler通过read-&gt;execute-&gt;send执行流程<br>![[Pasted image 20260219160841.png]]</li>
+</ol>
+</li>
+</ol>
+<h3 id="单Reactor多线程模型"><a href="#单Reactor多线程模型" class="headerlink" title="单Reactor多线程模型"></a>单Reactor多线程模型</h3><ol>
+<li>鉴于单 Reactor 单线程模式无法充分利用和发挥多核 CPU 的性能，于是就诞生了单 Reactor 多线程模型</li>
+<li>工作流程<ol>
+<li>与前者类似，但是handler不再进行业务处理（execute），仅响应事件</li>
+<li>handler通过read读取到数据后会<strong>发给processor</strong>进行业务处理</li>
+<li>processor会在<strong>独立的子线程（线程池）</strong> 内完成真正的业务处理，再返回响应给主线程的handler<br>![[Pasted image 20260219160817.png]]</li>
+</ol>
+</li>
+<li>尽管采用了多线程业务处理流程，但是由于是单reactor，瞬间高发的时候会造成reacotr的性能瓶颈</li>
+</ol>
+<h3 id="多Reactor多线程模式"><a href="#多Reactor多线程模式" class="headerlink" title="多Reactor多线程模式"></a>多Reactor多线程模式</h3><ol>
+<li>工作原理<ol>
+<li>父线程中mainReactor监听连接建立事件，通过Acceptor接受，将<strong>新连接分给某个子线程</strong></li>
+<li>子线程的subReactor分配的连接加入到连接队列中并监听，同时创建对应handler处理事件</li>
+<li>此时handler与单Reactor单线程的handler职责一致<br>![[Pasted image 20260219161120.png]]</li>
+</ol>
+</li>
+</ol>
+<h1 id="Proactor"><a href="#Proactor" class="headerlink" title="Proactor"></a>Proactor</h1><ol>
+<li>当有连接、读写等IO事件时，<strong>操作系统内核</strong>在处理完事件后主动通知我们的程序代码</li>
+<li><strong>异步</strong>非阻塞网络模型</li>
+<li>工作流程<ol>
+<li>Proactor Initiator 负责创建 Proactor 和 Handler，并将 Proactor 和 Handler 都通过 Asynchronous Operation Processor 注册到内核；</li>
+<li>Asynchronous Operation Processor 负责处理注册请求，并完成 I&#x2F;O 操作；</li>
+<li>Asynchronous Operation Processor 完成 I&#x2F;O 操作后通知 Proactor；</li>
+<li>Proactor 根据不同的事件类型回调不同的 Handler 进行业务处理；</li>
+<li>Handler 完成业务处理，Handler 也可以注册新的 Handler 到内核进程；<br>![[Pasted image 20260219170157.png]]</li>
+</ol>
+</li>
+</ol>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ul>
+<li>Reactor本质是<strong>应用程序</strong>处理IO请求，而Proactor则是<strong>操作系统内核</strong>处理IO请求</li>
+<li>就绪事件与完成事件<ol>
+<li>Reactor使用就绪事件，即可以立即执行而不会阻塞，即操作系统会告诉现在进行IO操作不会阻塞，<strong>读写仍由应用程序完成</strong></li>
+<li>Proactor则是使用完成事件，即<strong>IO操作在后台完成</strong>（数据已经读入缓冲区或已从缓冲区写出），程序只负责提交请求与处理结果</li>
+<li>因此可以将Reactor理解成：事件到达后<strong>由操作系统通知应用程序，应用程序进行处理</strong>；而Proactor则是：事件到达后操作系统来处理，<strong>处理完后通知应用程序</strong>（处理指IO操作）</li>
+</ol>
+</li>
+<li>三种IO方式<ol>
+<li>阻塞IO指程序使用read()询问内核，若未准备好则一直等待，阻塞程序运行</li>
+<li>非阻塞IO指程序轮询使用read()询问内核，若内核返回未准备好则立即返回，进行下面操作，过一段时间后继续询问内核</li>
+<li>异步IO则是发起aio_read后，立即返回，执行其他操作，当内核准备好数据后会通知程序</li>
+</ol>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/Reactor%E4%B8%8EProactor/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/CRTP/">
+                            CRTP
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ul>
+<li>奇异递归模板模式，实现编译时多态（静态多态）</li>
+<li>如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class T&gt;</span><br><span class="line">class Y&#123;&#125;;</span><br><span class="line"></span><br><span class="line">class X:public Y&lt;X&gt; &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>e.g</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class Derived&gt;</span><br><span class="line">struct Base</span><br><span class="line">&#123;</span><br><span class="line">    void name() &#123; static_cast&lt;Derived*&gt;(this)-&gt;impl(); &#125;</span><br><span class="line">protected:</span><br><span class="line">    Base() = default; // prohibits the creation of Base objects, which is UB</span><br><span class="line">&#125;;</span><br><span class="line">struct D1 : public Base&lt;D1&gt; &#123; void impl() &#123; std::puts(&quot;D1::impl()&quot;); &#125; &#125;;</span><br><span class="line">struct D2 : public Base&lt;D2&gt; &#123; void impl() &#123; std::puts(&quot;D2::impl()&quot;); &#125; &#125;;</span><br><span class="line"></span><br><span class="line">//在C++23中可以简写为</span><br><span class="line">struct Base &#123; void name(this auto&amp;&amp; self) &#123; self.impl(); &#125; &#125;;</span><br><span class="line">struct D1 : public Base &#123; void impl() &#123; std::puts(&quot;D1::impl()&quot;); &#125; &#125;;</span><br><span class="line">struct D2 : public Base &#123; void impl() &#123; std::puts(&quot;D2::impl()&quot;); &#125; &#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	D1 d1; d1.name();</span><br><span class="line">	D2 d2; d2.name();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/CRTP/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/boost.beast/">
+                            boost.beast
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ul>
+<li>头文件包含，依赖Boost.asio与OpenSSL</li>
+</ul>
+<ol>
+<li>IO上下文：<code>net::io_context</code></li>
+<li>流抽象：<code>stream</code></li>
+<li>缓冲区：<code>flat_buffer</code>，<code>multi_buffer</code>等</li>
+</ol>
+<h1 id="Http功能"><a href="#Http功能" class="headerlink" title="Http功能"></a>Http功能</h1><blockquote>
+<p>[!NOTE] http::request</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class Body,class Fields=fields&gt;</span><br><span class="line">using request=message&lt;true,Body,Fields&gt;</span><br></pre></td></tr></table></figure>
+<p>其中message声明如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">bool isRequest,</span><br><span class="line">class Body,</span><br><span class="line">class Fields = fields&gt;</span><br><span class="line">class message :</span><br><span class="line">public http::header&lt; isRequest, fields &gt;</span><br></pre></td></tr></table></figure>
+<p>message继承于header，消息头</p>
+<ol>
+<li>isRequest为true代表requests，false为responses</li>
+<li>body代表正文特征类型，即实际数据类型，如string_body（string）</li>
+<li>fields代表HTTP报头字段容器，其中字段声明在http::field枚举类中</li>
+</ol>
+</blockquote>
+<p>![[Pasted image 20260420171437.png]]</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;boost/beast/core.hpp&gt;</span><br><span class="line">#include &lt;boost/beast/http.hpp&gt;</span><br><span class="line">#include &lt;boost/beast/version.hpp&gt;</span><br><span class="line">#include &lt;boost/asio/connect.hpp&gt;</span><br><span class="line">#include &lt;boost/asio/ip/tcp.hpp&gt;</span><br><span class="line">#include &lt;cstdlib&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"></span><br><span class="line">namespace beast = boost::beast;     // from &lt;boost/beast.hpp&gt;</span><br><span class="line">namespace http = beast::http;       // from &lt;boost/beast/http.hpp&gt;</span><br><span class="line">namespace net = boost::asio;        // from &lt;boost/asio.hpp&gt;</span><br><span class="line">using tcp = net::ip::tcp;           // from &lt;boost/asio/ip/tcp.hpp&gt;</span><br><span class="line"></span><br><span class="line">// Performs an HTTP GET and prints the response</span><br><span class="line">int main(int argc, char** argv)</span><br><span class="line">&#123;</span><br><span class="line">    try</span><br><span class="line">    &#123;</span><br><span class="line">        // Check command line arguments.</span><br><span class="line">        if(argc != 4 &amp;&amp; argc != 5)</span><br><span class="line">        &#123;</span><br><span class="line">            std::cerr &lt;&lt;</span><br><span class="line">                &quot;Usage: http-client-sync &lt;host&gt; &lt;port&gt; &lt;target&gt; [&lt;HTTP version: 1.0 or 1.1(default)&gt;]\n&quot; &lt;&lt;</span><br><span class="line">                &quot;Example:\n&quot; &lt;&lt;</span><br><span class="line">                &quot;    http-client-sync www.example.com 80 /\n&quot; &lt;&lt;</span><br><span class="line">                &quot;    http-client-sync www.example.com 80 / 1.0\n&quot;;</span><br><span class="line">            return EXIT_FAILURE;</span><br><span class="line">        &#125;</span><br><span class="line">        auto const host = argv[1];</span><br><span class="line">        auto const port = argv[2];</span><br><span class="line">        auto const target = argv[3];</span><br><span class="line">        int version = argc == 5 &amp;&amp; !std::strcmp(&quot;1.0&quot;, argv[4]) ? 10 : 11;</span><br><span class="line"></span><br><span class="line">        // The io_context is required for all I/O</span><br><span class="line">        //创建IO上下文</span><br><span class="line">        net::io_context ioc;</span><br><span class="line"></span><br><span class="line">        // These objects perform our I/O</span><br><span class="line">        tcp::resolver resolver(ioc);</span><br><span class="line">        beast::tcp_stream stream(ioc);</span><br><span class="line"></span><br><span class="line">        // Look up the domain name</span><br><span class="line">        //解析域名</span><br><span class="line">        auto const results = resolver.resolve(host, port);</span><br><span class="line"></span><br><span class="line">        // Make the connection on the IP address we get from a lookup</span><br><span class="line">        //连接到目标主机端口</span><br><span class="line">        stream.connect(results);</span><br><span class="line"></span><br><span class="line">        // Set up an HTTP GET request message</span><br><span class="line">        //设置HTTP GET请求</span><br><span class="line">        http::request&lt;http::string_body&gt; req&#123;http::verb::get, target, version&#125;;</span><br><span class="line">        req.set(http::field::host, host);</span><br><span class="line">        req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);</span><br><span class="line"></span><br><span class="line">        // Send the HTTP request to the remote host</span><br><span class="line">        http::write(stream, req);</span><br><span class="line"></span><br><span class="line">        // This buffer is used for reading and must be persisted</span><br><span class="line">        beast::flat_buffer buffer;</span><br><span class="line"></span><br><span class="line">        // Declare a container to hold the response</span><br><span class="line">        //声明接受响应容器</span><br><span class="line">        http::response&lt;http::dynamic_body&gt; res;</span><br><span class="line"></span><br><span class="line">        // Receive the HTTP response</span><br><span class="line">        //接受HTTP响应</span><br><span class="line">        http::read(stream, buffer, res);</span><br><span class="line"></span><br><span class="line">        // Write the message to standard out</span><br><span class="line">        std::cout &lt;&lt; res &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">        // Gracefully close the socket</span><br><span class="line">        beast::error_code ec;</span><br><span class="line">        stream.socket().shutdown(tcp::socket::shutdown_both, ec);</span><br><span class="line"></span><br><span class="line">        // not_connected happens sometimes</span><br><span class="line">        // so don&#x27;t bother reporting it.</span><br><span class="line">        //</span><br><span class="line">        if(ec &amp;&amp; ec != beast::errc::not_connected)</span><br><span class="line">            throw beast::system_error&#123;ec&#125;;</span><br><span class="line"></span><br><span class="line">        // If we get here then the connection is closed gracefully</span><br><span class="line">    &#125;</span><br><span class="line">    catch(std::exception const&amp; e)</span><br><span class="line">    &#123;</span><br><span class="line">        std::cerr &lt;&lt; &quot;Error: &quot; &lt;&lt; e.what() &lt;&lt; std::endl;</span><br><span class="line">        return EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line">    return EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] 流程</p>
+<ol>
+<li>创建IO上下文<code>asio::io_context</code></li>
+<li>创建解析器<code>tcp::resolver</code>，解析域名与端口</li>
+<li>连接到服务器，创建流<code>beast::tcp_stream</code>，使用<code>tcp_stream::connect</code>连接</li>
+<li>构建<code>http::request</code>请求，使用<code>set</code>方法设置字段，<code>write</code>写入<code>tcp_stream</code></li>
+<li>使用<code>flat_buffer</code>与<code>http::response</code>接受请求</li>
+<li>断开连接<code>tcp_stream::socket().shutdown</code></li>
+</ol>
+</blockquote>
+<ul>
+<li><code>make_strand</code>返回一个从执行上下文或执行器构造的strand，如<code>net::make_strand(ioc)</code></li>
+</ul>
+<blockquote>
+<p>[!NOTE] tcp_stream</p>
+<ul>
+<li>设计为<code>asio::ip::tcp::socket</code>的替代品</li>
+<li>允许超时操作</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">stream.expires_after(std::chrono::seconds(30));</span><br><span class="line">//如果连接没有在30s内建立</span><br><span class="line">//这个操作将被取消，并且收到error::timeout</span><br><span class="line">stream.async_connect(resolver.resolve(&quot;www.xxx.com&quot;,&quot;http&quot;),</span><br><span class="line">[](error_code ec,net::ip::tcp::endpoint ep)</span><br><span class="line">&#123;</span><br><span class="line">	if(ec==error::timeout)</span><br><span class="line">		std::cerr &lt;&lt; &quot;async_connect took too long\n&quot;;</span><br><span class="line">	else if(!ec)</span><br><span class="line">		std::cout &lt;&lt; &quot;Connected to &quot; &lt;&lt; ep &lt;&lt; &quot;\n&quot;;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>速率限制，<code>basic_stream</code>类模板提供一个额外的<code>RatePolicy</code>模板参数，用于实现速率限制或带宽关联，默认策略为<code>unlimited_rate_policy</code><ul>
+<li><code>simple_rate_policy</code>，允许以每秒字节为单位独立控制读写限制</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">basic_stream&lt;net::ip::tcp,net::any_io_executor,simple_rate_policy&gt; stream(ioc);</span><br><span class="line">stream.rate_policy().read(write)_limit(10000);//bytes per second</span><br></pre></td></tr></table></figure></blockquote>
+<ul>
+<li>序列化：将HTTP消息转化成字节缓冲区</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    bool isRequest,</span><br><span class="line">    class Body,</span><br><span class="line">    class Fields = fields&gt;</span><br><span class="line">class serializer</span><br><span class="line"></span><br><span class="line">//request_serializer与response_serializer（两者均为模板别名）根据isRequest区分</span><br></pre></td></tr></table></figure>
+<p>![[Pasted image 20260420183839.png]]<br>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">//服务器进行序列化</span><br><span class="line">http::response&lt;http::string_body&gt; res&#123;http::status::ok&#125;;</span><br><span class="line"></span><br><span class="line">http::response_serializer&lt;http::string_body&gt; rs&#123;res&#125;;</span><br><span class="line"></span><br><span class="line">while(!rs.is_done())</span><br><span class="line">&#123;</span><br><span class="line">	error_code ec;</span><br><span class="line">	http::write_some(socket,rs,ec);</span><br><span class="line">	if(ec)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cerr &lt;&lt; ec.message() &lt;&lt; std::endl;</span><br><span class="line">		break;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">//客户端进行反序列化，即使用parser类</span><br><span class="line">http::response_parser&lt;http::string_body&gt; parser;</span><br><span class="line">beast::flat_buffer buffer;</span><br><span class="line">http::read(socket,buffer,parser);</span><br><span class="line">auto const&amp; response=parser.get();</span><br><span class="line"></span><br><span class="line">std::cout&lt;&lt;&quot;status:&quot;&lt;&lt;response.result_int()&lt;&lt;std::endl;</span><br><span class="line"></span><br><span class="line">//提取特定字段使用find函数，如提取Content-Length</span><br><span class="line">if(response.find(http::field::content_length)!=response.end())</span><br><span class="line">	std::cout&lt;&lt;&quot;Content-Length:&quot;&lt;&lt;response[http::field::content_length];</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    bool isRequest,</span><br><span class="line">    class Body,</span><br><span class="line">    class Allocator = std::allocator&lt;char&gt;&gt;</span><br><span class="line">class parser :</span><br><span class="line">    public http::basic_parser&lt; isRequest &gt;</span><br><span class="line"></span><br><span class="line">//与serializer同理，针对request与response有两个模板别名</span><br></pre></td></tr></table></figure>
+<h1 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    class NextLayer,</span><br><span class="line">    bool deflateSupported = true&gt;</span><br><span class="line">class stream;</span><br><span class="line">//不支持非阻塞模式</span><br><span class="line"></span><br><span class="line">//构造实例</span><br><span class="line">stream&lt;tcp_stream&gt; ws(ioc);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>WebSocket使用自己协议的超时功能，当其与<code>tcp_stream与basic_stream</code>类模板一起使用，应建立连接后禁用后者的超时，否则为UB</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//使用SSL</span><br><span class="line">//需包含头文件&lt;boost/beast/websocket/ssl.hpp&gt;</span><br><span class="line">//ctx的类型为net::ssl::context</span><br><span class="line">stream&lt;net::ssl::stream&lt;tcp_stream&gt;&gt; wss(net::make_strand(ioc),ctx);</span><br></pre></td></tr></table></figure>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/boost.beast/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/chrono/">
+                            C++时间库
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ul>
+<li>跟ctime类似，是表示与处理时间的标准库，包含三大功能<strong>时钟、时间段与时间点</strong></li>
+<li>时钟</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">std::chrono::system_clock //系统实际时间</span><br><span class="line">std::chrono::steady_clock //稳定时钟，时间从不调整</span><br><span class="line">std::chrono::high_resolution //提供最小的可表达的时间间隔</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note<br>对于上述时钟类型，其内部均含有一静态方法<code>now</code>获取该时钟对应的时间点，当前时间</p>
+<ul>
+<li>对与系统时钟还有两个静态方法，<code>to_time_t与from_time_t</code>，即转换成ctime的<code>time_t</code>类型或从其转换为<code>time_point</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>时间点，即<code>template&lt;class Clock,class Duration = typename Clock::duration&gt; class time_point</code></li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note<br>使用时间点可以计算经过的时间，即获取时间段duration</p>
+</blockquote>
+<ul>
+<li>时间段，即<code>template&lt;class Rep,class Period=std::ratio&lt;1&gt;&gt; class duration</code>，前一模板参数代表刻度计数，即允许该模板实例化的参数，如<code>std::chrono::duration&lt;double&gt; half_second(0.5)</code>，即<strong>0.5乘以后一模板参数刻度周期（默认为1，代表1s）为0.5秒</strong>，因此<code>std::chrono::duration&lt;int,std::ratio&lt;60&gt;&gt; minute(1)</code>代表一分钟</li>
+<li>对于duration时间段对象进行的四则运算或比较运算，均会返回一个新的<code>duration</code>对象</li>
+<li>duration特化了部分模板：<br>![[Pasted image 20260409212447.png]]</li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note<br>时间段包含一些字面量便于直接声明，如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">operator&quot;&quot;h</span><br><span class="line">operator&quot;&quot;min</span><br><span class="line">...s/ms/us/ns</span><br><span class="line">如：</span><br><span class="line">auto second=1s;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>时间段的转换需要使用<code>std::chrono::duration_cast&lt;&gt;()</code></li>
+</ul>
+</blockquote>
+
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/chrono/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/boost.asio/">
+                            boost.asio
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<h1 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h1><ol>
+<li>至少拥有一个IO执行上下文例如 <code>boost::asio::io_context</code> 对象、<code>boost::asio::thread_pool</code> 对象或 <code>boost::asio::system_context</code>。这个 <strong>I&#x2F;O 执行上下文</strong>代表了 <strong>程序</strong>与 <strong>操作系统</strong>的 I&#x2F;O 服务的连接，如<code>boost::asio::io_context io_context</code></li>
+<li>执行IO操作至少需要一个IO对象，如TCP套接字<code>boost::asio::ip::tcp::socket socket(io_context)</code><ul>
+<li>IO操作</li>
+</ul>
+</li>
+</ol>
+<h1 id="同步连接"><a href="#同步连接" class="headerlink" title="同步连接"></a>同步连接</h1><p>1. <strong>程序</strong>通过调用 <strong>I&#x2F;O 对象</strong>来发起连接操作：</p>
+<p><code>socket.connect(server_endpoint);</code></p>
+<p>2. <strong>I&#x2F;O 对象</strong>将请求转发给 <strong>I&#x2F;O 执行上下文</strong>。</p>
+<p>3. <strong>I&#x2F;O 执行上下文</strong>调用 <strong>操作系统</strong>来执行连接操作。</p>
+<p>4. <strong>操作系统</strong>将操作结果返回给 <strong>I&#x2F;O 执行上下文</strong>。</p>
+<p>5. <strong>I&#x2F;O 执行上下文</strong>将操作产生的任何错误转换为 <code>boost::system::error_code</code> 类型的对象。可以对 <code>error_code</code> 进行比较，也可以将其作为布尔值进行测试（其中 <code>false</code> 结果表示没有发生错误）。然后将结果转发回 <strong>I&#x2F;O 对象</strong>。</p>
+<ol start="6">
+<li>如果操作失败，<strong>I&#x2F;O 对象</strong>会抛出 <code>boost::system::system_error</code> 类型的异常。如果发起操作的代码被写成这样：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">boost::system::error_code ec;</span><br><span class="line">socket.connect(server_endpoint, ec);</span><br></pre></td></tr></table></figure>
+
+<p>那么 <code>error_code</code> 变量 <code>ec</code> 将被设置为操作的结果，并且不会抛出异常。</p>
+<h1 id="异步操作"><a href="#异步操作" class="headerlink" title="异步操作"></a>异步操作</h1><p>1. <strong>您的程序</strong>通过调用 <strong>I&#x2F;O 对象</strong>来发起连接操作<br><code>socket.async_connect(server_endpoint, your_completion_handler);</code></p>
+<p>其中 <code>your_completion_handler</code> 是一个函数或函数对象，其签名如下：<br><code>void your_completion_handler(const boost::system::error_code&amp; ec);</code><br>所需的确切签名取决于正在执行的异步操作。参考文档会指明每个操作的适当形式。</p>
+<p>2. <strong>I&#x2F;O 对象</strong>将请求转发给 <strong>I&#x2F;O 执行上下文</strong>。</p>
+<p>3. <strong>I&#x2F;O 执行上下文</strong>向 <strong>操作系统</strong>发出信号，指示其应启动异步连接。<br><em>时间流逝。（在同步情况下，此等待完全包含在连接操作的持续时间内。）</em><br>4. <strong>操作系统</strong>通过将结果放在队列中，准备由 <strong>I&#x2F;O 执行上下文</strong>提取，来指示连接操作已完成。<br>当使用 <code>io_context</code> 作为 <strong>I&#x2F;O 执行上下文</strong>时，<strong>您的程序</strong>必须调用 <code>io_context::run()</code>（或类似的 <code>io_context</code> 成员函数），以便检索结果。<code>io_context::run()</code> 的调用在有未完成的异步操作时会阻塞，因此您通常会在启动第一个异步操作后立即调用它。<br>6. 在调用 <code>io_context::run()</code> 期间，<strong>I&#x2F;O 执行上下文</strong>会从队列中取出操作的结果，将其转换为 <code>error_code</code>，然后将其传递给 <strong>您的完成处理程序</strong>。</p>
+<blockquote>
+<p>[!NOTE] Note<br>IO对象即实际执行请求的载体，其依赖于IO上下文，由其转发请求给操作系统<br>boost.asio报错依赖于boost.system的boost::system::system_error，因此使用前者必须<strong>把后者也链接上</strong></p>
+</blockquote>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="计时器"><a href="#计时器" class="headerlink" title="计时器"></a>计时器</h2><ol>
+<li>同步使用计时器</li>
+</ol>
+<blockquote>
+<p>[!INFO] 注意<br>提供IO功能的<strong>核心asio类</strong>始终将其<strong>第一个构造函数参数</strong>作为执行器或<strong>执行上下文（如io_context）的引用</strong></p>
+</blockquote>
+<p>#steady_timer</p>
+<blockquote>
+<p>[!NOTE] steady_timer类<br>用于定时操作，实现定时任务等机制，主要有方法wait()，async_wait()与cancel()等</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;boost/asio.hpp&gt;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">  boost::asio::io_context io;</span><br><span class="line">  boost::asio::steady_timer t(io, boost::asio::chrono::seconds(5));</span><br><span class="line">  //阻塞等待</span><br><span class="line">  t.wait();</span><br><span class="line">  std::cout &lt;&lt; &quot;Hello, world!&quot; &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>异步使用计时器</li>
+</ol>
+<blockquote>
+<p>[!INFO] 注意<br>asio 库提供了一个保证，即完成处理程序只会从当前调用 boost::asio::io_context::run() 的线程中调用。因此，<strong>除非调用了boost::asio::io_context::run() 函数，否则异步等待完成的处理程序（回调函数）将永远不会被调用</strong>。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;boost/asio.hpp&gt;</span><br><span class="line"></span><br><span class="line">void print(const boost::system::error_code&amp; /*e*/)</span><br><span class="line">&#123;</span><br><span class="line">  std::cout &lt;&lt; &quot;Hello, world!&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">  boost::asio::io_context io;</span><br><span class="line"></span><br><span class="line">  boost::asio::steady_timer t(io, boost::asio::chrono::seconds(5));</span><br><span class="line">  //传入一个回调函数，即告知程序计时器到5s后执行该函数</span><br><span class="line">  t.async_wait(&amp;print);</span><br><span class="line">  //阻塞本线程并开始事件循环</span><br><span class="line">  io.run();</span><br><span class="line"></span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>将参数绑定到完成处理程序</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;functional&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;boost/asio.hpp&gt;</span><br><span class="line"></span><br><span class="line">void print(const boost::system::error_code&amp; /*e*/,</span><br><span class="line">    boost::asio::steady_timer* t, int* count)</span><br><span class="line">&#123;</span><br><span class="line">  if (*count &lt; 5)</span><br><span class="line">  &#123;</span><br><span class="line">    std::cout &lt;&lt; *count &lt;&lt; std::endl;</span><br><span class="line">    ++(*count);</span><br><span class="line"></span><br><span class="line">    t-&gt;expires_at(t-&gt;expiry() + boost::asio::chrono::seconds(1));</span><br><span class="line">    //循环调用</span><br><span class="line">    t-&gt;async_wait(std::bind(print,</span><br><span class="line">          boost::asio::placeholders::error, t, count));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">  boost::asio::io_context io;</span><br><span class="line"></span><br><span class="line">  int count = 0;</span><br><span class="line">  boost::asio::steady_timer t(io, boost::asio::chrono::seconds(1));</span><br><span class="line">  t.async_wait(std::bind(print,</span><br><span class="line">        boost::asio::placeholders::error, &amp;t, &amp;count));</span><br><span class="line"></span><br><span class="line">  io.run();</span><br><span class="line"></span><br><span class="line">  std::cout &lt;&lt; &quot;Final count is &quot; &lt;&lt; count &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>多线程程序中同步完成处理程序</li>
+</ol>
+<p>#strand</p>
+<blockquote>
+<p>[!NOTE] Strand类<br>boost::asio::strand类模板是一个执行器适配器，将异步操作的处理程序串行化，即通过<strong>同一个strand提交的任务都会被顺序执行</strong>，但是仍然可能会与<strong>其他未通过srand分派的处理程序</strong>或通过<strong>不同的strand对象</strong>分派的处理程序<strong>并发执行</strong><br>方法：post（将任务提交给strand），wrap（将一个处理函数绑定到strand，确保其在strand的上下文运行）</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;boost/asio.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">printer</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">printer</span>(boost::asio::io_context&amp; io)</span><br><span class="line">    : <span class="built_in">strand_</span>(boost::asio::<span class="built_in">make_strand</span>(io)),</span><br><span class="line">      <span class="built_in">timer1_</span>(io, boost::asio::chrono::<span class="built_in">seconds</span>(<span class="number">1</span>)),</span><br><span class="line">      <span class="built_in">timer2_</span>(io, boost::asio::chrono::<span class="built_in">seconds</span>(<span class="number">1</span>)),</span><br><span class="line">      <span class="built_in">count_</span>(<span class="number">0</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">//绑定到strand上分发任务</span></span><br><span class="line">    timer1_.<span class="built_in">async_wait</span>(boost::asio::<span class="built_in">bind_executor</span>(strand_,</span><br><span class="line">          std::<span class="built_in">bind</span>(&amp;printer::print1, <span class="keyword">this</span>)));</span><br><span class="line">	<span class="comment">//绑定到strand上分发任务</span></span><br><span class="line">    timer2_.<span class="built_in">async_wait</span>(boost::asio::<span class="built_in">bind_executor</span>(strand_,</span><br><span class="line">          std::<span class="built_in">bind</span>(&amp;printer::print2, <span class="keyword">this</span>)));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ~<span class="built_in">printer</span>()</span><br><span class="line">  &#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Final count is &quot;</span> &lt;&lt; count_ &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">print1</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (count_ &lt; <span class="number">10</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;Timer 1: &quot;</span> &lt;&lt; count_ &lt;&lt; std::endl;</span><br><span class="line">      ++count_;</span><br><span class="line"></span><br><span class="line">      timer1_.<span class="built_in">expires_at</span>(timer1_.<span class="built_in">expiry</span>() + boost::asio::chrono::<span class="built_in">seconds</span>(<span class="number">1</span>));</span><br><span class="line">	  <span class="comment">//绑定到strand上分发任务</span></span><br><span class="line">      timer1_.<span class="built_in">async_wait</span>(boost::asio::<span class="built_in">bind_executor</span>(strand_,</span><br><span class="line">            std::<span class="built_in">bind</span>(&amp;printer::print1, <span class="keyword">this</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">print2</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (count_ &lt; <span class="number">10</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;Timer 2: &quot;</span> &lt;&lt; count_ &lt;&lt; std::endl;</span><br><span class="line">      ++count_;</span><br><span class="line"></span><br><span class="line">      timer2_.<span class="built_in">expires_at</span>(timer2_.<span class="built_in">expiry</span>() + boost::asio::chrono::<span class="built_in">seconds</span>(<span class="number">1</span>));</span><br><span class="line">	  <span class="comment">//绑定到strand上分发任务</span></span><br><span class="line">      timer2_.<span class="built_in">async_wait</span>(boost::asio::<span class="built_in">bind_executor</span>(strand_,</span><br><span class="line">            std::<span class="built_in">bind</span>(&amp;printer::print2, <span class="keyword">this</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  boost::asio::strand&lt;boost::asio::io_context::executor_type&gt; strand_;</span><br><span class="line">  boost::asio::steady_timer timer1_;</span><br><span class="line">  boost::asio::steady_timer timer2_;</span><br><span class="line">  <span class="type">int</span> count_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  boost::asio::io_context io;</span><br><span class="line">  <span class="function">printer <span class="title">p</span><span class="params">(io)</span></span>;</span><br><span class="line">  <span class="comment">//增加子线程，以证明srand在多线程下的串行执行保证</span></span><br><span class="line">  <span class="function">std::thread <span class="title">t</span><span class="params">([&amp;]&#123; io.run(); &#125;)</span></span>;</span><br><span class="line">  io.<span class="built_in">run</span>();</span><br><span class="line">  t.<span class="built_in">join</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="套接字"><a href="#套接字" class="headerlink" title="套接字"></a>套接字</h2><ol>
+<li>同步TCP daytime客户端与服务器</li>
+</ol>
+<blockquote>
+<p>[!NOTE] daytime<br>daytime服务通常监听端口13，一旦客户端连接，立即返回当前时间</p>
+</blockquote>
+<blockquote>
+<p>[!NOTE] TCP相关的类<br>均在ip::tcp命名空间下<br>socket：处理网络通信，可以建立连接，发送与接收数据，方法：async_connect，async_read，async_write，close，read_some，receive，send，wait，wait_some等<br>acceptor：监听端口，接受来着客户端的连接请求，方法：async_accept，open，close等<br>resolver：解析主机名，支持同步与异步解析，方法：async_resolve，resolve等<br>endpoint：表示一个网络端点，包括IP地址与端口号，方法：address，port等</p>
+</blockquote>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;array&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;boost/asio.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> boost::asio::ip::tcp;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">try</span></span><br><span class="line">  &#123;</span><br><span class="line">	<span class="comment">//要求用户传入服务器地址</span></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      std::cerr &lt;&lt; <span class="string">&quot;Usage: client &lt;host&gt;&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    boost::asio::io_context io_context;</span><br><span class="line">    <span class="comment">//resolve接受两个参数：主机名与服务名，如localhost与daytime</span></span><br><span class="line">    <span class="function">tcp::resolver <span class="title">resolver</span><span class="params">(io_context)</span></span>;</span><br><span class="line">    <span class="comment">//tcp::resolver::results_type是端点列表，而非单个端点</span></span><br><span class="line">    <span class="comment">//因为解析结果可能包含多个IPv4，IPv6，不同服务器IP等</span></span><br><span class="line">    tcp::resolver::results_type endpoints =</span><br><span class="line">      resolver.<span class="built_in">resolve</span>(argv[<span class="number">1</span>], <span class="string">&quot;daytime&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function">tcp::socket <span class="title">socket</span><span class="params">(io_context)</span></span>;</span><br><span class="line">    <span class="comment">//该函数会自动遍历上面resolver解析出来的endpoints，直到成功或所有均失败</span></span><br><span class="line">    <span class="comment">//该函数是同步连接，将会阻塞程序直到连接建立或抛出异常</span></span><br><span class="line">    boost::asio::<span class="built_in">connect</span>(socket, endpoints);</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//死循环</span></span><br><span class="line">    <span class="keyword">for</span> (;;)</span><br><span class="line">    &#123;</span><br><span class="line">      std::array&lt;<span class="type">char</span>, 128&gt; buf;</span><br><span class="line">      boost::system::error_code error;</span><br><span class="line"></span><br><span class="line">      <span class="comment">//从套接字中读取数据，该函数返回实际读取字节数，若读取成功则error为空</span></span><br><span class="line">      <span class="type">size_t</span> len = socket.<span class="built_in">read_some</span>(boost::asio::<span class="built_in">buffer</span>(buf), error);</span><br><span class="line"></span><br><span class="line">      <span class="comment">//error::eof表示对端关闭了连接，daytime服务器发送完时间数据后会立即关闭连接</span></span><br><span class="line">      <span class="keyword">if</span> (error == boost::asio::error::eof)</span><br><span class="line">        <span class="keyword">break</span>; <span class="comment">// Connection closed cleanly by peer.</span></span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span> (error)</span><br><span class="line">        <span class="keyword">throw</span> boost::system::<span class="built_in">system_error</span>(error); <span class="comment">// Some other error.</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">//写入标志输出流</span></span><br><span class="line">      std::cout.<span class="built_in">write</span>(buf.<span class="built_in">data</span>(), len);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">catch</span> (std::exception&amp; e)</span><br><span class="line">  &#123;</span><br><span class="line">    std::cerr &lt;&lt; e.<span class="built_in">what</span>() &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctime&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;boost/asio.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> boost::asio::ip::tcp;</span><br><span class="line"></span><br><span class="line"><span class="comment">//生成时间并返回</span></span><br><span class="line"><span class="function">std::string <span class="title">make_daytime_string</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">using</span> <span class="keyword">namespace</span> std; <span class="comment">// For time_t, time and ctime;</span></span><br><span class="line">  <span class="type">time_t</span> now = <span class="built_in">time</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">ctime</span>(&amp;now);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">try</span></span><br><span class="line">  &#123;</span><br><span class="line">    boost::asio::io_context io_context;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//监听新连接，初始化为端口13以及IPv4</span></span><br><span class="line">    <span class="function">tcp::acceptor <span class="title">acceptor</span><span class="params">(io_context, tcp::endpoint(tcp::v4(), <span class="number">13</span>))</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//迭代服务器一次值处理一个连接</span></span><br><span class="line">    <span class="keyword">for</span> (;;)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">//创建一个套接字，等待连接</span></span><br><span class="line">      <span class="function">tcp::socket <span class="title">socket</span><span class="params">(io_context)</span></span>;</span><br><span class="line">      acceptor.<span class="built_in">accept</span>(socket);</span><br><span class="line"></span><br><span class="line">      std::string message = <span class="built_in">make_daytime_string</span>();</span><br><span class="line"></span><br><span class="line">      boost::system::error_code ignored_error;</span><br><span class="line">      boost::asio::<span class="built_in">write</span>(socket, boost::asio::<span class="built_in">buffer</span>(message), ignored_error);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">catch</span> (std::exception&amp; e)</span><br><span class="line">  &#123;</span><br><span class="line">    std::cerr &lt;&lt; e.<span class="built_in">what</span>() &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>异步TCP服务器</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctime&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;boost/asio.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> boost::asio::ip::tcp;</span><br><span class="line"></span><br><span class="line"><span class="function">std::string <span class="title">make_daytime_string</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">using</span> <span class="keyword">namespace</span> std; <span class="comment">// For time_t, time and ctime;</span></span><br><span class="line">  <span class="type">time_t</span> now = <span class="built_in">time</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">ctime</span>(&amp;now);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//std::enable_shared_from_this即允许一个被 std::shared_ptr 管理的对象，安全地生成指向自身的其他 std::shared_ptr 实例，此时内部拥有方法shared_from_this</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">tcp_connection</span></span><br><span class="line">  : <span class="keyword">public</span> std::enable_shared_from_this&lt;tcp_connection&gt;</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">typedef</span> std::shared_ptr&lt;tcp_connection&gt; pointer;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//每次调用都返回一个管理新连接的智能指针对象，继承enable_shared_from_this，即希望该对象在有操作引用时延长生命周期</span></span><br><span class="line">  <span class="function"><span class="type">static</span> pointer <span class="title">create</span><span class="params">(boost::asio::io_context&amp; io_context)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">pointer</span>(<span class="keyword">new</span> <span class="built_in">tcp_connection</span>(io_context));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">tcp::socket&amp; <span class="title">socket</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> socket_;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    message_ = <span class="built_in">make_daytime_string</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//这里调用shared_from_this延长当前对象生命周期</span></span><br><span class="line">    boost::asio::<span class="built_in">async_write</span>(socket_, boost::asio::<span class="built_in">buffer</span>(message_),</span><br><span class="line">        std::<span class="built_in">bind</span>(&amp;tcp_connection::handle_write, <span class="built_in">shared_from_this</span>(),</span><br><span class="line">          boost::asio::placeholders::error,</span><br><span class="line">          boost::asio::placeholders::bytes_transferred));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="built_in">tcp_connection</span>(boost::asio::io_context&amp; io_context)</span><br><span class="line">    : <span class="built_in">socket_</span>(io_context)</span><br><span class="line">  &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">handle_write</span><span class="params">(<span class="type">const</span> boost::system::error_code&amp; <span class="comment">/*error*/</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">      <span class="type">size_t</span> <span class="comment">/*bytes_transferred*/</span>)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tcp::socket socket_;</span><br><span class="line">  std::string message_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">tcp_server</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">tcp_server</span>(boost::asio::io_context&amp; io_context)</span><br><span class="line">    : <span class="built_in">io_context_</span>(io_context),</span><br><span class="line">      <span class="built_in">acceptor_</span>(io_context, tcp::<span class="built_in">endpoint</span>(tcp::<span class="built_in">v4</span>(), <span class="number">13</span>))</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">start_accept</span>();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">//创建一个套接字并启动异步accept等待新连接</span></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">start_accept</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    tcp_connection::pointer new_connection =</span><br><span class="line">      tcp_connection::<span class="built_in">create</span>(io_context_);</span><br><span class="line"></span><br><span class="line">    acceptor_.<span class="built_in">async_accept</span>(new_connection-&gt;<span class="built_in">socket</span>(),</span><br><span class="line">        std::<span class="built_in">bind</span>(&amp;tcp_server::handle_accept, <span class="keyword">this</span>, new_connection,</span><br><span class="line">          boost::asio::placeholders::error));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//由新连接达到时（start_accept启动的异步操作完成时），然后调用完成后再启动下一个异步监听接受请求start_accept操作</span></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">handle_accept</span><span class="params">(tcp_connection::pointer new_connection,</span></span></span><br><span class="line"><span class="params"><span class="function">      <span class="type">const</span> boost::system::error_code&amp; error)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!error)</span><br><span class="line">    &#123;</span><br><span class="line">      new_connection-&gt;<span class="built_in">start</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">start_accept</span>();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  boost::asio::io_context&amp; io_context_;</span><br><span class="line">  tcp::acceptor acceptor_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">try</span></span><br><span class="line">  &#123;</span><br><span class="line">    boost::asio::io_context io_context;</span><br><span class="line">    <span class="function">tcp_server <span class="title">server</span><span class="params">(io_context)</span></span>;</span><br><span class="line">    io_context.<span class="built_in">run</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">catch</span> (std::exception&amp; e)</span><br><span class="line">  &#123;</span><br><span class="line">    std::cerr &lt;&lt; e.<span class="built_in">what</span>() &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note</p>
+<ol>
+<li>异步操作一般都需要传入<strong>回调函数</strong></li>
+<li>UDP则是在命名空间ip::udp中，其他不变，同时其不需要建立连接，因此使用<code>ip::udp::socket::receive_from</code>与<code>ip::udp::socket::send_to</code></li>
+</ol>
+</blockquote>
+<blockquote>
+<p>[!NOTE] Note<br>客户端流程如下：</p>
+<ol>
+<li>创建<code>io_context</code>对象</li>
+<li>创建<code>tcp::resolver</code>对象，调用<code>tcp::resolver::resolve</code>方法解析服务器名称与端口列表</li>
+<li>创建<code>tcp::socket</code>对象，调用<code>boost::asio::connect</code>方法遍历上面获取的列表尝试连接</li>
+<li>建立连接后可以使用socket的read或write方法</li>
+</ol>
+<p>服务端流程如下：</p>
+<ol>
+<li>创建<code>io_context</code>对象</li>
+<li>创建<code>tcp::acceptor</code>对象监听端口</li>
+<li>创建客户端套接字<code>tcp::socket</code>，调用<code>tcp::acceptor::accept</code>获取与客户端的连接套接字并赋值给socket</li>
+<li>使用write或read方法</li>
+</ol>
+<p>异步方法一般加上前缀async_以及传入回调函数（通常使用std::bind绑定）<br>使用错误处理，若为boost::system::system_error::eof，即关闭连接</p>
+</blockquote>
+
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/boost.asio/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/epoll.h/">
+                            epoll函数
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ol>
+<li>提供IO多路复用技术的一个函数epoll，该函数使用事件驱动，主要使用三个函数epoll_create，epoll_ctl，epoll_wait</li>
+<li><code>EPOLL_EVENTS</code>，即epoll事件<strong>枚举</strong>类型，如：<ol>
+<li>EPOLLIN，读事件</li>
+<li>EPOLLOUT，写事件</li>
+<li>EPOLLRDHUP，套接字关闭或半关闭</li>
+<li>EPOLLPRI，紧急数据可读事件</li>
+</ol>
+</li>
+<li><code>epoll_data</code>，联合体类型，声明如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">typedef union epoll_data</span><br><span class="line">&#123;</span><br><span class="line">  void \*ptr;</span><br><span class="line">  int fd;</span><br><span class="line">  uint32_t u32;</span><br><span class="line">  uint64_t u64;</span><br><span class="line">&#125; epoll_data_t;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>epoll_event，保存当前监听的事件epoll_events以及其指向的epoll_data用户数据</li>
+<li><code>int epoll_create(int size)</code>，创建一个epoll对象并返回其fd，需要使用close关闭该描述符，<strong>size参数一般被忽略（仅要求其值大于0即可</strong>）<ul>
+<li>本质是创建一个eventpoll对象并初始化，大致为红黑树与双向链表、互斥锁的组合</li>
+</ul>
+</li>
+<li><code>int epoll_ctl (int __epfd, int __op, int __fd, struct epoll_event *__event) __THROW</code>，控制epoll实例，按参数顺序为：<ol>
+<li>epoll对象fd</li>
+<li>epoll操作，也即红黑树上的操作，即 EPOLL_CTL_ADD，EPOLL_CTL_DEL，EPOLL_CTL_MOD</li>
+<li>监听的socket的fd</li>
+<li>事件，这里指添加进的事件信息，一般为struct epoll_event</li>
+</ol>
+</li>
+<li><code>int epoll_wait (int __epfd, struct epoll_event *__events,int __maxevents, int __timeout)</code>，等待在epoll实例上发生的事件，__time指定等待事件，单位为毫秒，若为-1则一直阻塞，这里的事件一般是一个事件数组即struct epoll_event []</li>
+<li>e.g.</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">int epoll_fd,event_count,sd;</span><br><span class="line">struct epoll_event events[MAX_EVENTS],event;</span><br><span class="line"></span><br><span class="line">if ((epoll_fd = epoll_create(0)) == -1) </span><br><span class="line">&#123;</span><br><span class="line">    perror(&quot;epoll_create1 failed&quot;);</span><br><span class="line">    exit(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">event.events = EPOLLIN;</span><br><span class="line">event.data.fd = server_socket;</span><br><span class="line"></span><br><span class="line">if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &amp;event) == -1) </span><br><span class="line">&#123;</span><br><span class="line">    perror(&quot;epoll_ctl: server_socket&quot;);</span><br><span class="line">    exit(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">while(true)</span><br><span class="line">&#123;</span><br><span class="line">	event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);</span><br><span class="line">	if (event_count &lt; 0) </span><br><span class="line">	&#123;</span><br><span class="line">        perror(&quot;epoll_wait error&quot;);</span><br><span class="line">        exit(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    for(int i=0;i&lt;event_count;++i)</span><br><span class="line">    &#123;</span><br><span class="line">	    sd=events[i].data.fd;</span><br><span class="line">	    </span><br><span class="line">	    //连接请求</span><br><span class="line">	    if(sd==server_socket)</span><br><span class="line">	    &#123;</span><br><span class="line">		    ...</span><br><span class="line">		    event.events=EPOLLIN;</span><br><span class="line">		    //使用accept函数返回的新套接字</span><br><span class="line">		    event.data.fd=new_socket;</span><br><span class="line">		    </span><br><span class="line">		    //将与客户端建立的新连接添加到epoll实例进行监听</span><br><span class="line">		    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, new_socket, &amp;event) == -1) </span><br><span class="line">		    &#123;</span><br><span class="line">	            perror(&quot;epoll_ctl: new_socket&quot;);</span><br><span class="line">	            exit(EXIT_FAILURE);</span><br><span class="line">	        &#125;</span><br><span class="line">	    &#125;else</span><br><span class="line">	    //处理非连接请求</span><br><span class="line">	    &#123;...&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">close(epoll_fd);</span><br><span class="line">close(server_socket);</span><br></pre></td></tr></table></figure>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/epoll.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/getopt.h/">
+                            getopt以及getopt_long
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<h1 id="getopt"><a href="#getopt" class="headerlink" title="getopt"></a>getopt</h1><ol>
+<li>getopt与getopt_long均为解析命令行参数的C库函数，前者处理短选项，后者还支持长选项，在头文件getopt.h下</li>
+<li>两个函数在解析过程中会设置以下外部变量：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>optarg</td>
+<td>如果当前选项需要参数，则该参数的值会被存储在这个变量中</td>
+</tr>
+<tr>
+<td>optind</td>
+<td>指向下一个要处理的命令行参数的索引</td>
+</tr>
+<tr>
+<td>opterr</td>
+<td>控制是否打印错误信息</td>
+</tr>
+<tr>
+<td>optopt</td>
+<td>如果发生错误，则该选项字符会被存储在这个变量中</td>
+</tr>
+<tr>
+<td>3. getopt函数原型<code>int getopt(int argc, char * const argv[], const char *optstring);</code>，其中optstring是包含所有短选项的字符串，每个选项字符后可以跟一个冒号 :，表示该选项需要一个参数；如果跟两个冒号 ::，表示该选项的参数是可选的</td>
+<td></td>
+</tr>
+<tr>
+<td>4. getopt_long函数原型<code>int getopt_long(int argc, char * const argv[], const char *optstring,const struct option *longopts, int *longindex);</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>[!NOTE] Option结构体<br>通常用来定义长命名行选项，通常与getopt_long函数共同使用，结构体包括以下成员：<br>name，has_arg，flag，val<br>p.s.:<br><em>flag: 如果不是 NULL，则 getopt_long 会将该选项的值（val 成员的值）存储在这里所指向的变量中。如果 flag 是 NULL，则 getopt_long 会返回 val 成员的值</em><br>e.g.:<br><code>{&quot;force&quot;,no_argument,&amp;force,1}</code>，代表长选项名为force，不需要传入参数，val&#x3D;1，<strong>同时getopt_long返回0，且force被置为1</strong><br><code> {&quot;time&quot;,required_argument,NULL,&#39;t&#39;}</code>，代表长选项名为time，短名称为t（flag为NULL且val&#x3D;’t’），需要传入参数，<strong>同时getopt_long返回val(‘t’)</strong></p>
+</blockquote>
+<ol start="5">
+<li>getopt跟getopt_long的处理流程为：<ol>
+<li>从argv[1]开始读取数据</li>
+<li>根据optstring识别选项，查看是否需要参数，若是，则optarg会被传入后面跟着的参数，若否，则下一步</li>
+<li>optind更新索引</li>
+<li>返回当前匹配的选项字符，若所有字符都处理完毕，则返回-1（长选项返回遵循上面option结构体内的规则）</li>
+</ol>
+</li>
+</ol>
+<blockquote>
+<p>[!NOTE] Note</p>
+<ol>
+<li>对于getopt_long函数来讲，最后一个参数一般不会使用，仅其内部当下标使用</li>
+<li>使用getopt_long函数前必须初始化option结构体数组，<strong>option结构体数组最后一个成员必须全为NULL</strong>（getopt_long函数本身不知道option结构体结束的位置，因此需要全NULL）</li>
+<li>有一个只处理长选项的函数<code>getopt_long_only</code>，一般较少使用</li>
+</ol>
+</blockquote>
+
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/getopt.h/">阅读更多</a>
                 </button>
             </div>
         
@@ -119,10 +893,10 @@
 
     <div class="pagination">
     <div class="paginator">
-        <span class="page-number current">1</span>
+        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-caret-right" aria-hidden="true"></i></a>
     </div>
     <div class="paginator-info">
-        <span class="gray">1 articles in total</span>
+        <span class="gray">25 articles in total</span>
     </div>
 </div>
 </article>

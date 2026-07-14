@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | boost.beast</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Http%E5%8A%9F%E8%83%BD"><span class="toc-number">1.</span> <span class="toc-text">Http功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#WebSocket"><span class="toc-number">2.</span> <span class="toc-text">WebSocket</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>boost.beast</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<ul>
+<li>头文件包含，依赖Boost.asio与OpenSSL</li>
+</ul>
+<ol>
+<li>IO上下文：<code>net::io_context</code></li>
+<li>流抽象：<code>stream</code></li>
+<li>缓冲区：<code>flat_buffer</code>，<code>multi_buffer</code>等</li>
+</ol>
+<h1 id="Http功能"><a href="#Http功能" class="headerlink" title="Http功能"></a>Http功能</h1><blockquote>
+<p>[!NOTE] http::request</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class Body,class Fields=fields&gt;</span><br><span class="line">using request=message&lt;true,Body,Fields&gt;</span><br></pre></td></tr></table></figure>
+<p>其中message声明如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">bool isRequest,</span><br><span class="line">class Body,</span><br><span class="line">class Fields = fields&gt;</span><br><span class="line">class message :</span><br><span class="line">public http::header&lt; isRequest, fields &gt;</span><br></pre></td></tr></table></figure>
+<p>message继承于header，消息头</p>
+<ol>
+<li>isRequest为true代表requests，false为responses</li>
+<li>body代表正文特征类型，即实际数据类型，如string_body（string）</li>
+<li>fields代表HTTP报头字段容器，其中字段声明在http::field枚举类中</li>
+</ol>
+</blockquote>
+<p>![[Pasted image 20260420171437.png]]</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;boost/beast/core.hpp&gt;</span><br><span class="line">#include &lt;boost/beast/http.hpp&gt;</span><br><span class="line">#include &lt;boost/beast/version.hpp&gt;</span><br><span class="line">#include &lt;boost/asio/connect.hpp&gt;</span><br><span class="line">#include &lt;boost/asio/ip/tcp.hpp&gt;</span><br><span class="line">#include &lt;cstdlib&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"></span><br><span class="line">namespace beast = boost::beast;     // from &lt;boost/beast.hpp&gt;</span><br><span class="line">namespace http = beast::http;       // from &lt;boost/beast/http.hpp&gt;</span><br><span class="line">namespace net = boost::asio;        // from &lt;boost/asio.hpp&gt;</span><br><span class="line">using tcp = net::ip::tcp;           // from &lt;boost/asio/ip/tcp.hpp&gt;</span><br><span class="line"></span><br><span class="line">// Performs an HTTP GET and prints the response</span><br><span class="line">int main(int argc, char** argv)</span><br><span class="line">&#123;</span><br><span class="line">    try</span><br><span class="line">    &#123;</span><br><span class="line">        // Check command line arguments.</span><br><span class="line">        if(argc != 4 &amp;&amp; argc != 5)</span><br><span class="line">        &#123;</span><br><span class="line">            std::cerr &lt;&lt;</span><br><span class="line">                &quot;Usage: http-client-sync &lt;host&gt; &lt;port&gt; &lt;target&gt; [&lt;HTTP version: 1.0 or 1.1(default)&gt;]\n&quot; &lt;&lt;</span><br><span class="line">                &quot;Example:\n&quot; &lt;&lt;</span><br><span class="line">                &quot;    http-client-sync www.example.com 80 /\n&quot; &lt;&lt;</span><br><span class="line">                &quot;    http-client-sync www.example.com 80 / 1.0\n&quot;;</span><br><span class="line">            return EXIT_FAILURE;</span><br><span class="line">        &#125;</span><br><span class="line">        auto const host = argv[1];</span><br><span class="line">        auto const port = argv[2];</span><br><span class="line">        auto const target = argv[3];</span><br><span class="line">        int version = argc == 5 &amp;&amp; !std::strcmp(&quot;1.0&quot;, argv[4]) ? 10 : 11;</span><br><span class="line"></span><br><span class="line">        // The io_context is required for all I/O</span><br><span class="line">        //创建IO上下文</span><br><span class="line">        net::io_context ioc;</span><br><span class="line"></span><br><span class="line">        // These objects perform our I/O</span><br><span class="line">        tcp::resolver resolver(ioc);</span><br><span class="line">        beast::tcp_stream stream(ioc);</span><br><span class="line"></span><br><span class="line">        // Look up the domain name</span><br><span class="line">        //解析域名</span><br><span class="line">        auto const results = resolver.resolve(host, port);</span><br><span class="line"></span><br><span class="line">        // Make the connection on the IP address we get from a lookup</span><br><span class="line">        //连接到目标主机端口</span><br><span class="line">        stream.connect(results);</span><br><span class="line"></span><br><span class="line">        // Set up an HTTP GET request message</span><br><span class="line">        //设置HTTP GET请求</span><br><span class="line">        http::request&lt;http::string_body&gt; req&#123;http::verb::get, target, version&#125;;</span><br><span class="line">        req.set(http::field::host, host);</span><br><span class="line">        req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);</span><br><span class="line"></span><br><span class="line">        // Send the HTTP request to the remote host</span><br><span class="line">        http::write(stream, req);</span><br><span class="line"></span><br><span class="line">        // This buffer is used for reading and must be persisted</span><br><span class="line">        beast::flat_buffer buffer;</span><br><span class="line"></span><br><span class="line">        // Declare a container to hold the response</span><br><span class="line">        //声明接受响应容器</span><br><span class="line">        http::response&lt;http::dynamic_body&gt; res;</span><br><span class="line"></span><br><span class="line">        // Receive the HTTP response</span><br><span class="line">        //接受HTTP响应</span><br><span class="line">        http::read(stream, buffer, res);</span><br><span class="line"></span><br><span class="line">        // Write the message to standard out</span><br><span class="line">        std::cout &lt;&lt; res &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">        // Gracefully close the socket</span><br><span class="line">        beast::error_code ec;</span><br><span class="line">        stream.socket().shutdown(tcp::socket::shutdown_both, ec);</span><br><span class="line"></span><br><span class="line">        // not_connected happens sometimes</span><br><span class="line">        // so don&#x27;t bother reporting it.</span><br><span class="line">        //</span><br><span class="line">        if(ec &amp;&amp; ec != beast::errc::not_connected)</span><br><span class="line">            throw beast::system_error&#123;ec&#125;;</span><br><span class="line"></span><br><span class="line">        // If we get here then the connection is closed gracefully</span><br><span class="line">    &#125;</span><br><span class="line">    catch(std::exception const&amp; e)</span><br><span class="line">    &#123;</span><br><span class="line">        std::cerr &lt;&lt; &quot;Error: &quot; &lt;&lt; e.what() &lt;&lt; std::endl;</span><br><span class="line">        return EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line">    return EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] 流程</p>
+<ol>
+<li>创建IO上下文<code>asio::io_context</code></li>
+<li>创建解析器<code>tcp::resolver</code>，解析域名与端口</li>
+<li>连接到服务器，创建流<code>beast::tcp_stream</code>，使用<code>tcp_stream::connect</code>连接</li>
+<li>构建<code>http::request</code>请求，使用<code>set</code>方法设置字段，<code>write</code>写入<code>tcp_stream</code></li>
+<li>使用<code>flat_buffer</code>与<code>http::response</code>接受请求</li>
+<li>断开连接<code>tcp_stream::socket().shutdown</code></li>
+</ol>
+</blockquote>
+<ul>
+<li><code>make_strand</code>返回一个从执行上下文或执行器构造的strand，如<code>net::make_strand(ioc)</code></li>
+</ul>
+<blockquote>
+<p>[!NOTE] tcp_stream</p>
+<ul>
+<li>设计为<code>asio::ip::tcp::socket</code>的替代品</li>
+<li>允许超时操作</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">stream.expires_after(std::chrono::seconds(30));</span><br><span class="line">//如果连接没有在30s内建立</span><br><span class="line">//这个操作将被取消，并且收到error::timeout</span><br><span class="line">stream.async_connect(resolver.resolve(&quot;www.xxx.com&quot;,&quot;http&quot;),</span><br><span class="line">[](error_code ec,net::ip::tcp::endpoint ep)</span><br><span class="line">&#123;</span><br><span class="line">	if(ec==error::timeout)</span><br><span class="line">		std::cerr &lt;&lt; &quot;async_connect took too long\n&quot;;</span><br><span class="line">	else if(!ec)</span><br><span class="line">		std::cout &lt;&lt; &quot;Connected to &quot; &lt;&lt; ep &lt;&lt; &quot;\n&quot;;</span><br><span class="line">&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>速率限制，<code>basic_stream</code>类模板提供一个额外的<code>RatePolicy</code>模板参数，用于实现速率限制或带宽关联，默认策略为<code>unlimited_rate_policy</code><ul>
+<li><code>simple_rate_policy</code>，允许以每秒字节为单位独立控制读写限制</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">basic_stream&lt;net::ip::tcp,net::any_io_executor,simple_rate_policy&gt; stream(ioc);</span><br><span class="line">stream.rate_policy().read(write)_limit(10000);//bytes per second</span><br></pre></td></tr></table></figure></blockquote>
+<ul>
+<li>序列化：将HTTP消息转化成字节缓冲区</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    bool isRequest,</span><br><span class="line">    class Body,</span><br><span class="line">    class Fields = fields&gt;</span><br><span class="line">class serializer</span><br><span class="line"></span><br><span class="line">//request_serializer与response_serializer（两者均为模板别名）根据isRequest区分</span><br></pre></td></tr></table></figure>
+<p>![[Pasted image 20260420183839.png]]<br>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">//服务器进行序列化</span><br><span class="line">http::response&lt;http::string_body&gt; res&#123;http::status::ok&#125;;</span><br><span class="line"></span><br><span class="line">http::response_serializer&lt;http::string_body&gt; rs&#123;res&#125;;</span><br><span class="line"></span><br><span class="line">while(!rs.is_done())</span><br><span class="line">&#123;</span><br><span class="line">	error_code ec;</span><br><span class="line">	http::write_some(socket,rs,ec);</span><br><span class="line">	if(ec)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cerr &lt;&lt; ec.message() &lt;&lt; std::endl;</span><br><span class="line">		break;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">//客户端进行反序列化，即使用parser类</span><br><span class="line">http::response_parser&lt;http::string_body&gt; parser;</span><br><span class="line">beast::flat_buffer buffer;</span><br><span class="line">http::read(socket,buffer,parser);</span><br><span class="line">auto const&amp; response=parser.get();</span><br><span class="line"></span><br><span class="line">std::cout&lt;&lt;&quot;status:&quot;&lt;&lt;response.result_int()&lt;&lt;std::endl;</span><br><span class="line"></span><br><span class="line">//提取特定字段使用find函数，如提取Content-Length</span><br><span class="line">if(response.find(http::field::content_length)!=response.end())</span><br><span class="line">	std::cout&lt;&lt;&quot;Content-Length:&quot;&lt;&lt;response[http::field::content_length];</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    bool isRequest,</span><br><span class="line">    class Body,</span><br><span class="line">    class Allocator = std::allocator&lt;char&gt;&gt;</span><br><span class="line">class parser :</span><br><span class="line">    public http::basic_parser&lt; isRequest &gt;</span><br><span class="line"></span><br><span class="line">//与serializer同理，针对request与response有两个模板别名</span><br></pre></td></tr></table></figure>
+<h1 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    class NextLayer,</span><br><span class="line">    bool deflateSupported = true&gt;</span><br><span class="line">class stream;</span><br><span class="line">//不支持非阻塞模式</span><br><span class="line"></span><br><span class="line">//构造实例</span><br><span class="line">stream&lt;tcp_stream&gt; ws(ioc);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>WebSocket使用自己协议的超时功能，当其与<code>tcp_stream与basic_stream</code>类模板一起使用，应建立连接后禁用后者的超时，否则为UB</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//使用SSL</span><br><span class="line">//需包含头文件&lt;boost/beast/websocket/ssl.hpp&gt;</span><br><span class="line">//ctx的类型为net::ssl::context</span><br><span class="line">stream&lt;net::ssl::stream&lt;tcp_stream&gt;&gt; wss(net::make_strand(ioc),ctx);</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/beast/" class="tag-item">
+                    beast
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/boost.beast/">https://narciostyx.github.io/2026/01/18/boost.beast/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/CRTP/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">CRTP</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/chrono/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++时间库</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

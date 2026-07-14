@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | Reactor与Proactor模型</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">网络通信模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reactor"><span class="toc-number">2.</span> <span class="toc-text">Reactor</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.1.</span> <span class="toc-text">三线程模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95Reactor%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.1.1.</span> <span class="toc-text">单Reactor单线程模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95Reactor%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.1.2.</span> <span class="toc-text">单Reactor多线程模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9AReactor%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.1.3.</span> <span class="toc-text">多Reactor多线程模式</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Proactor"><span class="toc-number">3.</span> <span class="toc-text">Proactor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">4.</span> <span class="toc-text">其他</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>Reactor与Proactor模型</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<h1 id="网络通信模型"><a href="#网络通信模型" class="headerlink" title="网络通信模型"></a>网络通信模型</h1><h1 id="Reactor"><a href="#Reactor" class="headerlink" title="Reactor"></a>Reactor</h1><ol>
+<li>被动过程，当接收到来着客户端事件后，根据事件类型调用对应代码处理，因此也叫做Dispatch模式</li>
+<li><strong>同步</strong>非阻塞网络模型</li>
+<li>底层是IO多路复用与<strong>线程池</strong></li>
+<li>三事件<ol>
+<li>客户端向服务器发送连接请求（连接事件）</li>
+<li>客户端向服务器发送写（读）请求，服务器从请求内读取内容再写入（服务器中读取）（读事件、写事件），处理完成后返回值</li>
+<li>连接由acceptor处理</li>
+<li>连接后会创建handler，负责处理读写事件并响应</li>
+<li>reactor负责监听与分配事件</li>
+</ol>
+</li>
+</ol>
+<h2 id="三线程模型"><a href="#三线程模型" class="headerlink" title="三线程模型"></a>三线程模型</h2><h3 id="单Reactor单线程模型"><a href="#单Reactor单线程模型" class="headerlink" title="单Reactor单线程模型"></a>单Reactor单线程模型</h3><ol>
+<li>连接请求、业务处理、响应请求都在一个线程中</li>
+<li>工作流程<ol>
+<li>reactor监听请求后，通过dispatch分发给acceptor或handler</li>
+<li>如果是来着客户端的连接请求，则分发给acceptor并创建一个对应的handler</li>
+<li>如果是来着客户端的读写请求，则reactor调用对应的handler处理</li>
+<li>handler通过read-&gt;execute-&gt;send执行流程<br>![[Pasted image 20260219160841.png]]</li>
+</ol>
+</li>
+</ol>
+<h3 id="单Reactor多线程模型"><a href="#单Reactor多线程模型" class="headerlink" title="单Reactor多线程模型"></a>单Reactor多线程模型</h3><ol>
+<li>鉴于单 Reactor 单线程模式无法充分利用和发挥多核 CPU 的性能，于是就诞生了单 Reactor 多线程模型</li>
+<li>工作流程<ol>
+<li>与前者类似，但是handler不再进行业务处理（execute），仅响应事件</li>
+<li>handler通过read读取到数据后会<strong>发给processor</strong>进行业务处理</li>
+<li>processor会在<strong>独立的子线程（线程池）</strong> 内完成真正的业务处理，再返回响应给主线程的handler<br>![[Pasted image 20260219160817.png]]</li>
+</ol>
+</li>
+<li>尽管采用了多线程业务处理流程，但是由于是单reactor，瞬间高发的时候会造成reacotr的性能瓶颈</li>
+</ol>
+<h3 id="多Reactor多线程模式"><a href="#多Reactor多线程模式" class="headerlink" title="多Reactor多线程模式"></a>多Reactor多线程模式</h3><ol>
+<li>工作原理<ol>
+<li>父线程中mainReactor监听连接建立事件，通过Acceptor接受，将<strong>新连接分给某个子线程</strong></li>
+<li>子线程的subReactor分配的连接加入到连接队列中并监听，同时创建对应handler处理事件</li>
+<li>此时handler与单Reactor单线程的handler职责一致<br>![[Pasted image 20260219161120.png]]</li>
+</ol>
+</li>
+</ol>
+<h1 id="Proactor"><a href="#Proactor" class="headerlink" title="Proactor"></a>Proactor</h1><ol>
+<li>当有连接、读写等IO事件时，<strong>操作系统内核</strong>在处理完事件后主动通知我们的程序代码</li>
+<li><strong>异步</strong>非阻塞网络模型</li>
+<li>工作流程<ol>
+<li>Proactor Initiator 负责创建 Proactor 和 Handler，并将 Proactor 和 Handler 都通过 Asynchronous Operation Processor 注册到内核；</li>
+<li>Asynchronous Operation Processor 负责处理注册请求，并完成 I&#x2F;O 操作；</li>
+<li>Asynchronous Operation Processor 完成 I&#x2F;O 操作后通知 Proactor；</li>
+<li>Proactor 根据不同的事件类型回调不同的 Handler 进行业务处理；</li>
+<li>Handler 完成业务处理，Handler 也可以注册新的 Handler 到内核进程；<br>![[Pasted image 20260219170157.png]]</li>
+</ol>
+</li>
+</ol>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ul>
+<li>Reactor本质是<strong>应用程序</strong>处理IO请求，而Proactor则是<strong>操作系统内核</strong>处理IO请求</li>
+<li>就绪事件与完成事件<ol>
+<li>Reactor使用就绪事件，即可以立即执行而不会阻塞，即操作系统会告诉现在进行IO操作不会阻塞，<strong>读写仍由应用程序完成</strong></li>
+<li>Proactor则是使用完成事件，即<strong>IO操作在后台完成</strong>（数据已经读入缓冲区或已从缓冲区写出），程序只负责提交请求与处理结果</li>
+<li>因此可以将Reactor理解成：事件到达后<strong>由操作系统通知应用程序，应用程序进行处理</strong>；而Proactor则是：事件到达后操作系统来处理，<strong>处理完后通知应用程序</strong>（处理指IO操作）</li>
+</ol>
+</li>
+<li>三种IO方式<ol>
+<li>阻塞IO指程序使用read()询问内核，若未准备好则一直等待，阻塞程序运行</li>
+<li>非阻塞IO指程序轮询使用read()询问内核，若内核返回未准备好则立即返回，进行下面操作，过一段时间后继续询问内核</li>
+<li>异步IO则是发起aio_read后，立即返回，执行其他操作，当内核准备好数据后会通知程序</li>
+</ol>
+</li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/Reactor/" class="tag-item">
+                    Reactor
+                </a>
+            
+                <a href="/tags/Proactor/" class="tag-item">
+                    Proactor
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/%E8%AE%A1%E7%BD%91/" class="cate-item">
+                    计网
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/Reactor%E4%B8%8EProactor/">https://narciostyx.github.io/2026/01/18/Reactor与Proactor/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">IO复用</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/CRTP/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">CRTP</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

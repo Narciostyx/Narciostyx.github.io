@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C/C++ make与cmake</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#makefile"><span class="toc-number">1.</span> <span class="toc-text">makefile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#cmake"><span class="toc-number">2.</span> <span class="toc-text">cmake</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BC%96%E8%AF%91%E9%80%89%E9%A1%B9"><span class="toc-number">2.1.</span> <span class="toc-text">自定义编译选项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="toc-number">2.2.</span> <span class="toc-text">安装与测试</span></a></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C/C++ make与cmake</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<h1 id="makefile"><a href="#makefile" class="headerlink" title="makefile"></a>makefile</h1><ul>
+<li>linux使用命令make执行，根据当前工作目录的makefile文件</li>
+<li>makefile文件包含目标（可执行文件），依赖（文件或目标），命令</li>
+<li>makefile支持自查找依赖，如</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">main: main.o</span><br><span class="line">	g++ main.o -o main</span><br><span class="line">	![[pcap_analysis_report]]</span><br><span class="line">main.o: main.cpp</span><br><span class="line">	g++ main.cpp -c main.o</span><br><span class="line">	</span><br><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">	rm -f main</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注释以#开头</li>
+<li>e.g:</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">target: dependencies</span><br><span class="line">	command</span><br><span class="line">	</span><br><span class="line">main: main.cpp</span><br><span class="line">	g++ main.cpp -o main</span><br></pre></td></tr></table></figure>
+<pre><code>- command前必须以tab开头
+</code></pre>
+<ul>
+<li>makefile支持定义![[chat_export_20260609_225644]]变量，如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CC = g++</span><br><span class="line">CFLAGS = -Wall -g</span><br><span class="line"></span><br><span class="line">main: main.cpp</span><br><span class="line">	$(CC) $(CFLAGS) main.cpp -o main</span><br></pre></td></tr></table></figure>
+<pre><code>- makefile内置了一些变量，如：
+	- $@，表示目标文件
+	- $^，表示所有的依赖文件
+	- $&lt;，表示第一个依赖文件
+	- CC与CXX，代表gcc与g++
+- e.g.
+</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main: main.cpp</span><br><span class="line">	$(CC) $^ -o $@</span><br></pre></td></tr></table></figure>
+<ul>
+<li>伪目标，即phony targets，以.PHONY开头，代表没有依赖文件，属于makefile内的内容，而非当前目录下同命的文件，且仅有make调用才会执行：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">	rm -f main</span><br></pre></td></tr></table></figure>
+<p>只有当执行<code>make clean</code>时才会执行</p>
+<ul>
+<li>执行makefile的脚本时，如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">build:</span><br><span class="line">	echo &quot;xxx&quot;</span><br><span class="line">	g++ hello.cpp -o hello</span><br><span class="line">	echo &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+<p>命令会各自在一个shell内执行，除非使用;隔开，即<code>echo &quot;xxx&quot;;gcc hello.cpp -o hello;echo &quot;xxx&quot;</code>或者使用&amp;&amp;连接</p>
+<blockquote>
+<p>[!NOTE] Note<br>main.cpp<br>-&gt;<code>g++ -c</code><br>main.o<br>-&gt;<code>g++ -o</code><br>main</p>
+</blockquote>
+<h1 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h1><ul>
+<li>平台无关构建项目的构建系统，使用CMakeLists.txt，可以生成MakeFile，Sln工程项目</li>
+<li>语法<ol>
+<li><code>cmake_minimum_required(VERSION x.x) #最低版本要求</code></li>
+<li><code>project(name [language]) #项目信息与语言信息</code></li>
+<li><code>add_executable(Demo main.cc) #指定生成目标（将main.cc编译成名为Demo的可执行文件）</code><ol>
+<li>当同一目录下源文件很多时，可以使用<code>aux_source_directory(&lt;dir&gt; &lt;variable&gt;)</code>查找dir目录下的所有源文件并把名称保存到variable中，如<code>aux_source_directory(. DIR_SRCS)</code>，<code>add_executable(Demo ${DIR_SRCS})</code></li>
+</ol>
+</li>
+<li>当使用<code>add_subdirectory(&lt;paht&gt;)</code>时，该目录下的CMakeLists.txt与源代码也会被包含</li>
+<li><code>target_link_libraries(Demo MathFuncs) #添加链接库</code>，指明可执行文件需要一个名为MathFuncs的链接库</li>
+<li><code>add_library(Mathfuncs ${DIR_LIB_SRCS})</code>，生成静态链接库</li>
+<li><code>include_directories(&lt;dir&gt;)</code>，寻找dir目录下的头文件</li>
+<li><code>add_compile_options(&lt;string&gt;)</code>，增加编译器选项，如<code>add_compile_options(-std=c++20 -Wall -O2)</code></li>
+<li><code>set(&lt;variable&gt; &lt;value&gt;)</code>，设置variable的值value</li>
+<li><code>find_package(&lt;name&gt;)</code>，搜寻指定库，如<code>find_package(Boost 1.70 REQUIRED)</code>，指定查找路径<code>find_package(OpenCV REQUIRED PATHS /path/to/opencv)</code></li>
+</ol>
+</li>
+<li>cmake系统变量<ul>
+<li><strong>可使用set设置值</strong></li>
+</ul>
+<ol>
+<li>PROJECT_BINARY_DIR，即cmake命令执行的目录，如当在build目录下执行cmake，这个变量值为build</li>
+<li>LIBRARY_OUTPUT_PATH，指定库生成的目录</li>
+<li>EXECUTABLE_OUTPUT_PATH，指定可执行文件生成的目录</li>
+<li>CMAKE_SOURCE(BINARY)_DIR，顶层CMakeLists.txt所在的源目录（构建目录）</li>
+<li>CMAKE_BUILD_TYPE，构建类型，如“Debug”，“Release”等</li>
+<li>CMAKE_CXX_FLAGS，等同于add_compiler_options</li>
+<li>CMAKE_CXX_FLAGS_DEBUG(RELEASE)，指定Debug（Release）模式下的编译器标志</li>
+</ol>
+</li>
+</ul>
+<h2 id="自定义编译选项"><a href="#自定义编译选项" class="headerlink" title="自定义编译选项"></a>自定义编译选项</h2><ul>
+<li>前提：将MathFuncs库设置为一个可选库，即根据配置决定使用该库还是标准库<ul>
+<li>加入配置条件</li>
+<li>CMake配置文件中，使用<code>cmakedefine</code>，如<code>#cmakedefine USE_MYMATH</code></li>
+<li>在CMakeLists.txt中设置的变量，可以在config.h.in中以@variable_name@的方式使用：</li>
+</ul>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">--CMakeLists.txt</span><br><span class="line">set(Demo_VERSION_MAJOR 1)</span><br><span class="line">set(Demo_VERSION_MINOR 0)</span><br><span class="line"></span><br><span class="line">--config.h.in</span><br><span class="line">#define Demo_VERSION_MAJOR @Demo_VERSION_MAJOR@</span><br><span class="line">同理</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#加入配置头文件</span><br><span class="line">configure_file(</span><br><span class="line">	#输入的模板文件</span><br><span class="line">	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h.in&quot;</span><br><span class="line">	#输出的最终配置文件</span><br><span class="line">	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h&quot;</span><br><span class="line">)</span><br><span class="line">#添加选项，且默认值为ON</span><br><span class="line">option(USE_MYMATH &quot;Use self-defined library&quot; ON)</span><br><span class="line"></span><br><span class="line">if(USE_MYMATH)</span><br><span class="line">	include_directories(&quot;$&#123;PROJECT_SOURCE_DIR&#125;/math&quot;)</span><br><span class="line">	add_subdirectory(math)</span><br><span class="line">	set(EXTRA_LIBS $&#123;EXTRA_LIBS&#125; MathFuncs)</span><br><span class="line">endif(USE_MYMATH)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改源文件，增加宏定义</li>
+</ul>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifdef USE_MYMATH</span><br><span class="line">	#include &quot;math/MathFuncs&quot;</span><br><span class="line">#else</span><br><span class="line">	#include &lt;math.h&gt;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="安装与测试"><a href="#安装与测试" class="headerlink" title="安装与测试"></a>安装与测试</h2><ul>
+<li>安装规则</li>
+<li>TARGETS关键字指定<code>add_executable,add_library</code>创建的目标</li>
+<li>FILES关键字指定要安装的文件，并指定目录</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">install(TARGETS MathFuncs DESTINATION bin)</span><br><span class="line">install(FILES MathFuncs DESTINATION include)</span><br><span class="line"></span><br><span class="line">install(TARGETS Demo DESTINATION bin)</span><br><span class="line">insatll(FILES &quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot; DESTINATION include)</span><br></pre></td></tr></table></figure>
+<pre><code>- 执行后，MathFuncs.h与config.h会被复制到cmake工作目录的include目录下
+- 同理，MathFuncs.o会被复制到bin目录下
+</code></pre>
+<ul>
+<li>测试</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动测试</span><br><span class="line">enable_testing()</span><br><span class="line"></span><br><span class="line">#测试程序能否正常运行</span><br><span class="line">add_test(test_run Demo 5 2)</span><br><span class="line"></span><br><span class="line">add_test (test_usage Demo)</span><br><span class="line">set_tests_properties (test_usage PROPERTIES PASS_REGULAR_EXPRESSION &quot;Usage: .* base exponent&quot;)</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/makefile/" class="tag-item">
+                    makefile
+                </a>
+            
+                <a href="/tags/cmake/" class="tag-item">
+                    cmake
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/makefile%E4%B8%8Ecmake/">https://narciostyx.github.io/2026/01/18/makefile与cmake/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/getopt.h/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">getopt以及getopt_long</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/poll.h/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">poll函数</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

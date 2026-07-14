@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++常用类及其方法</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#iostream-fstream-sstream"><span class="toc-number">1.</span> <span class="toc-text">iostream,fstream,sstream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#iomanip"><span class="toc-number">2.</span> <span class="toc-text">iomanip</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#memory"><span class="toc-number">3.</span> <span class="toc-text">memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#type-traits"><span class="toc-number">4.</span> <span class="toc-text">type_traits</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%88%A4%E5%88%AB"><span class="toc-number">4.1.</span> <span class="toc-text">常用的类型判别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E5%85%B3%E7%B3%BB%E5%88%A4%E5%88%AB"><span class="toc-number">4.2.</span> <span class="toc-text">常用的关系判别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%82%E9%A1%B9"><span class="toc-number">4.3.</span> <span class="toc-text">杂项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ratio"><span class="toc-number">5.</span> <span class="toc-text">ratio</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E5%BA%93"><span class="toc-number">6.</span> <span class="toc-text">容器库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8"><span class="toc-number">6.1.</span> <span class="toc-text">顺序容器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vector"><span class="toc-number">6.1.1.</span> <span class="toc-text">vector</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#list%E4%B8%8Eforward-list"><span class="toc-number">6.1.2.</span> <span class="toc-text">list与forward_list</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#deque"><span class="toc-number">6.1.3.</span> <span class="toc-text">deque</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-number">6.1.4.</span> <span class="toc-text">适配器</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#queue"><span class="toc-number">6.1.4.1.</span> <span class="toc-text">queue</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#priority-queue"><span class="toc-number">6.1.4.2.</span> <span class="toc-text">priority_queue</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#stack"><span class="toc-number">6.1.4.3.</span> <span class="toc-text">stack</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E8%81%94%E5%AE%B9%E5%99%A8"><span class="toc-number">6.2.</span> <span class="toc-text">关联容器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%89%E5%BA%8F%E5%AE%B9%E5%99%A8"><span class="toc-number">6.2.1.</span> <span class="toc-text">有序容器</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#set%E4%B8%8Emultiset"><span class="toc-number">6.2.1.1.</span> <span class="toc-text">set与multiset</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#map%E4%B8%8Emultimap"><span class="toc-number">6.2.1.2.</span> <span class="toc-text">map与multimap</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E5%BA%8F%E5%AE%B9%E5%99%A8"><span class="toc-number">6.2.2.</span> <span class="toc-text">无序容器</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#unordered-map%E4%B8%8Eunordered-multimap"><span class="toc-number">6.2.2.1.</span> <span class="toc-text">unordered_map与unordered_multimap</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#unordered-set%E4%B8%8Eunordered-multiset"><span class="toc-number">6.2.2.2.</span> <span class="toc-text">unordered_set与unordered_multiset</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#functional"><span class="toc-number">7.</span> <span class="toc-text">functional</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#algorithm"><span class="toc-number">8.</span> <span class="toc-text">algorithm</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95"><span class="toc-number">8.1.</span> <span class="toc-text">查找算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E5%88%86%E6%90%9C%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="toc-number">8.2.</span> <span class="toc-text">二分搜索算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%AE%B9%E5%99%A8%E7%AE%97%E6%B3%95"><span class="toc-number">8.3.</span> <span class="toc-text">写容器算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%92%E5%88%86%E4%B8%8E%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95"><span class="toc-number">8.4.</span> <span class="toc-text">划分与排序算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%8E%92%E7%AE%97%E6%B3%95"><span class="toc-number">8.5.</span> <span class="toc-text">重排算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#numeric"><span class="toc-number">9.</span> <span class="toc-text">numeric</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#string"><span class="toc-number">10.</span> <span class="toc-text">string</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++常用类及其方法</h1>
+    </section>
+    <section class="article">
+        <p>总结一些比较常使用的类及其方法</p>
+<span id="more"></span>
+
+<h2 id="iostream-fstream-sstream"><a href="#iostream-fstream-sstream" class="headerlink" title="iostream,fstream,sstream"></a>iostream,fstream,sstream</h2><p>#iostream<br>#fstream<br>#sstream<br>#io流</p>
+<ol>
+<li>对于C++的输入输出流来讲，其继承关系为：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">//IO流基类，保存流状态等基础信息</span><br><span class="line">class ios_base</span><br><span class="line">&#123;</span><br><span class="line">class:</span><br><span class="line">	failure</span><br><span class="line">	Init</span><br><span class="line">method:</span><br><span class="line">	fmtflags (un)setf(fmtflags ...)</span><br><span class="line">	width</span><br><span class="line">	imbue(设置区域设置)</span><br><span class="line">	sync_with_stdio(设置标准C IO库是否可互操作)</span><br><span class="line">	...</span><br><span class="line">attributions:</span><br><span class="line">	openmode:流打开模式</span><br><span class="line">	-app,binary,in,out,trunc,ate,noreplace(独占)</span><br><span class="line">	fmtflags:格式化标志</span><br><span class="line">	-dec,oct,hex,left,right,scientific(通常与fixed结合),boolalpha(以字母格式插入或提取bool类型),</span><br><span class="line">	iostate:流状态标志</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//拥有与std::basic_streambuf接口进行交互的功能</span><br><span class="line">//std::basic_streambuf是实际与操作系统进行读写的类</span><br><span class="line">//进一步封装ios_base的属性，提供接口</span><br><span class="line">class basic_ios:ios_base</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	good,eof,fail,bad,rdstate,setstate,clear</span><br><span class="line">	tie</span><br><span class="line">	...</span><br><span class="line">attributions:</span><br><span class="line">	char_type:CharT</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>#标准IO流类 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//标准输入流(w)cin</span><br><span class="line">class basic_istream:basic_ios</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	get,peek(不会像get那样把字符从流中提取),unget,putback,getline,ignore,read</span><br><span class="line">	tellg,seekg</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line">//标准输出流(w)cout</span><br><span class="line">class basic_ostream:basic_ios</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	put,write</span><br><span class="line">	tellp,seekp</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line">class basic_iostream:basic_istream,basic_ostream&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>#文件操作类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//std::basic_filebuf：std::basic_streambuf</span><br><span class="line">//定义于fstream，均有方法open,is_open,close</span><br><span class="line">class basic_ifstream:basic_istream&#123;&#125;</span><br><span class="line">class basic_ofstream:basic_ostream&#123;&#125;</span><br><span class="line">class basic_fstream:basic_iostream&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>#sring流操作类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//std::basic_stringbuf：std::basic_streambuf</span><br><span class="line">//定义于sstream，均有方法str,view</span><br><span class="line">class basic_istringstream:basic_istream&#123;&#125;</span><br><span class="line">class basic_ostringstream:basic_ostream&#123;&#125;</span><br><span class="line">class basic_stringstream:basic_iostream&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在标准命名空间std中有以下对象：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cin\wcin</td>
+<td>标准输入流</td>
+</tr>
+<tr>
+<td>cout\wcout</td>
+<td>标准输出流</td>
+</tr>
+<tr>
+<td>cerr\wcerr</td>
+<td>标准错误流，<strong>无缓冲</strong></td>
+</tr>
+<tr>
+<td>clog\wclog</td>
+<td>标准错误流</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="iomanip"><a href="#iomanip" class="headerlink" title="iomanip"></a>iomanip</h2><p>#iomanip<br>#标准IO流类格式化输出控制<br>属于IO流的一部分，使用函数控制流的格式：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>setbase</td>
+<td>设置整数的基数</td>
+</tr>
+<tr>
+<td>setfill</td>
+<td>更改填充字符</td>
+</tr>
+<tr>
+<td>setprecision</td>
+<td>更改浮点精度</td>
+</tr>
+<tr>
+<td>setw</td>
+<td>更改下一个输入&#x2F;输出字段的宽度</td>
+</tr>
+<tr>
+<td>#时间相关的IO操作</td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>get_time</td>
+<td>解析指定格式的日期&#x2F;时间值</td>
+</tr>
+<tr>
+<td>put_time</td>
+<td>根据指定格式格式化并输出日期&#x2F;时间值</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="memory"><a href="#memory" class="headerlink" title="memory"></a>memory</h2><p>#memory<br>#动态内存<br>#智能指针</p>
+<ol>
+<li>在该头文件中，定义以下常用类：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>类名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>allocator</td>
+<td>默认分配器</td>
+</tr>
+<tr>
+<td>unique_ptr</td>
+<td>唯一对象所有权语义的智能指针</td>
+</tr>
+<tr>
+<td>shared_ptr</td>
+<td>共享对象所有权语义的智能指针</td>
+</tr>
+<tr>
+<td>weak_ptr</td>
+<td>对shared_ptr管理对象的<strong>弱引用</strong></td>
+</tr>
+<tr>
+<td>#分配器类</td>
+<td></td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class allocator</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	allocate(_at_least),deallocate</span><br><span class="line">	construct,destroy</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>#智能指针类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class unique_ptr</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	release(返回指向托管对象的指针并释放所有权)</span><br><span class="line">	reset(替换托管对象)</span><br><span class="line">	swap(交换管理对象)</span><br><span class="line">	get(返回指向托管对象的指针)</span><br><span class="line">	get_deleter(返回用于销毁托管对象的删除器)</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">class shared_ptr</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	reset,swap,get</span><br><span class="line">	use_count,unique</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class weak_ptr</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	reset,swap</span><br><span class="line">	use_count</span><br><span class="line">	expire(检查引用的对象是否已被删除)</span><br><span class="line">	lock(创建一个管理引用对象的 shared_ptr)</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>定义以下常用方法：</li>
+</ol>
+<p>#动态内存方法 </p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>addressof</td>
+<td>获取对象实际地址，<strong>即使&amp;运算符被重载</strong></td>
+</tr>
+<tr>
+<td>uninitialized_copy(_n)</td>
+<td>将对象复制到未初始化的内存空间</td>
+</tr>
+<tr>
+<td>uninitialized_fill(_n)</td>
+<td>将对象复制到由范围定义的未初始化内存区域</td>
+</tr>
+<tr>
+<td>uninitialized_move(_n)</td>
+<td>将一系列对象移动到未初始化内存区域</td>
+</tr>
+<tr>
+<td>construct_at</td>
+<td>在<strong>给定地址</strong>创建对象</td>
+</tr>
+<tr>
+<td>destroy_at</td>
+<td>销毁<strong>给定地址</strong>处的对象</td>
+</tr>
+<tr>
+<td>destroy(_n)</td>
+<td>销毁对象范围</td>
+</tr>
+<tr>
+<td>#智能指针方法</td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>make_unique</td>
+<td>创建一个管理新对象的唯一指针</td>
+</tr>
+<tr>
+<td>make_shared</td>
+<td>创建一个管理新对象的共享指针</td>
+</tr>
+<tr>
+<td>#enable_shared_from_this</td>
+<td></td>
+</tr>
+</tbody></table>
+<ul>
+<li>允许一个被 std::shared_ptr 管理的对象，安全地生成指向自身的其他 std::shared_ptr 实例</li>
+<li>使用方法<code>shared_from_this</code>返回一个与外部共享引用计数的shared_ptr</li>
+<li>内部维护一个<code>weak_ptr</code>，当外部有<code>shared_ptr</code>管理这个类型时，weak_ptr会被初始化，当调用<code>shared_from_this</code>时，会调用<code>weak_ptr::lock()</code>提升为shared_ptr</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	...</span><br><span class="line">	//此函数返回一个新的shared_ptr，其计数独立于外部的shared_ptr</span><br><span class="line">	std::shared_ptr&lt;base&gt; get_self()&#123;return std::shared_ptr&lt;base&gt;(this);&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	std::shared_ptr&lt;base&gt; ptr=std::make_shared&lt;base&gt;();</span><br><span class="line">	std::shared_ptr&lt;base&gt; ptr2=ptr-&gt;get_self();</span><br><span class="line">	</span><br><span class="line">	//当主程序结束时，按照销毁顺序：</span><br><span class="line">	//销毁ptr2，合法，因为此时引用计数为1，减1并销毁this指针</span><br><span class="line">	//销毁ptr，UB，因为此时this指针被销毁，但仍调用析构函数</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note</p>
+<ol>
+<li>必须使用公用继承</li>
+<li>对象必须被std::shared_ptr管理，即在调用<code>shared_from_this()</code>前必须有一个实例持有该对象</li>
+<li>不能对栈上分配的对象调用</li>
+<li>避免循环引用</li>
+</ol>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class base:public std::enable_shared_from_this&lt;base&gt;</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	std::shared_ptr&lt;base&gt; get_self()&#123;return shared_from_this();&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">其他同上，但不会引发二次释放问题</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="type-traits"><a href="#type-traits" class="headerlink" title="type_traits"></a>type_traits</h2><p>该头文件定义了类型特性查询的接口，该头文件判定类型的模板类都是<strong>继承于模板基类</strong><code>integral_constant</code>，以格式<code>is_xxx或者is_xxx_v(即is_xxx::value)</code>命名</p>
+<h3 id="常用的类型判别"><a href="#常用的类型判别" class="headerlink" title="常用的类型判别"></a>常用的类型判别</h3><ol>
+<li>void</li>
+<li>integral</li>
+<li>floating_point</li>
+<li>array</li>
+<li>enum</li>
+<li>union</li>
+<li>class</li>
+<li>pointer</li>
+<li>function</li>
+<li>((r)lvalue_)reference</li>
+<li><strong>fundamenta</strong>l(检查类型是否为基本类型)</li>
+<li><strong>arithmetic</strong>(检查类型是否为算术类型)</li>
+<li>object</li>
+<li>const,volatile,trivial</li>
+</ol>
+<h3 id="常用的关系判别"><a href="#常用的关系判别" class="headerlink" title="常用的关系判别"></a>常用的关系判别</h3><ol>
+<li>same</li>
+<li>base_of</li>
+<li>virtual_base_of</li>
+</ol>
+<h3 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>(add)remove_cv(const\volatile)</td>
+<td>(添加)移除const和（或）volatile限定符</td>
+</tr>
+<tr>
+<td>remove_reference</td>
+<td></td>
+</tr>
+<tr>
+<td>add_l(r)value_reference</td>
+<td></td>
+</tr>
+<tr>
+<td>remove(add)_pointer</td>
+<td></td>
+</tr>
+<tr>
+<td>decay</td>
+<td></td>
+</tr>
+<tr>
+<td>enable_if</td>
+<td></td>
+</tr>
+</tbody></table>
+<ul>
+<li>enable_if</li>
+</ul>
+<p>#SFINAE<br>#if_constexpr  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//定义</span><br><span class="line">template&lt;bool B,typename T=void&gt;</span><br><span class="line">struct enable_if;</span><br><span class="line"></span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">struct enable_if&lt;true,T&gt;&#123;typedef T type;&#125;</span><br><span class="line"></span><br><span class="line">//e.g.</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">typename std::enable_if&lt;std::is_integral&lt;T&gt;::value,void&gt;::type func(T num)</span><br><span class="line">&#123;...&#125;</span><br><span class="line"></span><br><span class="line">//c++14后提供模板别名，等同于如下</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">std::enable_if_t&lt;std::is_integral_v&lt;T&gt;,void&gt; func(T num)&#123;...&#125;</span><br><span class="line"></span><br><span class="line">//c++17后提供if constexpr，即编译器决定if分支优化</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">void print(T value) &#123;</span><br><span class="line">    if constexpr (std::is_integral_v&lt;T&gt;) &#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;Integral: &quot; &lt;&lt; value;</span><br><span class="line">    &#125; else if constexpr (std::is_floating_point_v&lt;T&gt;) &#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;Float: &quot; &lt;&lt; value;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;Other type&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">//c++20后提供概念concepts，如下</span><br><span class="line">template&lt;std::integral T&gt;</span><br><span class="line">void func(T num)&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="ratio"><a href="#ratio" class="headerlink" title="ratio"></a>ratio</h2><p>#ratio</p>
+<ol>
+<li>定义std::ratio类，为有理数计算的一部分，如下</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    std::intmax_t Num,</span><br><span class="line">    std::intmax_t Denom = 1</span><br><span class="line">&gt; class ratio;</span><br></pre></td></tr></table></figure>
+<p>即<strong>std::ratio&lt;x,y&gt;，此时代表x&#x2F;y的大小</strong>，如std::kilo&#x3D;std::ratio&lt;1000,1&gt;，std::centi&#x3D;std::ratio&lt;1,100&gt;</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ratio_add</td>
+<td>加</td>
+</tr>
+<tr>
+<td>ratio_subtract</td>
+<td>减</td>
+</tr>
+<tr>
+<td>ratio_multiply</td>
+<td>乘</td>
+</tr>
+<tr>
+<td>ratio_divide</td>
+<td>除</td>
+</tr>
+<tr>
+<td>ratio_(not_)equal</td>
+<td>(不)等于</td>
+</tr>
+<tr>
+<td>ratio_less(greater)(_equal)</td>
+<td>(大于)小于(等于)</td>
+</tr>
+<tr>
+<td>2. e.g.</td>
+<td></td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;ratio&gt;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    using two_third = std::ratio&lt;2, 3&gt;;</span><br><span class="line">    using one_sixth = std::ratio&lt;1, 6&gt;;</span><br><span class="line">    using sum = std::ratio_add&lt;two_third, one_sixth&gt;;</span><br><span class="line"> </span><br><span class="line">    std::cout &lt;&lt; &quot;2/3 + 1/6 = &quot; &lt;&lt; sum::num &lt;&lt; &#x27;/&#x27; &lt;&lt; sum::den &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;ratio&gt;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    constexpr bool equ = std::ratio_equal_v&lt;std::ratio&lt;2,3&gt;,</span><br><span class="line">                                            std::ratio&lt;6,9&gt;&gt;;</span><br><span class="line">    static_assert(equ);</span><br><span class="line">    std::cout &lt;&lt; &quot;2/3 &quot; &lt;&lt; (equ ? &quot;==&quot; : &quot;!=&quot;) &lt;&lt; &quot; 6/9\n&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="容器库"><a href="#容器库" class="headerlink" title="容器库"></a>容器库</h2><p>#容器</p>
+<h3 id="顺序容器"><a href="#顺序容器" class="headerlink" title="顺序容器"></a>顺序容器</h3><h4 id="vector"><a href="#vector" class="headerlink" title="vector"></a>vector</h4><p>#vector</p>
+<ol>
+<li>封装了动态大小数组的序列容器</li>
+<li>迭代器失效的情况<br>![[Pasted image 20260211183756.png]]</li>
+<li>元素访问</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>at</td>
+<td>指定元素</td>
+</tr>
+<tr>
+<td>operator[]</td>
+<td>指定元素</td>
+</tr>
+<tr>
+<td>front</td>
+<td>第一个元素</td>
+</tr>
+<tr>
+<td>back</td>
+<td>最后一个元素</td>
+</tr>
+<tr>
+<td>data</td>
+<td>底层指针</td>
+</tr>
+<tr>
+<td>4. 迭代器有<code>begin,end,rbegin,rend</code>，在前加上前缀<code>c</code>代表const</td>
+<td></td>
+</tr>
+<tr>
+<td>5. 容量与修改器操作</td>
+<td></td>
+</tr>
+<tr>
+<td>![[Pasted image 20260211184338.png]]</td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="list与forward-list"><a href="#list与forward-list" class="headerlink" title="list与forward_list"></a>list与forward_list</h4><p>#list<br>#forward_list</p>
+<ol>
+<li>list为双向链表，forward_list则是单向链表</li>
+<li>由于结构与STL中如vector这里容器不同，有属于自己的操作<br>![[Pasted image 20260211185133.png]]</li>
+<li>forward_list没有反向迭代器，因为其是单向的</li>
+</ol>
+<h4 id="deque"><a href="#deque" class="headerlink" title="deque"></a>deque</h4><p>#deque</p>
+<ol>
+<li>双向队列，允许在开头与末尾进行快速插入与删除</li>
+<li>修改操作如下：<br>![[Pasted image 20260211185450.png]]</li>
+</ol>
+<h4 id="适配器"><a href="#适配器" class="headerlink" title="适配器"></a>适配器</h4><h5 id="queue"><a href="#queue" class="headerlink" title="queue"></a>queue</h5><p>#queue</p>
+<ol>
+<li>表示数据结构队列，FIFO</li>
+<li>使用push,push_range,emplace,pop,swap修改容器</li>
+<li>默认使用deque容器模拟</li>
+</ol>
+<h5 id="priority-queue"><a href="#priority-queue" class="headerlink" title="priority_queue"></a>priority_queue</h5><p>#priority_queue</p>
+<ol>
+<li>优先级队列，默认使用vector容器模拟，std::less比较大小</li>
+<li>top访问顶部元素</li>
+<li>修改操作与queue一致</li>
+</ol>
+<h5 id="stack"><a href="#stack" class="headerlink" title="stack"></a>stack</h5><p>#stack</p>
+<ol>
+<li>表示数据结构栈，LIFO</li>
+<li>默认使用deque模拟</li>
+<li>使用top访问顶部元素，修改操作与queue一致</li>
+</ol>
+<h3 id="关联容器"><a href="#关联容器" class="headerlink" title="关联容器"></a>关联容器</h3><h4 id="有序容器"><a href="#有序容器" class="headerlink" title="有序容器"></a>有序容器</h4><h5 id="set与multiset"><a href="#set与multiset" class="headerlink" title="set与multiset"></a>set与multiset</h5><p>#set<br>#multiset</p>
+<ol>
+<li>默认使用std::less对集合内元素排序，实现为红黑树，multi代表允许重复</li>
+<li>由于关联容器与顺序容器不同，其不能直接使用STL的算法库进行操作，因此有自己的方法：![[Pasted image 20260211190509.png]]<br> ![[Pasted image 20260211190829.png]]</li>
+</ol>
+<h5 id="map与multimap"><a href="#map与multimap" class="headerlink" title="map与multimap"></a>map与multimap</h5><p>#map<br>#multimap</p>
+<ol>
+<li>默认使用std::less对容器内排序，实现为红黑树，同理multi代表允许重复</li>
+<li>查找操作与set内方法一致</li>
+</ol>
+<h4 id="无序容器"><a href="#无序容器" class="headerlink" title="无序容器"></a>无序容器</h4><h5 id="unordered-map与unordered-multimap"><a href="#unordered-map与unordered-multimap" class="headerlink" title="unordered_map与unordered_multimap"></a>unordered_map与unordered_multimap</h5><p>#unordered_map<br>#unordered_multimap</p>
+<ol>
+<li>使用键的哈希值将对应的值存储进桶，因此无序容器还有对桶的操作<br>![[Pasted image 20260211212145.png]]</li>
+<li>迭代器失效情况<br>![[Pasted image 20260211211940.png]]</li>
+</ol>
+<h5 id="unordered-set与unordered-multiset"><a href="#unordered-set与unordered-multiset" class="headerlink" title="unordered_set与unordered_multiset"></a>unordered_set与unordered_multiset</h5><p>#unordered_set<br>#unordered_multimap </p>
+<ol>
+<li>搜索、插入和删除具有平均常数时间复杂度。在内部，元素不按任何特定顺序排序，而是组织成桶。元素被放入哪个桶完全取决于其值的哈希值。这允许快速访问单个元素，因为一旦计算出哈希值，它就指向元素被放入的确切桶。</li>
+<li>方法与上述unordered_map一致</li>
+</ol>
+<hr>
+<h2 id="functional"><a href="#functional" class="headerlink" title="functional"></a>functional</h2><p>#functional</p>
+<ol>
+<li>包含函数对象，并提供标准散列函数(即hash)</li>
+<li>拥有命名空间placeholders，为std::bind的未绑定提供占位符</li>
+<li>其中较为常用的类有如下图所示：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>类名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>function</td>
+<td>多态函数封装器</td>
+</tr>
+<tr>
+<td>plus,minus,multiplies,divides,modulus,negate</td>
+<td>算术运算函数对象</td>
+</tr>
+<tr>
+<td>(not_)equal_to,greater(less)(_equal)</td>
+<td>比较函数对象</td>
+</tr>
+<tr>
+<td>4. 较常用函数有：</td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bind</td>
+<td>将一个或多个参数绑定到函数对象</td>
+</tr>
+<tr>
+<td>ref&#x2F;cref</td>
+<td>根据其参数推导类型创建 std::reference_wrapper</td>
+</tr>
+<tr>
+<td>invoke(_r)</td>
+<td>使用给定参数调用任何 可调用 对象 并可指定返回类型</td>
+</tr>
+<tr>
+<td>5. e.g.</td>
+<td></td>
+</tr>
+<tr>
+<td>使用function</td>
+<td></td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">std::function&lt;void(int)&gt; display_num=print_num;</span><br><span class="line">std::function&lt;int(int,int)&gt; sum=[](int a,int b)&#123;return a+b;&#125;;</span><br></pre></td></tr></table></figure>
+<p>使用bind</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//函数声明</span><br><span class="line">void print_f(int a,int b,int c,int d)</span><br><span class="line">&#123;std::cout&lt;&lt;a&lt;&lt;&quot; &quot;&lt;&lt;b&lt;&lt;&quot; &quot;&lt;&lt;c&lt;&lt;&quot; &quot;&lt;&lt;d&lt;&lt;&quot;\n&quot;;&#125;</span><br><span class="line"></span><br><span class="line">//bind函数</span><br><span class="line">auto func=std::bind(print_f,std::placeholders::_2,12,std::placeholders::_1,n);</span><br></pre></td></tr></table></figure>
+<p>使用ref&#x2F;cref</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;functional&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line"> </span><br><span class="line">void f(int&amp; n1, int&amp; n2, const int&amp; n3)</span><br><span class="line">&#123;</span><br><span class="line">    std::cout &lt;&lt; &quot;In function: &quot; &lt;&lt; n1 &lt;&lt; &#x27; &#x27; &lt;&lt; n2 &lt;&lt; &#x27; &#x27; &lt;&lt; n3 &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">    ++n1;</span><br><span class="line">    ++n2;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    int n1 = 1, n2 = 2, n3 = 3;</span><br><span class="line">    std::function&lt;void()&gt; bound_f = std::bind(f, n1, std::ref(n2), std::cref(n3));</span><br><span class="line">    n1 = 10;</span><br><span class="line">    n2 = 11;</span><br><span class="line">    n3 = 12;</span><br><span class="line">    std::cout &lt;&lt; &quot;Before function: &quot; &lt;&lt; n1 &lt;&lt; &#x27; &#x27; &lt;&lt; n2 &lt;&lt; &#x27; &#x27; &lt;&lt; n3 &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">    bound_f();</span><br><span class="line">    std::cout &lt;&lt; &quot;After function: &quot; &lt;&lt; n1 &lt;&lt; &#x27; &#x27; &lt;&lt; n2 &lt;&lt; &#x27; &#x27; &lt;&lt; n3 &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//输出结果</span><br><span class="line">Before function: 10 11 12</span><br><span class="line">In function: 1 11 12</span><br><span class="line">After function: 10 12 12</span><br></pre></td></tr></table></figure>
+<p>使用invoke(_r)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;functional&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;type_traits&gt;</span><br><span class="line"> </span><br><span class="line">struct Foo</span><br><span class="line">&#123;</span><br><span class="line">    Foo(int num) : num_(num) &#123;&#125;</span><br><span class="line">    void print_add(int i) const &#123; std::cout &lt;&lt; num_ + i &lt;&lt; &#x27;\n&#x27;; &#125;</span><br><span class="line">    int num_;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">void print_num(int i)</span><br><span class="line">&#123;</span><br><span class="line">    std::cout &lt;&lt; i &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">struct PrintNum</span><br><span class="line">&#123;</span><br><span class="line">    void operator()(int i) const</span><br><span class="line">    &#123;</span><br><span class="line">        std::cout &lt;&lt; i &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"> //FOO().print_add属于类里的方法，print_num属于普通函数，PrintNum属于函数对象</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    std::cout &lt;&lt; &quot;invoke a free function: &quot;;</span><br><span class="line">    std::invoke(print_num, -9);</span><br><span class="line"> </span><br><span class="line">    std::cout &lt;&lt; &quot;invoke a lambda: &quot;;</span><br><span class="line">    std::invoke([]()&#123; print_num(42); &#125;);</span><br><span class="line"> </span><br><span class="line">    std::cout &lt;&lt; &quot;invoke a member function: &quot;;</span><br><span class="line">    const Foo foo(314159);</span><br><span class="line">    std::invoke(&amp;Foo::print_add, foo, 1);</span><br><span class="line"> </span><br><span class="line">    std::cout &lt;&lt; &quot;invoke (i.e., access) a data member num_: &quot;</span><br><span class="line">              &lt;&lt; std::invoke(&amp;Foo::num_, foo) &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line"> </span><br><span class="line">    std::cout &lt;&lt; &quot;invoke a function object: &quot;;</span><br><span class="line">    std::invoke(PrintNum(), 18);</span><br><span class="line"> </span><br><span class="line">#if defined(__cpp_lib_invoke_r)</span><br><span class="line">    auto add = [](int x, int y)&#123; return x + y; &#125;;</span><br><span class="line">    std::cout &lt;&lt; &quot;invoke a lambda converting result to float: &quot;;</span><br><span class="line">    auto ret = std::invoke_r&lt;float&gt;(add, 11, 22);</span><br><span class="line">    static_assert(std::is_same&lt;decltype(ret), float&gt;());</span><br><span class="line">    std::cout &lt;&lt; std::fixed &lt;&lt; ret &lt;&lt; &quot;\ninvoke print_num: &quot;;</span><br><span class="line">    std::invoke_r&lt;void&gt;(print_num, 44);</span><br><span class="line">#endif</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">\\运行结果</span><br><span class="line">invoke a free function: -9</span><br><span class="line">invoke a lambda: 42</span><br><span class="line">invoke a member function: 314160</span><br><span class="line">invoke (i.e., access) a data member num_: 314159</span><br><span class="line">invoke a function object: 18</span><br><span class="line">invoke a lambda converting result to float: 33.000000</span><br><span class="line">invoke print_num: 44</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="algorithm"><a href="#algorithm" class="headerlink" title="algorithm"></a>algorithm</h2><p>#algorithm</p>
+<ol>
+<li>algorithm内的算法属于泛型算法，即满足特定条件就可调用算法(通常是实现迭代器begin()与end())</li>
+<li>算法要求迭代器类别通常有以下五种：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>读写类别</th>
+<th>扫描方式</th>
+<th>移动方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>输入迭代器</td>
+<td>只读不写</td>
+<td>单遍</td>
+<td>只能递增</td>
+</tr>
+<tr>
+<td>输出迭代器</td>
+<td>只写不读</td>
+<td>单遍</td>
+<td>只能递增</td>
+</tr>
+<tr>
+<td>前向迭代器</td>
+<td>可读写</td>
+<td>多遍</td>
+<td>只能递增</td>
+</tr>
+<tr>
+<td>双向迭代器</td>
+<td>可读写</td>
+<td>多遍</td>
+<td>递增递减</td>
+</tr>
+<tr>
+<td>随机访问迭代器</td>
+<td>可读写</td>
+<td>多遍</td>
+<td>支持全部迭代器运算</td>
+</tr>
+</tbody></table>
+<ol start="3">
+<li>下简要描述标准库算法及其参数<ol>
+<li>使用beg与end代表迭代器开始与结束，beg2与end2同理</li>
+<li>dest代表目的序列的迭代器</li>
+<li>unaryPred与binaryPred代表一元与二元谓词，comp是二元谓词(代表满足关联容器对关键字序的要求)</li>
+<li>unaryOp与binaryOp代表可调用对象(可分别使用来自输入序列的一个和两个实参来调用)</li>
+</ol>
+</li>
+<li>在算法命名方式，通常_if后缀代表使用谓词pred，_copy代表使用额外目的空间，而非原序列</li>
+</ol>
+<h3 id="查找算法"><a href="#查找算法" class="headerlink" title="查找算法"></a>查找算法</h3><p>#查找算法</p>
+<ol>
+<li>简单查找算法：</li>
+</ol>
+<blockquote>
+<p>[!均返回迭代器]<br>		1. find(beg,end,val)<br>		2. find_if(beg,end,unaryPred)<br>		3. find_if_not(beg,end,unaryPred)</p>
+</blockquote>
+<blockquote>
+<p>[!返回计数器]<br>		1. count(beg,end,val)<br>		2. count_if(beg,end,unaryPred)</p>
+</blockquote>
+<blockquote>
+<p>[!返回布尔值]<br>		1. all_of(beg,end,unaryPred)<br>		2. any_of(beg,end,unaryPred)<br>		3. none_of(beg,end,unaryPred)</p>
+</blockquote>
+<ol start="2">
+<li>查找重复值</li>
+</ol>
+<blockquote>
+<p>[!返回第一段相邻重复元素的迭代器，否则返回end]<br>		adjacent_find(beg,end[,binaryPred])</p>
+</blockquote>
+<blockquote>
+<p>[!返回一个迭代器，从此位置开始有count个相等的元素，否则返回end]<br>		search_n(beg,end,count,val[,binaryPred])</p>
+</blockquote>
+<ol start="2">
+<li>查找子序列</li>
+</ol>
+<blockquote>
+<p>[!返回子序列在序列中第一次出现的位置，否则返回end1]<br>		 search(beg1,end1,beg2,end2[,binaryPred])</p>
+</blockquote>
+<blockquote>
+<p>[!返回子序列中任意元素在序列中第一次出现的位置，否则返回end1]<br>		 find_first_of(beg1,end1,beg2,end2[,binaryPred])</p>
+</blockquote>
+<blockquote>
+<p>[!与search类型，但返回最后一次出现的位置]<br>		find_end(beg1,end1,beg2,end2[,binaryPred])</p>
+</blockquote>
+<ol start="3">
+<li>其他只读算法</li>
+</ol>
+<blockquote>
+<p>[!对序列中每个元素调用unaryOp，返回值被忽略]<br>		for_each(beg,end,unaryOp)</p>
+</blockquote>
+<blockquote>
+<p>[!比较两个序列的元素，返回一个迭代器pair，表示两个序列中第一个不匹配的元素，否则，返回std::pair&lt;end1,beg2+前一序列的长度&gt;]<br>		mismatch(beg1,end1,beg2[,binaryPred])</p>
+</blockquote>
+<blockquote>
+<p>[!判断两序列是否相等，如果均相等则返回true]<br>		equal(beg1,end1,beg2[,binaryPred])</p>
+</blockquote>
+<h3 id="二分搜索算法"><a href="#二分搜索算法" class="headerlink" title="二分搜索算法"></a>二分搜索算法</h3><p>#搜索算法</p>
+<blockquote>
+<p>[!INFO] 注意</p>
+<ol>
+<li>需要先对序列排序</li>
+<li>lower_bound返回指向第一个小于等于val的元素迭代器，否则返回end</li>
+<li>upper_bound返回指向第一个大于val的元素迭代器，否则返回end</li>
+<li>equal_range返回一个迭代器pair，first为lower_bound返回的迭代器，second为upper_bound返回的迭代器</li>
+<li>binary_search返回一个bool值，指出序列中是否存在等于val的元素</li>
+</ol>
+</blockquote>
+<ol>
+<li>lower_bound(beg,end,val[,comp])</li>
+<li>upper_bound(beg,end,val[,comp])</li>
+<li>equal_range(beg,end,val[,comp])</li>
+<li>binary_search(beg,end,val[,comp])</li>
+</ol>
+<h3 id="写容器算法"><a href="#写容器算法" class="headerlink" title="写容器算法"></a>写容器算法</h3><p>#只读不写</p>
+<blockquote>
+<p>[!INFO] 注意<br>Gen代表可调用对象</p>
+</blockquote>
+<ol>
+<li>fill(beg,end,val)</li>
+<li>fill_n(dest,cnt,val)</li>
+<li>generate(beg,end,Gen)</li>
+<li>generate(beg,cnt,Gen)</li>
+</ol>
+<p>#写算法<br>#输入迭代器<br>5. copy(beg,end,dest)<br>6. copy(beg,end,dest,unaryPred)<br>7. copy_n(beg,n,dest)</p>
+<blockquote>
+<p>[!INFO] 注意<br>move代表对序列中的每个元素调用std::move移动到迭代器dest开始的序列中</p>
+</blockquote>
+<ol start="8">
+<li>move(beg,end,dest)</li>
+</ol>
+<blockquote>
+<p>[!INFO] 注意<br>transform功能上与for_each一致，但是transform是写入到目的序列dest中，for_each则是写入原序列</p>
+</blockquote>
+<ol start="9">
+<li>transform(beg,end,dest,unaryOp)</li>
+<li>transform(beg,end,beg2,dest,binaryOp)</li>
+<li>replace_copy(beg,end,dest,old_val,new_val)</li>
+<li>replace_copy_if(beg,end,dest,unaryPred,new_val)</li>
+<li>merge(beg1,end1,beg2,end2,dest[,comp])</li>
+</ol>
+<p>#前向迭代器<br>6. iter_swap(iter1,iter2)<br>7. swap_range(beg1,end1,beg2)<br>8. replace(beg,end,old_val,new_val)<br>9. replace_if(beg,end,unaryPred,new_val)<br>#双向迭代器</p>
+<blockquote>
+<p>[!INFO] 注意<br>针对下列算法，dest代表目的序列的尾后迭代器</p>
+</blockquote>
+<ol start="10">
+<li>copy_backward(beg,end,dest)</li>
+<li>move_backward(beg,end,dest)</li>
+<li>inplace_merge(beg,mid,end[,comp])</li>
+</ol>
+<h3 id="划分与排序算法"><a href="#划分与排序算法" class="headerlink" title="划分与排序算法"></a>划分与排序算法</h3><p>#划分算法</p>
+<ol>
+<li>is_partitioned(beg,end,unaryPred)</li>
+<li>partition_copy(beg,end,dest1,dest2,unaryPred)</li>
+<li>partition_point(beg,end,unaryPred)</li>
+<li>stable_partition(beg,end,unaryPred)</li>
+<li>partition(beg,end,unaryPred)</li>
+</ol>
+<p>#排序算法<br>6. sort(beg,end[,comp])<br>7. stabel_sort(beg,end[,comp])<br>8. is_sorted(beg,end[,comp])<br>9. is_sorted_until(beg,end[,comp])<br>10. partial_sort(beg,mid,end[,comp])<br>11. partial_sort_copy(beg,end,destBeg,destEnd[,comp])<br>12. nth_element(beg,nth,end[,comp])</p>
+<h3 id="重排算法"><a href="#重排算法" class="headerlink" title="重排算法"></a>重排算法</h3><p>#重排算法</p>
+<ol>
+<li>remove</li>
+<li>remove_if</li>
+<li>remove_copy</li>
+<li>remove_copy_if</li>
+<li>unique</li>
+<li>unique_copy</li>
+<li>unique_copy_if</li>
+<li>rotate(_copy)</li>
+<li>reverse(_copy)</li>
+<li>random_shuffle</li>
+<li>shuffle</li>
+</ol>
+<hr>
+<h2 id="numeric"><a href="#numeric" class="headerlink" title="numeric"></a>numeric</h2><p>#numeric</p>
+<ol>
+<li>数值库的一部分，定义了常见的数值算法</li>
+<li>下列常见算法：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>accumulate</td>
+<td>对一个范围的元素进行求和或折叠</td>
+</tr>
+<tr>
+<td>reduce</td>
+<td>类似于 std::accumulate，但顺序是乱序的</td>
+</tr>
+<tr>
+<td>gcd</td>
+<td>计算两个整数的最大公约数</td>
+</tr>
+<tr>
+<td>lcm</td>
+<td>计算两个整数的最小公倍数</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="string"><a href="#string" class="headerlink" title="string"></a>string</h2><p>#string</p>
+<ol>
+<li>该头文件中包含以下类及其函数：<br>![[Pasted image 20260212162715.png]]<br>![[Pasted image 20260212162719.png]]</li>
+<li>char_traits 类是一个特性类模板，它为给定字符类型<strong>抽象了基本的字符和字符串操作</strong>，定义的运算集合使得通用算法几乎总能通过它实现，通过提供定制的 char_traits 类，几乎可以使用任何可能的字符或字符串类型来使用此类算法</li>
+<li>CharTraits中定义了一系列静态成员函数：<ol>
+<li>assign </li>
+<li>eq,lt</li>
+<li>move</li>
+<li>copy</li>
+<li>compare</li>
+<li>length</li>
+<li>find</li>
+<li>to_char_type</li>
+<li>to_int_type</li>
+<li>eq_int_type</li>
+<li>eof</li>
+<li>not_eof</li>
+</ol>
+</li>
+<li>basic_string类声明如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">template&lt;</span><br><span class="line">    class CharT,</span><br><span class="line">    class Traits = std::char_traits&lt;CharT&gt;,</span><br><span class="line">    class Allocator = std::allocator&lt;CharT&gt;</span><br><span class="line">&gt; class basic_string</span><br><span class="line">&#123;</span><br><span class="line">method:</span><br><span class="line">	find</span><br><span class="line">	find_first(_not)_of</span><br><span class="line">	find_last(_not)_of</span><br><span class="line">	starts_with</span><br><span class="line">	ends_with</span><br><span class="line">	contains</span><br><span class="line">	substr</span><br><span class="line">	c_str</span><br><span class="line">	...</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E5%B8%B8%E8%A7%81%E7%B1%BB/" class="tag-item">
+                    常见类
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/">https://narciostyx.github.io/2026/01/18/常用类以及函数/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++多线程编程</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++正则表达式</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

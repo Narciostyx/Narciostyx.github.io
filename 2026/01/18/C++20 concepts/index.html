@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++20 concepts</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++20 concepts</h1>
+    </section>
+    <section class="article">
+        <p>C++20<concept>以及概念，requires关键字</p>
+<span id="more"></span>
+
+<p>#concepts</p>
+<ul>
+<li>Concepts即对模板参数的类型约束，可以理解成SFINAE的语法糖，如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//SFINAE</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">std::enable_if_t&lt;std::is_arithmetic_v&lt;T&gt;,T&gt; add(T a,T b)&#123;return a+b;&#125;</span><br><span class="line"></span><br><span class="line">//C++20 concepts</span><br><span class="line">//requires语句</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">requires std::is_arithmetic_v&lt;T&gt;</span><br><span class="line">T add(T a,T b)&#123;return a+b;&#125;</span><br><span class="line"></span><br><span class="line">//更简洁</span><br><span class="line">template&lt;std::is_arithmetic T&gt;</span><br><span class="line">T add(T a,T b)&#123;return a+b;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>concept定义，语法如下：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T&gt;</span><br><span class="line">concept ConceptName = expression;</span><br><span class="line"></span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">concept ConceptName = requires(...)&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>e.g.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T&gt;</span><br><span class="line">concept always_satisfied=true;</span><br><span class="line"></span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">concept integral=std::is_integral_v&lt;T&gt;;</span><br><span class="line"></span><br><span class="line">template&lt;always_satisfied T&gt;</span><br><span class="line">T mul(T a,T b)&#123;return a*b;&#125;</span><br><span class="line">以此类推</span><br><span class="line"></span><br><span class="line">template&lt;my_concept T&gt;</span><br><span class="line">void func(T t);</span><br><span class="line"></span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">requires my_concept&lt;T&gt;</span><br><span class="line">void func(T t);</span><br><span class="line"></span><br><span class="line">template&lt;typename T&gt;n</span><br><span class="line">void func(T t) requires my_concept&lt;T&gt;;</span><br><span class="line"></span><br><span class="line">//参数列表中使用</span><br><span class="line">void func(my_concept auto t);</span><br><span class="line"></span><br><span class="line">//模板参数列表使用</span><br><span class="line">template&lt;my_concept auto t&gt;</span><br><span class="line">void g();</span><br></pre></td></tr></table></figure>
+<p>lambda函数使用概念：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">auto f=[]&lt;my_concept T&gt;(T v)&#123;...&#125;</span><br><span class="line"></span><br><span class="line">auto f=[]&lt;typename T&gt; requires my_concept&lt;T&gt; (T v)&#123;...&#125;</span><br><span class="line">与上述保持一致，以此类推</span><br></pre></td></tr></table></figure>
+<ul>
+<li>concepts相较于传统SFINAE，其优势在于：<ul>
+<li>可读性更高，且错误信息更友好</li>
+<li>编译速度更快，重用性高</li>
+</ul>
+</li>
+<li>requires的几种形式</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">//简单约束</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">concept addable=requires(T a,T b)&#123;a+b;&#125;//即a+b合法</span><br><span class="line"></span><br><span class="line">//类型约束</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">concept classAttr=requires</span><br><span class="line">&#123;</span><br><span class="line">	typename T::value;//即T类型应有成员value</span><br><span class="line">	typename S&lt;T&gt;;//即T类型应有对与模板S的特化</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//复合约束，形似&#123;expr&#125; noexcept(optional)-&gt;type-constraint</span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">concept classAttr=requires(T x)</span><br><span class="line">&#123;</span><br><span class="line">	&#123;*x&#125;-&gt;typename T::inner;//即*T应该可以转换成T::innner</span><br><span class="line">	&#123;x+1&#125;-&gt;std::same_as&lt;int&gt;;//x+1应满足返回int类型，即x+1可以转换成int</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//嵌套约束，即requires内部嵌套requires</span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">concept Semiregular = DefaultConstructible&lt;T&gt;/*默认可构造*/ &amp;&amp; CopyConstructible&lt;T&gt; /*复制拷贝构造*/ &amp;&amp; Destructible&lt;T&gt;/*可销毁*/ &amp;&amp; CopyAssignable&lt;T&gt;/*?*/ &amp;&amp;</span><br><span class="line">requires(T a, size_t n) &#123;  </span><br><span class="line">    requires Same&lt;T*, decltype(&amp;a)&gt;;//满足Same&lt;T*,decltype(&amp;a)&gt;</span><br><span class="line">    &#123; a.~T() &#125; noexcept;//a.~T()合法且不会抛出异常</span><br><span class="line">    requires Same&lt;T*, decltype(new T)&gt;;//同上</span><br><span class="line">    requires Same&lt;T*, decltype(new T[n])&gt;;//同上</span><br><span class="line">    &#123; delete new T &#125;;  // compound</span><br><span class="line">    &#123; delete new T[n] &#125;; // compound</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>概念支持与&amp;&amp;，或||与原子约束<ul>
+<li>原子约束一定程度上可以理解成<strong>当前表达式的最小约束</strong>，如<code>template&lt;typename T&gt; concept C=sizeof(T)==4&amp;&amp;std::is_const_v&lt;T&gt;</code>，包含两个原子约束<code>sizeof(T)==4</code>与<code>std::is_const_v&lt;T&gt;</code></li>
+<li><code>template&lt;typename T&gt;concept D = C&lt;T&gt; &amp;&amp; (std::is_pointer_v&lt;T&gt; || std::is_reference_v&lt;T&gt;);</code>，规范化 D&lt;T&gt; 时，会先展开 C&lt;T&gt; 得到两个原子约束，再与后面的析取分支组合，最终得到三个原子约束</li>
+<li>原子约束本身是为了<strong>防止循环依赖</strong>与<strong>约束的部分排序</strong></li>
+<li>约束模板重载决议会选择<strong>更受约束的</strong></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;type_traits&gt;</span><br><span class="line"></span><br><span class="line">template&lt;typename T&gt; concept Int = std::is_integral_v&lt;T&gt;;</span><br><span class="line">template&lt;typename T&gt; concept SignedInt = Int&lt;T&gt; &amp;&amp; std::is_signed_v&lt;T&gt;;</span><br><span class="line"></span><br><span class="line">void f(Int auto) &#123;&#125;      // (1)</span><br><span class="line">void f(SignedInt auto) &#123;&#125; // (2)</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    f(42);   // 调用 (2)，因为 SignedInt 比 Int 更受约束</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/concepts/" class="tag-item">
+                    concepts
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/C++20%20concepts/">https://narciostyx.github.io/2026/01/18/C++20 concepts/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/ADL%E4%B8%8ECPO/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">ADL与CPO</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

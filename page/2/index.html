@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <section class="index-title">
+    <h2>H3ll0_h4h</h2>
+    <div class="description"></h3>
+</section>
+<header>
+    <nav>
+        
+        
+            
+            <a href="/archives/">archive</a>
+        
+            
+             | <a href="/tags/">tags</a>
+        
+            
+             | <a href="/categories/">categories</a>
+        
+            
+             | <a href="/about/">关于我</a>
+        
+    </nav>
+</header>
+<div class="head-img">
+    <img src="/imgs/beach.jpg">
+</div>
+<article class="index-article">
+    <div class="article-list">
+        
+            
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/makefile%E4%B8%8Ecmake/">
+                            C/C++ make与cmake
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<h1 id="makefile"><a href="#makefile" class="headerlink" title="makefile"></a>makefile</h1><ul>
+<li>linux使用命令make执行，根据当前工作目录的makefile文件</li>
+<li>makefile文件包含目标（可执行文件），依赖（文件或目标），命令</li>
+<li>makefile支持自查找依赖，如</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">main: main.o</span><br><span class="line">	g++ main.o -o main</span><br><span class="line">	![[pcap_analysis_report]]</span><br><span class="line">main.o: main.cpp</span><br><span class="line">	g++ main.cpp -c main.o</span><br><span class="line">	</span><br><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">	rm -f main</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注释以#开头</li>
+<li>e.g:</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">target: dependencies</span><br><span class="line">	command</span><br><span class="line">	</span><br><span class="line">main: main.cpp</span><br><span class="line">	g++ main.cpp -o main</span><br></pre></td></tr></table></figure>
+<pre><code>- command前必须以tab开头
+</code></pre>
+<ul>
+<li>makefile支持定义![[chat_export_20260609_225644]]变量，如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CC = g++</span><br><span class="line">CFLAGS = -Wall -g</span><br><span class="line"></span><br><span class="line">main: main.cpp</span><br><span class="line">	$(CC) $(CFLAGS) main.cpp -o main</span><br></pre></td></tr></table></figure>
+<pre><code>- makefile内置了一些变量，如：
+	- $@，表示目标文件
+	- $^，表示所有的依赖文件
+	- $&lt;，表示第一个依赖文件
+	- CC与CXX，代表gcc与g++
+- e.g.
+</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main: main.cpp</span><br><span class="line">	$(CC) $^ -o $@</span><br></pre></td></tr></table></figure>
+<ul>
+<li>伪目标，即phony targets，以.PHONY开头，代表没有依赖文件，属于makefile内的内容，而非当前目录下同命的文件，且仅有make调用才会执行：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">	rm -f main</span><br></pre></td></tr></table></figure>
+<p>只有当执行<code>make clean</code>时才会执行</p>
+<ul>
+<li>执行makefile的脚本时，如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">build:</span><br><span class="line">	echo &quot;xxx&quot;</span><br><span class="line">	g++ hello.cpp -o hello</span><br><span class="line">	echo &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+<p>命令会各自在一个shell内执行，除非使用;隔开，即<code>echo &quot;xxx&quot;;gcc hello.cpp -o hello;echo &quot;xxx&quot;</code>或者使用&amp;&amp;连接</p>
+<blockquote>
+<p>[!NOTE] Note<br>main.cpp<br>-&gt;<code>g++ -c</code><br>main.o<br>-&gt;<code>g++ -o</code><br>main</p>
+</blockquote>
+<h1 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h1><ul>
+<li>平台无关构建项目的构建系统，使用CMakeLists.txt，可以生成MakeFile，Sln工程项目</li>
+<li>语法<ol>
+<li><code>cmake_minimum_required(VERSION x.x) #最低版本要求</code></li>
+<li><code>project(name [language]) #项目信息与语言信息</code></li>
+<li><code>add_executable(Demo main.cc) #指定生成目标（将main.cc编译成名为Demo的可执行文件）</code><ol>
+<li>当同一目录下源文件很多时，可以使用<code>aux_source_directory(&lt;dir&gt; &lt;variable&gt;)</code>查找dir目录下的所有源文件并把名称保存到variable中，如<code>aux_source_directory(. DIR_SRCS)</code>，<code>add_executable(Demo ${DIR_SRCS})</code></li>
+</ol>
+</li>
+<li>当使用<code>add_subdirectory(&lt;paht&gt;)</code>时，该目录下的CMakeLists.txt与源代码也会被包含</li>
+<li><code>target_link_libraries(Demo MathFuncs) #添加链接库</code>，指明可执行文件需要一个名为MathFuncs的链接库</li>
+<li><code>add_library(Mathfuncs ${DIR_LIB_SRCS})</code>，生成静态链接库</li>
+<li><code>include_directories(&lt;dir&gt;)</code>，寻找dir目录下的头文件</li>
+<li><code>add_compile_options(&lt;string&gt;)</code>，增加编译器选项，如<code>add_compile_options(-std=c++20 -Wall -O2)</code></li>
+<li><code>set(&lt;variable&gt; &lt;value&gt;)</code>，设置variable的值value</li>
+<li><code>find_package(&lt;name&gt;)</code>，搜寻指定库，如<code>find_package(Boost 1.70 REQUIRED)</code>，指定查找路径<code>find_package(OpenCV REQUIRED PATHS /path/to/opencv)</code></li>
+</ol>
+</li>
+<li>cmake系统变量<ul>
+<li><strong>可使用set设置值</strong></li>
+</ul>
+<ol>
+<li>PROJECT_BINARY_DIR，即cmake命令执行的目录，如当在build目录下执行cmake，这个变量值为build</li>
+<li>LIBRARY_OUTPUT_PATH，指定库生成的目录</li>
+<li>EXECUTABLE_OUTPUT_PATH，指定可执行文件生成的目录</li>
+<li>CMAKE_SOURCE(BINARY)_DIR，顶层CMakeLists.txt所在的源目录（构建目录）</li>
+<li>CMAKE_BUILD_TYPE，构建类型，如“Debug”，“Release”等</li>
+<li>CMAKE_CXX_FLAGS，等同于add_compiler_options</li>
+<li>CMAKE_CXX_FLAGS_DEBUG(RELEASE)，指定Debug（Release）模式下的编译器标志</li>
+</ol>
+</li>
+</ul>
+<h2 id="自定义编译选项"><a href="#自定义编译选项" class="headerlink" title="自定义编译选项"></a>自定义编译选项</h2><ul>
+<li>前提：将MathFuncs库设置为一个可选库，即根据配置决定使用该库还是标准库<ul>
+<li>加入配置条件</li>
+<li>CMake配置文件中，使用<code>cmakedefine</code>，如<code>#cmakedefine USE_MYMATH</code></li>
+<li>在CMakeLists.txt中设置的变量，可以在config.h.in中以@variable_name@的方式使用：</li>
+</ul>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">--CMakeLists.txt</span><br><span class="line">set(Demo_VERSION_MAJOR 1)</span><br><span class="line">set(Demo_VERSION_MINOR 0)</span><br><span class="line"></span><br><span class="line">--config.h.in</span><br><span class="line">#define Demo_VERSION_MAJOR @Demo_VERSION_MAJOR@</span><br><span class="line">同理</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#加入配置头文件</span><br><span class="line">configure_file(</span><br><span class="line">	#输入的模板文件</span><br><span class="line">	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h.in&quot;</span><br><span class="line">	#输出的最终配置文件</span><br><span class="line">	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h&quot;</span><br><span class="line">)</span><br><span class="line">#添加选项，且默认值为ON</span><br><span class="line">option(USE_MYMATH &quot;Use self-defined library&quot; ON)</span><br><span class="line"></span><br><span class="line">if(USE_MYMATH)</span><br><span class="line">	include_directories(&quot;$&#123;PROJECT_SOURCE_DIR&#125;/math&quot;)</span><br><span class="line">	add_subdirectory(math)</span><br><span class="line">	set(EXTRA_LIBS $&#123;EXTRA_LIBS&#125; MathFuncs)</span><br><span class="line">endif(USE_MYMATH)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改源文件，增加宏定义</li>
+</ul>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifdef USE_MYMATH</span><br><span class="line">	#include &quot;math/MathFuncs&quot;</span><br><span class="line">#else</span><br><span class="line">	#include &lt;math.h&gt;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="安装与测试"><a href="#安装与测试" class="headerlink" title="安装与测试"></a>安装与测试</h2><ul>
+<li>安装规则</li>
+<li>TARGETS关键字指定<code>add_executable,add_library</code>创建的目标</li>
+<li>FILES关键字指定要安装的文件，并指定目录</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">install(TARGETS MathFuncs DESTINATION bin)</span><br><span class="line">install(FILES MathFuncs DESTINATION include)</span><br><span class="line"></span><br><span class="line">install(TARGETS Demo DESTINATION bin)</span><br><span class="line">insatll(FILES &quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot; DESTINATION include)</span><br></pre></td></tr></table></figure>
+<pre><code>- 执行后，MathFuncs.h与config.h会被复制到cmake工作目录的include目录下
+- 同理，MathFuncs.o会被复制到bin目录下
+</code></pre>
+<ul>
+<li>测试</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动测试</span><br><span class="line">enable_testing()</span><br><span class="line"></span><br><span class="line">#测试程序能否正常运行</span><br><span class="line">add_test(test_run Demo 5 2)</span><br><span class="line"></span><br><span class="line">add_test (test_usage Demo)</span><br><span class="line">set_tests_properties (test_usage PROPERTIES PASS_REGULAR_EXPRESSION &quot;Usage: .* base exponent&quot;)</span><br></pre></td></tr></table></figure>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/makefile%E4%B8%8Ecmake/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/poll.h/">
+                            poll函数
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <p>IO复用中的poll函数</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/poll.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/mysql.h/">
+                            C++ MYSQL编程
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ul>
+<li>包含MYSQL结构体以及相关函数</li>
+<li>MYSQL结构体，代表一个客户端到MYSQL服务器的连接</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">typedef struct MYSQL &#123;</span><br><span class="line">  NET net;//与MYSQL服务器通信的参数</span><br><span class="line">  unsigned char *connector_fd;//SSL通信的fd</span><br><span class="line">  char *host, *user, *passwd, *unix_socket, *server_version, *host_info;//连接服务器的信息</span><br><span class="line">  char *info, *db;</span><br><span class="line">  struct CHARSET_INFO *charset;</span><br><span class="line">  MYSQL_FIELD *fields;//查询的字段数据</span><br><span class="line">  struct MEM_ROOT *field_alloc;</span><br><span class="line">  uint64_t affected_rows;</span><br><span class="line">  uint64_t insert_id;      /* id if insert on table with NEXTNR */</span><br><span class="line">  uint64_t extra_info;     /* Not used */</span><br><span class="line">  unsigned long thread_id; /* Id for connection in server */</span><br><span class="line">  unsigned long packet_length;</span><br><span class="line">  unsigned int port;</span><br><span class="line">  unsigned long client_flag, server_capabilities;</span><br><span class="line">  unsigned int protocol_version;</span><br><span class="line">  unsigned int field_count;</span><br><span class="line">  unsigned int server_status;</span><br><span class="line">  unsigned int server_language;</span><br><span class="line">  unsigned int warning_count;</span><br><span class="line">  struct st_mysql_options options;</span><br><span class="line">  enum mysql_status status;</span><br><span class="line">  enum enum_resultset_metadata resultset_metadata;</span><br><span class="line">  bool free_me;   /* If free in mysql_close */</span><br><span class="line">  bool reconnect; /* set to 1 if automatic reconnect */</span><br><span class="line"></span><br><span class="line">  /* session-wide random string */</span><br><span class="line">  char scramble[SCRAMBLE_LENGTH + 1];</span><br><span class="line"></span><br><span class="line">  LIST *stmts;//指向语句列表的指针，包含与此连接所有已准备或已执行的语句</span><br><span class="line">  const struct MYSQL_METHODS *methods;</span><br><span class="line">  void *thd;</span><br><span class="line">  /*</span><br><span class="line">    Points to boolean flag in MYSQL_RES  or MYSQL_STMT. We set this flag</span><br><span class="line">    from mysql_stmt_close if close had to cancel result set of this object.</span><br><span class="line">  */</span><br><span class="line">  bool *unbuffered_fetch_owner;</span><br><span class="line">  void *extension;</span><br><span class="line">&#125; MYSQL;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>MYSQL_RES，代表MYSQL数据库查询结果的返回集合</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">typedef struct MYSQL_RES &#123;</span><br><span class="line">  uint64_t row_count;//表示结果集中的行数</span><br><span class="line">  MYSQL_FIELD *fields;//列信息</span><br><span class="line">  struct MYSQL_DATA *data;//实际数据</span><br><span class="line">  MYSQL_ROWS *data_cursor;//当前读取数据的行数</span><br><span class="line">  unsigned long *lengths; /* column lengths of current row */</span><br><span class="line">  MYSQL *handle;          /* for unbuffered reads */</span><br><span class="line">  const struct MYSQL_METHODS *methods;</span><br><span class="line">  MYSQL_ROW row;         /* If unbuffered read */</span><br><span class="line">  MYSQL_ROW current_row; /* buffer to current row */</span><br><span class="line">  struct MEM_ROOT *field_alloc;</span><br><span class="line">  unsigned int field_count, current_field;</span><br><span class="line">  bool eof; /* Used by mysql_fetch_row */</span><br><span class="line">  /* mysql_stmt_close() had to cancel this result */</span><br><span class="line">  bool unbuffered_fetch_cancelled;</span><br><span class="line">  enum enum_resultset_metadata metadata;</span><br><span class="line">  void *extension;</span><br><span class="line">&#125; MYSQL_RES;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><ul>
+<li><code>mysql_init(MYSQL*)</code>初始化一个MYSQL结构体，在后续操作中被用作与MySql服务器的连接句柄，<strong>如果传入的是NULL，则会分配一个新的MYSQL结构并返回其指针</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line">conn=mysql_init(NULL);</span><br><span class="line">//若要保证初始化正确，则需要再检查conn是否为NULL</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_real_connect(xxx)</code>用于建立与MySql服务器的实际连接，参数为：指向MYSQL结构体的指针，主机名，用户名，密码，数据库，端口，如果运行在本地并通过Unix套接字连接则为套接字的路径（若为TCP连接，则为NULL），客户端标志</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line">conn=mysql_init(NULL);</span><br><span class="line">if(conn==NULL)</span><br><span class="line">&#123;</span><br><span class="line">	perror(xxx);</span><br><span class="line">	return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//连接成功，则返回跟传入的MYSQL结构体指针，失败则返回NULL</span><br><span class="line">//mysql_error获取错误信息</span><br><span class="line">if(mysql_real_connect(conn,&quot;localhost&quot;,&quot;user&quot;,&quot;passwd&quot;,&quot;dbname&quot;,3306,NULL,0))</span><br><span class="line">&#123;</span><br><span class="line">	perror(xxx);</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">mysql_close(conn);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_close(MYSQL*)</code>关闭连接</li>
+<li><code>mysql_query(MYSQL*,const char*)</code>用于发送SQL查询，<strong>现被<code>mysql_real_query</code>或其他预处理语句函数取代</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">//查询成功返回0，失败则返回非零值</span><br><span class="line">if(mysql_query(conn,&quot;select * from table&quot;))</span><br><span class="line">&#123;</span><br><span class="line">	perror(xxx);</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">mysql_close(conn);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note<br>即使查询成功也应该检查<code>mysql_store_result</code>与<code>mysql_use_result</code>的返回值，<strong>因为这些函数可能会在尝试检索结果时遇到错误</strong></p>
+</blockquote>
+<blockquote>
+<p>[!NOTE] P.s.<br>执行<code>select show describe explain</code>必须使用<code>mysql_store_result或mysql_use_result</code>获取结果集</p>
+</blockquote>
+<ul>
+<li><code>mysql_real_query</code>比上面那个查询函数多了字符串长度的参数，因此传入字符串不一定要以<code>\0</code>结尾</li>
+<li><code>mysql_store_result</code>、<code>mysql_free_result</code>与<code>mysql_use_result</code></li>
+<li><code>mysql_fetch_row</code></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line">MYSQL_RES *res;</span><br><span class="line">MYSQL_ROW row;</span><br><span class="line"></span><br><span class="line">conn=mysql_init(NULL);</span><br><span class="line">if(conn==NULL)</span><br><span class="line">&#123;</span><br><span class="line">	//perror(xxx);</span><br><span class="line">	auto str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(mysql_query(conn,&quot;select * from mytable&quot;))</span><br><span class="line">&#123;</span><br><span class="line">	auto str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br><span class="line">//mysql_store_result会为结果集行分配内存，因此处理完毕应使用mysql_free_result</span><br><span class="line">//mysql_use_result则不用，其是从服务器逐行检索，但会增加通信开销</span><br><span class="line">res=mysql_store_result(conn);</span><br><span class="line">或</span><br><span class="line">res=mysql_use_result(conn);</span><br><span class="line">if(res==NULL)</span><br><span class="line">&#123;</span><br><span class="line">	auto str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br><span class="line">//逐行获取行，若无更多行检索则返回NULL</span><br><span class="line">while((row=mysql_fetch_row(res))!=NULL)</span><br><span class="line">&#123;...&#125;</span><br><span class="line"></span><br><span class="line">mysql_free_result(res);</span><br><span class="line">mysql_close(conn);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_fetch_lengths</code></li>
+<li><code>mysql_num_fields</code>，获取字段数，与<code>mysql_field_count</code>类似，但是后者传入MYSQL结构体指针</li>
+<li><code>mysql_num_rows</code>，获取总行数</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">auto num_rows=mysql_num_rows(res);</span><br><span class="line">std::cout&lt;&lt;&quot;The rows is &quot;&lt;&lt;num_rows&lt;&lt;std::endl;</span><br><span class="line"></span><br><span class="line">while((row=mysql_fetch_row(res))!=NULL)</span><br><span class="line">&#123;</span><br><span class="line">	length=mysql_fetch_lengths(res);</span><br><span class="line">	if(length)</span><br><span class="line">		for(int i=0,col=mysql_num_fields(res);i&lt;col;++i)</span><br><span class="line">			std::cout(std::format(&quot;Column &#123;&#125; length is &#123;&#125;.\n&quot;,i,length[i]));</span><br><span class="line">			</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_real_escape_string(MYSQL*,char*,const char*,unsigned long)</code>，用于转义特殊字符以防止SQL注入，char*是储存转义后字符串的缓冲区</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">char query[1024];</span><br><span class="line">char user_input[]=&quot;Hello&#x27;s world&quot;;</span><br><span class="line">char escape_input[2*sizeof(user_input)];</span><br><span class="line">unsigned long len;</span><br><span class="line"></span><br><span class="line">len=mysql_real_escape_string(conn,escape_input,user_input,sizeof(user_input)-1);</span><br><span class="line"></span><br><span class="line">if(len==-1)</span><br><span class="line">&#123;</span><br><span class="line">	std::string str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note</p>
+<ol>
+<li>初始化MYSQL结构体<code>mysql_init</code></li>
+<li>连接服务器<code>mysql_real_connect</code></li>
+<li>查询<code>mysql_query等</code></li>
+<li>返回数据检查，处理<code>mysql_store_result mysql_use_result</code></li>
+<li>清除结果集<code>mysql_free_result</code></li>
+<li>关闭连接<code>mysql_close</code></li>
+</ol>
+</blockquote>
+<ul>
+<li><code>mysql_send_query()</code>，发送查询，不等待结果</li>
+<li><code>mysql_next_result()</code>，获取下一个结果集（多语句）</li>
+<li>预处理语句</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">mysql_stmt_init：初始化预处理语句</span><br><span class="line">mysql_stmt_prepare：准备 SQL 语句</span><br><span class="line">mysql_stmt_execute：执行预处理语句</span><br><span class="line">mysql_stmt_bind_param：绑定输入参数</span><br><span class="line">mysql_stmt_bind_result：绑定输出参数</span><br><span class="line">mysql_stmt_fetch：获取结果行</span><br><span class="line">mysql_stmt_store_result：缓存结果集</span><br><span class="line">mysql_stmt_close：关闭预处理语句</span><br><span class="line"></span><br><span class="line">//实例</span><br><span class="line">MYSQL_STMT* stmt=mysql_stmt_init(mysql);</span><br><span class="line">//?为占位符</span><br><span class="line">const char* sql=&quot;insert into users(name,age) values(?,?)&quot;;</span><br><span class="line">mysql_stmt_prepare(stmt,sql,strlen(sql));</span><br><span class="line"></span><br><span class="line">MYSQL_BIND bind[2];</span><br><span class="line">memset(bind,0,sizeof(bind));</span><br><span class="line"></span><br><span class="line">char name[]=&quot;hi&quot;;</span><br><span class="line">bind[0].buffer_type=MYSQL_TYPE_STRING;</span><br><span class="line">bind[0].buffer=name;</span><br><span class="line">bind[0].buffer_length=strlen(name);</span><br><span class="line"></span><br><span class="line">//同理</span><br><span class="line">int age=30;</span><br><span class="line">bind[1].buffer_type = MYSQL_TYPE_LONG;</span><br><span class="line">bind[1].buffer = &amp;age;</span><br><span class="line"></span><br><span class="line">mysql_stmt_bind_param(stmt, bind);</span><br><span class="line"></span><br><span class="line">mysql_stmt_execute(stmt);</span><br><span class="line"></span><br><span class="line">//处理语句</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">mysql_stmt_close(stmt);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>事务控制</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">mysql_commit：提交事务</span><br><span class="line">mysql_rollback：回滚事务</span><br><span class="line">mysql_autocommit：设置自动提交模式</span><br><span class="line"></span><br><span class="line">//实例</span><br><span class="line">// 1. 关闭自动提交</span><br><span class="line">mysql_autocommit(mysql, false);</span><br><span class="line"></span><br><span class="line">// 2. 开始事务 (隐式开始)</span><br><span class="line">mysql_query(mysql, &quot;START TRANSACTION&quot;);</span><br><span class="line"></span><br><span class="line">// 3. 执行事务操作</span><br><span class="line">mysql_query(mysql, &quot;UPDATE account SET balance=balance-100 WHERE id=1&quot;);</span><br><span class="line">mysql_query(mysql, &quot;UPDATE account SET balance=balance+100 WHERE id=2&quot;);</span><br><span class="line"></span><br><span class="line">// 4. 提交/回滚</span><br><span class="line">if (/* 所有操作成功 */) &#123;</span><br><span class="line">    mysql_commit(mysql);  // 提交事务</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    mysql_rollback(mysql); // 回滚事务</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 5. 恢复自动提交</span><br><span class="line">mysql_autocommit(mysql, true);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/mysql.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/select.h/">
+                            select函数
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <p>IO复用中的select函数</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/select.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/pthread.h/">
+                            C多线程编程
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ol>
+<li>该库几乎所有函数均以pthread_前缀开始</li>
+<li>线程创建</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int pthread_create (pthread_t *__restrict __newthread,</span><br><span class="line">   const pthread_attr_t *__restrict __attr,</span><br><span class="line">   void *(*__start_routine) (void *),</span><br><span class="line">   void *__restrict __arg) __THROWNL __nonnull ((1, 3));</span><br></pre></td></tr></table></figure>
+<p>newthread是返回的线程ID，成功返回0，失败返回错误码<br>3. pthread_self返回当前线程的ID<br>4. 线程终止自己</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void pthread_exit (void *__retval) __attribute__ ((__noreturn__))</span><br></pre></td></tr></table></figure>
+<p>retval是线程返回值，不能指向一个局部变量<br>5. 线程终止其他线程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int pthread_cancel (pthread_t __th)</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li><code>int pthread_join (pthread_t __th, void **__thread_return)</code></li>
+<li><code>int pthread_detach (pthread_t __th) __THROW</code></li>
+<li>e.g.</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line"></span><br><span class="line">void *thread_func(void *arg)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Hello from thread %ld\n&quot;,pthread_self());</span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    pthread_t thread1, thread2;</span><br><span class="line">    pthread_create(&amp;thread1, NULL, thread_func, NULL);</span><br><span class="line">    pthread_create(&amp;thread2, NULL, thread_func, NULL);</span><br><span class="line">    pthread_join(thread1, NULL);</span><br><span class="line">    pthread_join(thread2, NULL);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="互斥量"><a href="#互斥量" class="headerlink" title="互斥量"></a>互斥量</h1><ol>
+<li>以pthread_mutex_为前缀</li>
+<li><code>int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict attr)</code></li>
+<li><code>int pthread_mutex_destroy(pthread_mutex_t *mutex)</code></li>
+<li></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int pthread_mutex_lock(pthread_mutex_t *mutex);</span><br><span class="line">int pthread_mutex_unlock(pthread_mutex_t *mutex);</span><br><span class="line">int pthread_mutex_trylock(pthread_mutex_t *mutex);</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>e.g.</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line"></span><br><span class="line">pthread_mutex_t mx;</span><br><span class="line">int i=10;</span><br><span class="line"></span><br><span class="line">void *thread_func(void *arg)</span><br><span class="line">&#123;</span><br><span class="line">    pthread_mutex_lock(&amp;mx);</span><br><span class="line">    i++;</span><br><span class="line">    printf(&quot;i = %d\n&quot;,i);</span><br><span class="line">    pthread_mutex_unlock(&amp;mx);</span><br><span class="line">    printf(&quot;Hello from thread %ld\n&quot;,pthread_self());</span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    pthread_t thread1, thread2;</span><br><span class="line">    pthread_mutex_init(&amp;mx, NULL);</span><br><span class="line">    pthread_create(&amp;thread1, NULL, thread_func, NULL);</span><br><span class="line">    pthread_create(&amp;thread2, NULL, thread_func, NULL);</span><br><span class="line">    pthread_join(thread1, NULL);</span><br><span class="line">    pthread_join(thread2, NULL);</span><br><span class="line">    pthread_mutex_destroy(&amp;mx);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h1><ol>
+<li>以前缀pthread_cond_</li>
+<li></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">int pthread_cond_init(pthread_cond_t *restrict cond, const pthread_condattr_t *restrict attr);</span><br><span class="line">int pthread_cond_destroy(pthread_cond_t *cond);</span><br><span class="line">int pthread_cond_wait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex);</span><br><span class="line">//唤醒状态多了一个等待时间，即时间一到也被唤醒（超时机制）</span><br><span class="line">int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime);</span><br><span class="line">//允许使用不同时钟</span><br><span class="line">int pthread_cond_clockwait(pthread_cond_t *cond, pthread_mutex_t *mutex, clockid_t clock_id, const struct timespec *abstime);</span><br><span class="line">int pthread_cond_signal(pthread_cond_t *cond);</span><br><span class="line">int pthread_cond_broadcast(pthread_cond_t *cond);   </span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>e.g.</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line"></span><br><span class="line">pthread_cond_t cond;</span><br><span class="line">pthread_mutex_t mx;</span><br><span class="line">unsigned char flag=0;</span><br><span class="line">// int i=10;</span><br><span class="line"></span><br><span class="line">void *thread_func(void *arg)</span><br><span class="line">&#123;</span><br><span class="line">    pthread_mutex_lock(&amp;mx);</span><br><span class="line">    flag=1;</span><br><span class="line">    // i++;</span><br><span class="line">    // printf(&quot;i = %d\n&quot;,i);</span><br><span class="line">    printf(&quot;Changed flag.\n&quot;);</span><br><span class="line">    pthread_cond_signal(&amp;cond);</span><br><span class="line">    pthread_mutex_unlock(&amp;mx);</span><br><span class="line">    // printf(&quot;Hello from thread %ld\n&quot;,pthread_self());</span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void *thread_gen(void *arg)</span><br><span class="line">&#123;</span><br><span class="line">    pthread_mutex_lock(&amp;mx);</span><br><span class="line">    while(!flag)</span><br><span class="line">        pthread_cond_wait(&amp;cond,&amp;mx);</span><br><span class="line">    printf(&quot;Flag is true.\n&quot;);</span><br><span class="line">    pthread_mutex_unlock(&amp;mx);</span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    pthread_t thread1, thread2;</span><br><span class="line">    pthread_create(&amp;thread1, NULL, thread_func, NULL);</span><br><span class="line">    pthread_create(&amp;thread2, NULL, thread_gen, NULL);</span><br><span class="line">    pthread_mutex_init(&amp;mx, NULL);</span><br><span class="line">    pthread_cond_init(&amp;cond, NULL);</span><br><span class="line">    pthread_join(thread1, NULL);</span><br><span class="line">    pthread_join(thread2, NULL);</span><br><span class="line">    pthread_cond_destroy(&amp;cond);</span><br><span class="line">    pthread_mutex_destroy(&amp;mx);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>#悲观锁</p>
+<ul>
+<li>每次访问数据时，总是认为数据可能会被其他线程修改，因此在访问数据前回先加锁，适用于线程多，写操作多</li>
+</ul>
+<p>#乐观锁</p>
+<ul>
+<li>每次访问数据时，认为数据不会被其他线程修改，因此不加锁，适用于线程少时或多读时</li>
+</ul>
+<p>#自旋锁</p>
+<ul>
+<li>忙等待锁，即线程在等待时会一直检查锁的状态，适用于线程少且持锁时间短</li>
+<li>以前缀ptread_spin_，与锁操作一致</li>
+</ul>
+<p>#公平锁与非公平锁</p>
+<ul>
+<li>前者按照请求锁的顺序来获取锁，后者则不保证</li>
+</ul>
+<p>#读写锁</p>
+<ul>
+<li>读共享，写独占：多个线程允许同时持有读锁，但写锁必须独占，且二者互斥</li>
+<li>读者优先、写者优先或公平性<ol>
+<li><strong>读者优先</strong>：当有读者正在读取数据时，写者必须等待，直到所有读者都完成读取操作。</li>
+<li><strong>写者优先</strong>：当有写者正在写入数据时，其他读者和写者必须等待，直到写者完成写入操作。</li>
+<li><strong>公平性</strong>：确保读者和写者公平地获取锁，避免某些线程长期得不到锁的情况。</li>
+</ol>
+</li>
+<li>以前缀pthread_rwlock_为前缀</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr);</span><br><span class="line">int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);</span><br><span class="line">int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);</span><br><span class="line">int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);</span><br><span class="line">int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>读写锁可升级降级</li>
+</ul>
+<p>#屏障</p>
+<ul>
+<li>作用为让一组线程都到达某个集合点，然后一起继续，以pthread_barrier_为前缀，如类型t，init，destroy，wait，destroy</li>
+<li>只有当所有线程都调用了pthread_barrier_wait，屏障才会释放线程进入下一操作</li>
+<li>e.g.</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pthread_barrier_t bar;</span><br><span class="line"></span><br><span class="line">void* func(void *arg)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout&lt;&lt;&quot;xxx...&quot;&lt;&lt;std::endl;</span><br><span class="line">	pthread_barrier_wait(&amp;bar);</span><br><span class="line">	std::cout&lt;&lt;&quot;Pass the barrier!&quot;&lt;&lt;std::endl;</span><br><span class="line">	return NULL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/pthread.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/signal.h/">
+                            signal函数及其信号集
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ol>
+<li>定义类型sig_atomic_t与sigset_t，前者为原子实体，后者表示信号集</li>
+<li>信号类型：<br>![[Pasted image 20260305220422.png]]<br>![[Pasted image 20260305220453.png]]</li>
+<li>常用的库函数：</li>
+</ol>
+<ul>
+<li>void (*signal(int sig, void (*func)(int)))(int)，设置信号处理程序，该函数接受一个信号sig，以及void (*)(int)信号函数指针func，该函数本身返回一个信号函数指针</li>
+<li>int raise(int sig)，向当前进程发送信号</li>
+<li>int kill(pid_t pid, int sig)，向指定进程发送信号</li>
+<li>int pause(void)，挂起进程直到捕捉到信号</li>
+</ul>
+<blockquote>
+<p>[!NOTE] Note<br>一般来讲，Linux下对大多数信号的默认处理程序是<code>terminate()</code></p>
+</blockquote>
+
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/signal.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/time.h/">
+                            time头文件
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <p>&lt;time.h&gt;中常见的结构体以及函数</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/time.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/socket.h/">
+                            socket编程
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <span id="more"></span>
+
+<ol>
+<li>包含linux下网络编程的函数，除send与recv其他函数成功均返回0，失败返回-1（socket成功返回监听套接字fd，accept同理返回已连接套接字fd）<ul>
+<li><code>int socket (int __domain, int __type, int __protocol) __THROW</code></li>
+<li><code>int bind (int __fd, __CONST_SOCKADDR_ARG __addr, socklen_t __len) __THROW</code></li>
+<li><code>int connect (int __fd, __CONST_SOCKADDR_ARG __addr, socklen_t __len)</code></li>
+<li><code>ssize_t send (int __fd, const void *__buf, size_t __n, int __flags)</code></li>
+<li><code>ssize_t recv (int __fd, void *__buf, size_t __n, int __flags)</code></li>
+<li><code>int listen (int __fd, int __n) __THROW</code></li>
+<li><code>int accept (int __fd, __SOCKADDR_ARG __addr,socklen_t *__restrict __addr_len)</code></li>
+<li><code>int shutdown (int __fd, int __how) __THROW</code></li>
+<li><code>int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen)</code></li>
+<li><code>read</code>默认返回收到字节数，<strong>若为FIN，则返回零，若为RST，则为-1（阻塞也为-1，与RST的区别是errno设置值不一样）</strong></li>
+</ul>
+</li>
+<li><code>int socket(AF_INET\INET6\AF_UNIX, SOCK_STREAM(DGRAM\RAW)</code>, 默认为0（自动根据第二个参数选择协议）)<ul>
+<li>针对<code>SOCK_RAW</code>（直接访问网络层数据包，不经过TCP或UDP处理）来讲，其第三个参数允许使用以下协议值：  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">IPPROTO_ICMP(6)</span><br><span class="line">IPPROTO_TCP</span><br><span class="line">xxx_UDP</span><br><span class="line">xxx_IP(V6)（捕获所有IP数据包）</span><br><span class="line">0（通常与前者类似，但取决于具体的操作系统实现）</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><code>bind</code>函数的addr参数一般与netinet&#x2F;in.h的sockaddr_in结构体搭配，即sockaddr与sockaddr_in相互转换</li>
+<li><code>listen</code>第二个参数代表请<strong>求队列的最大长度</strong></li>
+<li><code>accept</code><strong>默认为阻塞到有连接请求到达</strong>，非阻塞下立即返回-1（若需要非阻塞，则需要在创建套接字时使用<code>SOCK_NONBLOCK</code>，即<code>socket(AF_INET | SOCK_NONBLOCK,SOCK_STREAM,)</code>）</li>
+<li><code>shutdown</code>（立即发送FIN，执行TCP四次分手）的第二个参数指定关闭那方的数据传输：<ul>
+<li><code>shut_rd</code>，关闭连接读（接受端），不再<strong>接受数据</strong></li>
+<li><code>shut_wr</code>，关闭连接写（发送端），**发送缓冲区的所有数据</li>
+<li><code>shut_rdwr</code>，读写都关闭，<strong>先关读，再关写</strong></li>
+</ul>
+</li>
+<li><code>setsockopt</code>的第二个参数针对协议层：<code>SOL_SOCKET,IPPROTO_TCP,IPPROTO_UDP</code>，第三个参数则为对应协议层的选项，<strong>第四个参数为设置选项的值，其大小由后一个参数决定</strong></li>
+<li>除了<code>send</code>与<code>recv</code>两个发送接收函数，还有针对TCP的<code>write</code>与<code>read</code>，针对UDP的<code>sendto</code>与<code>recvfrom</code></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ssize_t recvfrom (int __fd, void *__restrict __buf, size_t __n,</span><br><span class="line">			 int __flags, __SOCKADDR_ARG __addr,</span><br><span class="line">			 socklen_t *__restrict __addr_len);</span><br><span class="line">ssize_t sendto (int __fd, const void *__buf, size_t __n,</span><br><span class="line">		       int __flags, __CONST_SOCKADDR_ARG __addr,</span><br><span class="line">		       socklen_t __addr_len);</span><br></pre></td></tr></table></figure>
+<ol start="8">
+<li><code>send</code>与<code>recv</code>本身封装了底层的<code>write与read</code>，其针对套接字IO，因此存在Flags标志，允许使用一些特定行为</li>
+<li>处理主机与网络字节序转换的函数</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">uint32_t htonl(uint32_t hostlong)</span><br><span class="line">uint16_t htons(uint16_t hostshort)</span><br><span class="line">uint16_t ntohs(uint16_t netshort)</span><br><span class="line">uint32_t ntohl(uint32_t netlong)</span><br></pre></td></tr></table></figure>
+<ol start="8">
+<li>处理网络二进制与点分十进制转换的函数</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">in_addr_t inet_addr(const char *cp)</span><br><span class="line">int inet_aton(const char *cp, struct in_addr *inp)</span><br><span class="line">char *inet_ntoa(struct in_addr in)</span><br><span class="line">const char *inet_ntop(int af, const void *src, char *dst, socklen_t size)</span><br><span class="line">int inet_pton(int af, const char *src, void *dst)</span><br></pre></td></tr></table></figure>
+<ol start="9">
+<li><code>sockaddr_in</code></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">typedef uint32_t in_addr_t;</span><br><span class="line">struct in_addr</span><br><span class="line">  &#123;</span><br><span class="line">    in_addr_t s_addr;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">struct sockaddr_in</span><br><span class="line">  &#123;</span><br><span class="line">    __SOCKADDR_COMMON (sin_); //等同于sa_family_t sin_family</span><br><span class="line">    in_port_t sin_port;			/* Port number.  */</span><br><span class="line">    struct in_addr sin_addr;		/* Internet address.  */</span><br><span class="line"></span><br><span class="line">    /* Pad to size of `struct sockaddr&#x27;.  */</span><br><span class="line">    unsigned char sin_zero[sizeof (struct sockaddr)</span><br><span class="line">			   - __SOCKADDR_COMMON_SIZE</span><br><span class="line">			   - sizeof (in_port_t)</span><br><span class="line">			   - sizeof (struct in_addr)];//通常这个值为8</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  struct sockaddr</span><br><span class="line">  &#123;</span><br><span class="line">    __SOCKADDR_COMMON (sa_);	/* Common data: address family and length.  */ //等同于sa_family_t sa_family</span><br><span class="line">    char sa_data[14];		/* Address data.  */</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+<h1 id="TCP套接字迭代服务器编程流程"><a href="#TCP套接字迭代服务器编程流程" class="headerlink" title="TCP套接字迭代服务器编程流程"></a>TCP套接字迭代服务器编程流程</h1><p>这种情况下，服务器一次只需要处理一个客户端请求，因此基本流程为:</p>
+<p>1.   创建socket()，即<code>int fd=socket(AF_INET,SOCK_STREAM,0)</code>生成TCP套接字</p>
+<p>2.   使用bind()绑定本机特定端口，即<code>bind(fd,(struct sockaddr*)&amp;server_addr,sizeof(server_addr));</code></p>
+<p>3.   使用listen()使套接字文件描述符进入监听状态，即listen(fd,1)，1表示同时最大监听数</p>
+<p>4.   使用死循环，在该循环内使用accept()函数接受连接<code>accept(fd, (struct sockaddr*)&amp;address, (socklen_t*)&amp;addrlen))</code></p>
+<p>5.   处理请求</p>
+<p>6.   关闭与当前服务器连接，继续循环使用accept获取下一个等待队列客户端</p>
+<h1 id="UDP套接字服务器编程流程"><a href="#UDP套接字服务器编程流程" class="headerlink" title="UDP套接字服务器编程流程"></a>UDP套接字服务器编程流程</h1><p>与TCP不一样的地方是不需要使用监听端口，因为UDP是无连接的：</p>
+<p>1.   创建socket()，即<code>int fd=socket(AF_INET,SOCK_DGRAM,0)</code></p>
+<p>2.   使用bind()绑定端口</p>
+<p>3.   使用死循环，在该循环内使用recvfrom()，即<code>recvfrom(fd,buffer,BUFFER_SIZE,0,(struct sockaddr*)&amp;client_addr,&amp;client_addr_len)</code>，将客户端的数据写入缓冲区buffer，同时将客户端地址信息写入sockaddr结构体</p>
+<p>4.   处理请求</p>
+<p>5.   不需要关闭连接，循环直接回到recvfrom()等待下一个请求</p>
+<h1 id="TCP多进程并发服务器编程流程"><a href="#TCP多进程并发服务器编程流程" class="headerlink" title="TCP多进程并发服务器编程流程"></a>TCP多进程并发服务器编程流程</h1><p>使用多进程处理多个请求，即每接受一个连接请求就使用fork()函数取创建子进程处理，其他与TCP套接字迭代服务器一致：</p>
+<p>1.   创建socket()</p>
+<p>2.   使用bind()绑定端口</p>
+<p>3.   使用listen()监听端口</p>
+<p>4.   使用死循环，该循环内使用accept()接受连接</p>
+<p>5.   当父进程接收到连接后，使用fork()函数创建子进程，即：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">**_接受到新连接_**</span><br><span class="line"></span><br><span class="line">**_int pid=fork();_**</span><br><span class="line"></span><br><span class="line">**_if(pid&lt;0)_**</span><br><span class="line"></span><br><span class="line">**_&#123;_****_报错&#125;_**</span><br><span class="line"></span><br><span class="line">**_//_****_子进程，fork返回0_**</span><br><span class="line"></span><br><span class="line">**_else if(pid==0)_**</span><br><span class="line"></span><br><span class="line">**_&#123;_****_处理逻辑，最后关闭客户端套接字&#125;_**</span><br><span class="line"></span><br><span class="line">**_//_****_父进程，fork返回子进程pid_**</span><br><span class="line"></span><br><span class="line">**_else if_**</span><br><span class="line"></span><br><span class="line">**_&#123;_****_关闭客户端套接字，使用wait()等待子进程&#125;_**</span><br><span class="line"></span><br><span class="line">**_继续从4开始循环_**</span><br></pre></td></tr></table></figure>
+<h1 id="TCP多线程并发服务器编程流程"><a href="#TCP多线程并发服务器编程流程" class="headerlink" title="TCP多线程并发服务器编程流程"></a>TCP多线程并发服务器编程流程</h1><p>与TCP多进程并发服务器类似，但使用线程代替进程：</p>
+<p>1.   创建socket()</p>
+<p>2.   使用bind()绑定端口</p>
+<p>3.   使用listen()监听端口</p>
+<p>4.   使用死循环，该循环内使用accept()接受连接</p>
+<p>5.   当主线程接受到新连接后，使用pthread_create()创建子线程，即：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">**_pthread_t thread;_**</span><br><span class="line"></span><br><span class="line">**_//_****_传递客户端套接字，因为下次监听后该值会被覆盖_**</span><br><span class="line"></span><br><span class="line">**_int* fd = new int(client_fd);_**</span><br><span class="line"></span><br><span class="line">**_//threadFunc_****_即void(*)(void*)，负责处理逻辑_**</span><br><span class="line"></span><br><span class="line">**_if(pthread_create(&amp;thread,NULL,threadFunc,static_cast&lt;void*&gt;(fd))!=0)_**</span><br><span class="line"></span><br><span class="line">**_&#123;_****_报错&#125;_**</span><br><span class="line"></span><br><span class="line">**_//_****_使子线程与主线程分离，不阻塞主线程，其结束后自动释放资源_**</span><br><span class="line"></span><br><span class="line">**_pthread_detach(thread);_**</span><br><span class="line"></span><br><span class="line">**_继续从4开始循环_**</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct hostent *gethostbyname(const char *name);</span><br><span class="line">struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type);</span><br><span class="line">int getaddrinfo(const char *node, const char *service,</span><br><span class="line">                const struct addrinfo *hints, struct addrinfo **res);</span><br><span class="line">int getnameinfo(const struct sockaddr *sa, socklen_t salen,</span><br><span class="line">                char *host, socklen_t hostlen,</span><br><span class="line">                char *serv, socklen_t servlen, int flags);</span><br></pre></td></tr></table></figure>
+<p>![[Pasted image 20260429214934.png]]</p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/socket.h/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/">
+                            C++命名修饰(C++ name mangling)
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <p>简要总结了MSVC与Itanium C++ ABI的修饰规则</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/">阅读更多</a>
+                </button>
+            </div>
+        
+            
+            
+                <hr>
+            
+            <div class="article-item"> 
+                <div class="article-item-title">
+                    <h1>
+                        <a href="/2026/01/18/stdarg.h/">
+                            VA_ARG(C 可变参数列表)
+                        </a>
+                    </h1>
+                    <div class="info">
+                        
+                        
+                            <span>
+                                2026/01/18
+                            </span>
+                        
+                    </div>
+                </div>
+                <div class="article-item-excerpt article">
+                    <div>
+                        <p>C语言中实现可变参数列表的方法</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="read-more">
+                    <a href="/2026/01/18/stdarg.h/">阅读更多</a>
+                </button>
+            </div>
+        
+    </div>
+
+    <div class="pagination">
+    <div class="paginator">
+        <a class="extend prev" rel="prev" href="/"><i class="fa fa-caret-left" aria-hidden="true"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-caret-right" aria-hidden="true"></i></a>
+    </div>
+    <div class="paginator-info">
+        <span class="gray">25 articles in total</span>
+    </div>
+</div>
+</article>
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

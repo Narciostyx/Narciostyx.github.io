@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++ MYSQL编程</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div>
+                    <a href="/">
+                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%BD%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">函数</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++ MYSQL编程</h1>
+    </section>
+    <section class="article">
+        <span id="more"></span>
+
+<ul>
+<li>包含MYSQL结构体以及相关函数</li>
+<li>MYSQL结构体，代表一个客户端到MYSQL服务器的连接</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">typedef struct MYSQL &#123;</span><br><span class="line">  NET net;//与MYSQL服务器通信的参数</span><br><span class="line">  unsigned char *connector_fd;//SSL通信的fd</span><br><span class="line">  char *host, *user, *passwd, *unix_socket, *server_version, *host_info;//连接服务器的信息</span><br><span class="line">  char *info, *db;</span><br><span class="line">  struct CHARSET_INFO *charset;</span><br><span class="line">  MYSQL_FIELD *fields;//查询的字段数据</span><br><span class="line">  struct MEM_ROOT *field_alloc;</span><br><span class="line">  uint64_t affected_rows;</span><br><span class="line">  uint64_t insert_id;      /* id if insert on table with NEXTNR */</span><br><span class="line">  uint64_t extra_info;     /* Not used */</span><br><span class="line">  unsigned long thread_id; /* Id for connection in server */</span><br><span class="line">  unsigned long packet_length;</span><br><span class="line">  unsigned int port;</span><br><span class="line">  unsigned long client_flag, server_capabilities;</span><br><span class="line">  unsigned int protocol_version;</span><br><span class="line">  unsigned int field_count;</span><br><span class="line">  unsigned int server_status;</span><br><span class="line">  unsigned int server_language;</span><br><span class="line">  unsigned int warning_count;</span><br><span class="line">  struct st_mysql_options options;</span><br><span class="line">  enum mysql_status status;</span><br><span class="line">  enum enum_resultset_metadata resultset_metadata;</span><br><span class="line">  bool free_me;   /* If free in mysql_close */</span><br><span class="line">  bool reconnect; /* set to 1 if automatic reconnect */</span><br><span class="line"></span><br><span class="line">  /* session-wide random string */</span><br><span class="line">  char scramble[SCRAMBLE_LENGTH + 1];</span><br><span class="line"></span><br><span class="line">  LIST *stmts;//指向语句列表的指针，包含与此连接所有已准备或已执行的语句</span><br><span class="line">  const struct MYSQL_METHODS *methods;</span><br><span class="line">  void *thd;</span><br><span class="line">  /*</span><br><span class="line">    Points to boolean flag in MYSQL_RES  or MYSQL_STMT. We set this flag</span><br><span class="line">    from mysql_stmt_close if close had to cancel result set of this object.</span><br><span class="line">  */</span><br><span class="line">  bool *unbuffered_fetch_owner;</span><br><span class="line">  void *extension;</span><br><span class="line">&#125; MYSQL;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>MYSQL_RES，代表MYSQL数据库查询结果的返回集合</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">typedef struct MYSQL_RES &#123;</span><br><span class="line">  uint64_t row_count;//表示结果集中的行数</span><br><span class="line">  MYSQL_FIELD *fields;//列信息</span><br><span class="line">  struct MYSQL_DATA *data;//实际数据</span><br><span class="line">  MYSQL_ROWS *data_cursor;//当前读取数据的行数</span><br><span class="line">  unsigned long *lengths; /* column lengths of current row */</span><br><span class="line">  MYSQL *handle;          /* for unbuffered reads */</span><br><span class="line">  const struct MYSQL_METHODS *methods;</span><br><span class="line">  MYSQL_ROW row;         /* If unbuffered read */</span><br><span class="line">  MYSQL_ROW current_row; /* buffer to current row */</span><br><span class="line">  struct MEM_ROOT *field_alloc;</span><br><span class="line">  unsigned int field_count, current_field;</span><br><span class="line">  bool eof; /* Used by mysql_fetch_row */</span><br><span class="line">  /* mysql_stmt_close() had to cancel this result */</span><br><span class="line">  bool unbuffered_fetch_cancelled;</span><br><span class="line">  enum enum_resultset_metadata metadata;</span><br><span class="line">  void *extension;</span><br><span class="line">&#125; MYSQL_RES;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><ul>
+<li><code>mysql_init(MYSQL*)</code>初始化一个MYSQL结构体，在后续操作中被用作与MySql服务器的连接句柄，<strong>如果传入的是NULL，则会分配一个新的MYSQL结构并返回其指针</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line">conn=mysql_init(NULL);</span><br><span class="line">//若要保证初始化正确，则需要再检查conn是否为NULL</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_real_connect(xxx)</code>用于建立与MySql服务器的实际连接，参数为：指向MYSQL结构体的指针，主机名，用户名，密码，数据库，端口，如果运行在本地并通过Unix套接字连接则为套接字的路径（若为TCP连接，则为NULL），客户端标志</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line">conn=mysql_init(NULL);</span><br><span class="line">if(conn==NULL)</span><br><span class="line">&#123;</span><br><span class="line">	perror(xxx);</span><br><span class="line">	return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//连接成功，则返回跟传入的MYSQL结构体指针，失败则返回NULL</span><br><span class="line">//mysql_error获取错误信息</span><br><span class="line">if(mysql_real_connect(conn,&quot;localhost&quot;,&quot;user&quot;,&quot;passwd&quot;,&quot;dbname&quot;,3306,NULL,0))</span><br><span class="line">&#123;</span><br><span class="line">	perror(xxx);</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">mysql_close(conn);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_close(MYSQL*)</code>关闭连接</li>
+<li><code>mysql_query(MYSQL*,const char*)</code>用于发送SQL查询，<strong>现被<code>mysql_real_query</code>或其他预处理语句函数取代</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">//查询成功返回0，失败则返回非零值</span><br><span class="line">if(mysql_query(conn,&quot;select * from table&quot;))</span><br><span class="line">&#123;</span><br><span class="line">	perror(xxx);</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">mysql_close(conn);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note<br>即使查询成功也应该检查<code>mysql_store_result</code>与<code>mysql_use_result</code>的返回值，<strong>因为这些函数可能会在尝试检索结果时遇到错误</strong></p>
+</blockquote>
+<blockquote>
+<p>[!NOTE] P.s.<br>执行<code>select show describe explain</code>必须使用<code>mysql_store_result或mysql_use_result</code>获取结果集</p>
+</blockquote>
+<ul>
+<li><code>mysql_real_query</code>比上面那个查询函数多了字符串长度的参数，因此传入字符串不一定要以<code>\0</code>结尾</li>
+<li><code>mysql_store_result</code>、<code>mysql_free_result</code>与<code>mysql_use_result</code></li>
+<li><code>mysql_fetch_row</code></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line">MYSQL_RES *res;</span><br><span class="line">MYSQL_ROW row;</span><br><span class="line"></span><br><span class="line">conn=mysql_init(NULL);</span><br><span class="line">if(conn==NULL)</span><br><span class="line">&#123;</span><br><span class="line">	//perror(xxx);</span><br><span class="line">	auto str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(mysql_query(conn,&quot;select * from mytable&quot;))</span><br><span class="line">&#123;</span><br><span class="line">	auto str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br><span class="line">//mysql_store_result会为结果集行分配内存，因此处理完毕应使用mysql_free_result</span><br><span class="line">//mysql_use_result则不用，其是从服务器逐行检索，但会增加通信开销</span><br><span class="line">res=mysql_store_result(conn);</span><br><span class="line">或</span><br><span class="line">res=mysql_use_result(conn);</span><br><span class="line">if(res==NULL)</span><br><span class="line">&#123;</span><br><span class="line">	auto str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br><span class="line">//逐行获取行，若无更多行检索则返回NULL</span><br><span class="line">while((row=mysql_fetch_row(res))!=NULL)</span><br><span class="line">&#123;...&#125;</span><br><span class="line"></span><br><span class="line">mysql_free_result(res);</span><br><span class="line">mysql_close(conn);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_fetch_lengths</code></li>
+<li><code>mysql_num_fields</code>，获取字段数，与<code>mysql_field_count</code>类似，但是后者传入MYSQL结构体指针</li>
+<li><code>mysql_num_rows</code>，获取总行数</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">auto num_rows=mysql_num_rows(res);</span><br><span class="line">std::cout&lt;&lt;&quot;The rows is &quot;&lt;&lt;num_rows&lt;&lt;std::endl;</span><br><span class="line"></span><br><span class="line">while((row=mysql_fetch_row(res))!=NULL)</span><br><span class="line">&#123;</span><br><span class="line">	length=mysql_fetch_lengths(res);</span><br><span class="line">	if(length)</span><br><span class="line">		for(int i=0,col=mysql_num_fields(res);i&lt;col;++i)</span><br><span class="line">			std::cout(std::format(&quot;Column &#123;&#125; length is &#123;&#125;.\n&quot;,i,length[i]));</span><br><span class="line">			</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mysql_real_escape_string(MYSQL*,char*,const char*,unsigned long)</code>，用于转义特殊字符以防止SQL注入，char*是储存转义后字符串的缓冲区</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">char query[1024];</span><br><span class="line">char user_input[]=&quot;Hello&#x27;s world&quot;;</span><br><span class="line">char escape_input[2*sizeof(user_input)];</span><br><span class="line">unsigned long len;</span><br><span class="line"></span><br><span class="line">len=mysql_real_escape_string(conn,escape_input,user_input,sizeof(user_input)-1);</span><br><span class="line"></span><br><span class="line">if(len==-1)</span><br><span class="line">&#123;</span><br><span class="line">	std::string str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE] Note</p>
+<ol>
+<li>初始化MYSQL结构体<code>mysql_init</code></li>
+<li>连接服务器<code>mysql_real_connect</code></li>
+<li>查询<code>mysql_query等</code></li>
+<li>返回数据检查，处理<code>mysql_store_result mysql_use_result</code></li>
+<li>清除结果集<code>mysql_free_result</code></li>
+<li>关闭连接<code>mysql_close</code></li>
+</ol>
+</blockquote>
+<ul>
+<li><code>mysql_send_query()</code>，发送查询，不等待结果</li>
+<li><code>mysql_next_result()</code>，获取下一个结果集（多语句）</li>
+<li>预处理语句</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">mysql_stmt_init：初始化预处理语句</span><br><span class="line">mysql_stmt_prepare：准备 SQL 语句</span><br><span class="line">mysql_stmt_execute：执行预处理语句</span><br><span class="line">mysql_stmt_bind_param：绑定输入参数</span><br><span class="line">mysql_stmt_bind_result：绑定输出参数</span><br><span class="line">mysql_stmt_fetch：获取结果行</span><br><span class="line">mysql_stmt_store_result：缓存结果集</span><br><span class="line">mysql_stmt_close：关闭预处理语句</span><br><span class="line"></span><br><span class="line">//实例</span><br><span class="line">MYSQL_STMT* stmt=mysql_stmt_init(mysql);</span><br><span class="line">//?为占位符</span><br><span class="line">const char* sql=&quot;insert into users(name,age) values(?,?)&quot;;</span><br><span class="line">mysql_stmt_prepare(stmt,sql,strlen(sql));</span><br><span class="line"></span><br><span class="line">MYSQL_BIND bind[2];</span><br><span class="line">memset(bind,0,sizeof(bind));</span><br><span class="line"></span><br><span class="line">char name[]=&quot;hi&quot;;</span><br><span class="line">bind[0].buffer_type=MYSQL_TYPE_STRING;</span><br><span class="line">bind[0].buffer=name;</span><br><span class="line">bind[0].buffer_length=strlen(name);</span><br><span class="line"></span><br><span class="line">//同理</span><br><span class="line">int age=30;</span><br><span class="line">bind[1].buffer_type = MYSQL_TYPE_LONG;</span><br><span class="line">bind[1].buffer = &amp;age;</span><br><span class="line"></span><br><span class="line">mysql_stmt_bind_param(stmt, bind);</span><br><span class="line"></span><br><span class="line">mysql_stmt_execute(stmt);</span><br><span class="line"></span><br><span class="line">//处理语句</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">mysql_stmt_close(stmt);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>事务控制</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">mysql_commit：提交事务</span><br><span class="line">mysql_rollback：回滚事务</span><br><span class="line">mysql_autocommit：设置自动提交模式</span><br><span class="line"></span><br><span class="line">//实例</span><br><span class="line">// 1. 关闭自动提交</span><br><span class="line">mysql_autocommit(mysql, false);</span><br><span class="line"></span><br><span class="line">// 2. 开始事务 (隐式开始)</span><br><span class="line">mysql_query(mysql, &quot;START TRANSACTION&quot;);</span><br><span class="line"></span><br><span class="line">// 3. 执行事务操作</span><br><span class="line">mysql_query(mysql, &quot;UPDATE account SET balance=balance-100 WHERE id=1&quot;);</span><br><span class="line">mysql_query(mysql, &quot;UPDATE account SET balance=balance+100 WHERE id=2&quot;);</span><br><span class="line"></span><br><span class="line">// 4. 提交/回滚</span><br><span class="line">if (/* 所有操作成功 */) &#123;</span><br><span class="line">    mysql_commit(mysql);  // 提交事务</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    mysql_rollback(mysql); // 回滚事务</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 5. 恢复自动提交</span><br><span class="line">mysql_autocommit(mysql, true);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/Mysql/" class="tag-item">
+                    Mysql
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/mysql.h/">https://narciostyx.github.io/2026/01/18/mysql.h/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/poll.h/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">poll函数</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/select.h/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">select函数</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>长风破浪会有时，直挂云帆济沧海</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
