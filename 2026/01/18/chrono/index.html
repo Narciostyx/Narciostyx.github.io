@@ -34,9 +34,13 @@
     <main>
         <div class="container">
             <section class="page-top-badge flex-between w100">
-                <div>
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
                     <a href="/">
-                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
                     </a>
                 </div>
                 <!-- <div>
@@ -53,7 +57,8 @@
         <h1>C++时间库</h1>
     </section>
     <section class="article">
-        <span id="more"></span>
+        <p>C++11 chrono 时间库的时钟、时间点与时间段</p>
+<span id="more"></span>
 
 <ul>
 <li>跟ctime类似，是表示与处理时间的标准库，包含三大功能<strong>时钟、时间段与时间点</strong></li>
@@ -76,7 +81,7 @@
 <ul>
 <li>时间段，即<code>template&lt;class Rep,class Period=std::ratio&lt;1&gt;&gt; class duration</code>，前一模板参数代表刻度计数，即允许该模板实例化的参数，如<code>std::chrono::duration&lt;double&gt; half_second(0.5)</code>，即<strong>0.5乘以后一模板参数刻度周期（默认为1，代表1s）为0.5秒</strong>，因此<code>std::chrono::duration&lt;int,std::ratio&lt;60&gt;&gt; minute(1)</code>代表一分钟</li>
 <li>对于duration时间段对象进行的四则运算或比较运算，均会返回一个新的<code>duration</code>对象</li>
-<li>duration特化了部分模板：<br>![[Pasted image 20260409212447.png]]</li>
+<li>duration特化了部分模板：<br>![](Pasted image 20260409212447.png)</li>
 </ul>
 <blockquote>
 <p>[!NOTE] Note<br>时间段包含一些字面量便于直接声明，如</p>
@@ -102,7 +107,7 @@
         <section class="post-cate">
             <a href="/categories"><i class="fa fa-inbox"></i></a>
             
-                <a href="/categories/C/" class="cate-item">
+                <a href="/categories/Cpp/" class="cate-item">
                     C++
                 </a>
             
@@ -127,21 +132,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/boost.beast/" class="change-link">
+                <a href="/2026/01/18/CRTP/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">boost.beast</span>
+                        <span class="text-title">CRTP</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/boost.asio/" class="change-link">
+                <a href="/2026/01/18/epoll.h/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">boost.asio</span>
+                        <span class="text-title" style="text-align: right;">epoll函数</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

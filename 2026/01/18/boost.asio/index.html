@@ -34,9 +34,13 @@
     <main>
         <div class="container">
             <section class="page-top-badge flex-between w100">
-                <div>
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
                     <a href="/">
-                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
                     </a>
                 </div>
                 <!-- <div>
@@ -53,7 +57,8 @@
         <h1>boost.asio</h1>
     </section>
     <section class="article">
-        <span id="more"></span>
+        <p>Boost.Asio 异步IO库的核心概念与基本使用方法</p>
+<span id="more"></span>
 
 <h1 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h1><ol>
 <li>至少拥有一个IO执行上下文例如 <code>boost::asio::io_context</code> 对象、<code>boost::asio::thread_pool</code> 对象或 <code>boost::asio::system_context</code>。这个 <strong>I&#x2F;O 执行上下文</strong>代表了 <strong>程序</strong>与 <strong>操作系统</strong>的 I&#x2F;O 服务的连接，如<code>boost::asio::io_context io_context</code></li>
@@ -168,7 +173,7 @@
         <section class="post-cate">
             <a href="/categories"><i class="fa fa-inbox"></i></a>
             
-                <a href="/categories/C/" class="cate-item">
+                <a href="/categories/Cpp/" class="cate-item">
                     C++
                 </a>
             
@@ -193,21 +198,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/chrono/" class="change-link">
+                <a href="/2026/01/18/boost.beast/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C++时间库</span>
+                        <span class="text-title">boost.beast</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/epoll.h/" class="change-link">
+                <a href="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">epoll函数</span>
+                        <span class="text-title" style="text-align: right;">IO复用</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

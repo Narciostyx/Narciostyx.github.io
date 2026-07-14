@@ -34,9 +34,13 @@
     <main>
         <div class="container">
             <section class="page-top-badge flex-between w100">
-                <div>
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
                     <a href="/">
-                        <span title="github"><i class="fa fa-home" aria-hidden="true"></i></span>
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
                     </a>
                 </div>
                 <!-- <div>
@@ -53,7 +57,8 @@
         <h1>IO复用</h1>
     </section>
     <section class="article">
-        <span id="more"></span>
+        <p>select&#x2F;poll&#x2F;epoll IO 多路复用技术总结</p>
+<span id="more"></span>
 
 <h1 id="socket编程"><a href="#socket编程" class="headerlink" title="socket编程"></a>socket编程</h1><ol>
 <li>服务端<ol>
@@ -77,7 +82,7 @@
 <li>上述描述的对象为同步阻塞模型</li>
 </ol>
 <h1 id="多进程模型"><a href="#多进程模型" class="headerlink" title="多进程模型"></a>多进程模型</h1><ol>
-<li>基于传统的TCP socket编程，如果服务器要建立多个客户端，则可以使用fork函数新建子进程![[Pasted image 20260219180010.png]]</li>
+<li>基于传统的TCP socket编程，如果服务器要建立多个客户端，则可以使用fork函数新建子进程![](Pasted image 20260219180010.png)</li>
 <li><strong>子进程只需要已连接socket（父进程accept后使用fork传递），父进程只需要监听socket</strong></li>
 <li>当子进程退出后，内核仍然会保留对应的一些信息，因此需要调用wait与waitpid函数</li>
 <li>进程本身较为消耗资源，因此下介绍多线程模型</li>
@@ -85,7 +90,7 @@
 <h1 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h1><ol>
 <li>使用pthread_create()函数创建线程</li>
 <li>与多进程第二点一致</li>
-<li>为了尽可能减小系统开销，使用线程池来避免线程的频繁创建与销毁![[Pasted image 20260219180605.png]]<ul>
+<li>为了尽可能减小系统开销，使用线程池来避免线程的频繁创建与销毁![](Pasted image 20260219180605.png)<ul>
 <li>这个队列是全局的，需要避免多线程竞争</li>
 </ul>
 </li>
@@ -165,21 +170,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/ADL%E4%B8%8ECPO/" class="change-link">
+                <a href="/2026/01/18/boost.asio/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">ADL与CPO</span>
+                        <span class="text-title">boost.asio</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/Reactor%E4%B8%8EProactor/" class="change-link">
+                <a href="/2026/01/18/CRTP/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">Reactor与Proactor模型</span>
+                        <span class="text-title" style="text-align: right;">CRTP</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>
