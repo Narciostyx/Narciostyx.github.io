@@ -133,7 +133,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">**_pthread_t thread;_**</span><br><span class="line"></span><br><span class="line">**_//_****_传递客户端套接字，因为下次监听后该值会被覆盖_**</span><br><span class="line"></span><br><span class="line">**_int* fd = new int(client_fd);_**</span><br><span class="line"></span><br><span class="line">**_//threadFunc_****_即void(*)(void*)，负责处理逻辑_**</span><br><span class="line"></span><br><span class="line">**_if(pthread_create(&amp;thread,NULL,threadFunc,static_cast&lt;void*&gt;(fd))!=0)_**</span><br><span class="line"></span><br><span class="line">**_&#123;_****_报错&#125;_**</span><br><span class="line"></span><br><span class="line">**_//_****_使子线程与主线程分离，不阻塞主线程，其结束后自动释放资源_**</span><br><span class="line"></span><br><span class="line">**_pthread_detach(thread);_**</span><br><span class="line"></span><br><span class="line">**_继续从4开始循环_**</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct hostent *gethostbyname(const char *name);</span><br><span class="line">struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type);</span><br><span class="line">int getaddrinfo(const char *node, const char *service,</span><br><span class="line">                const struct addrinfo *hints, struct addrinfo **res);</span><br><span class="line">int getnameinfo(const struct sockaddr *sa, socklen_t salen,</span><br><span class="line">                char *host, socklen_t hostlen,</span><br><span class="line">                char *serv, socklen_t servlen, int flags);</span><br></pre></td></tr></table></figure>
-<p>![](Pasted image 20260429214934.png)</p>
+<p><img src="/2026/01/18/socket.h/Pasted_image_20260429214934.png"></p>
 
     </section>
 
@@ -176,21 +176,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/time.h/" class="change-link">
+                <a href="/2026/01/18/signal.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">time头文件</span>
+                        <span class="text-title">signal函数及其信号集</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/" class="change-link">
+                <a href="/2026/01/18/time.h/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C++命名修饰(C++ name mangling)</span>
+                        <span class="text-title" style="text-align: right;">time头文件</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

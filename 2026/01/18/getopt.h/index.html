@@ -97,7 +97,7 @@
 </tr>
 </tbody></table>
 <blockquote>
-<p>[!NOTE] Option结构体<br>通常用来定义长命名行选项，通常与getopt_long函数共同使用，结构体包括以下成员：<br>name，has_arg，flag，val<br>p.s.:<br><em>flag: 如果不是 NULL，则 getopt_long 会将该选项的值（val 成员的值）存储在这里所指向的变量中。如果 flag 是 NULL，则 getopt_long 会返回 val 成员的值</em><br>e.g.:<br><code>{&quot;force&quot;,no_argument,&amp;force,1}</code>，代表长选项名为force，不需要传入参数，val&#x3D;1，<strong>同时getopt_long返回0，且force被置为1</strong><br><code> {&quot;time&quot;,required_argument,NULL,&#39;t&#39;}</code>，代表长选项名为time，短名称为t（flag为NULL且val&#x3D;’t’），需要传入参数，<strong>同时getopt_long返回val(‘t’)</strong></p>
+<p><strong>Note — Option结构体</strong><br>通常用来定义长命名行选项，通常与getopt_long函数共同使用，结构体包括以下成员：<br>name，has_arg，flag，val<br>p.s.:<br><em>flag: 如果不是 NULL，则 getopt_long 会将该选项的值（val 成员的值）存储在这里所指向的变量中。如果 flag 是 NULL，则 getopt_long 会返回 val 成员的值</em><br>e.g.:<br><code>{&quot;force&quot;,no_argument,&amp;force,1}</code>，代表长选项名为force，不需要传入参数，val&#x3D;1，<strong>同时getopt_long返回0，且force被置为1</strong><br><code> {&quot;time&quot;,required_argument,NULL,&#39;t&#39;}</code>，代表长选项名为time，短名称为t（flag为NULL且val&#x3D;’t’），需要传入参数，<strong>同时getopt_long返回val(‘t’)</strong></p>
 </blockquote>
 <ol start="5">
 <li>getopt跟getopt_long的处理流程为：<ol>
@@ -109,7 +109,7 @@
 </li>
 </ol>
 <blockquote>
-<p>[!NOTE] Note</p>
+<p><strong>Note</strong></p>
 <ol>
 <li>对于getopt_long函数来讲，最后一个参数一般不会使用，仅其内部当下标使用</li>
 <li>使用getopt_long函数前必须初始化option结构体数组，<strong>option结构体数组最后一个成员必须全为NULL</strong>（getopt_long函数本身不知道option结构体结束的位置，因此需要全NULL）</li>
@@ -162,21 +162,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/epoll.h/" class="change-link">
+                <a href="/2026/01/18/makefile%E4%B8%8Ecmake/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">epoll函数</span>
+                        <span class="text-title">C/C++ make与cmake</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/poll.h/" class="change-link">
+                <a href="/2026/01/18/mysql.h/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">poll函数</span>
+                        <span class="text-title" style="text-align: right;">C++ MYSQL编程</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

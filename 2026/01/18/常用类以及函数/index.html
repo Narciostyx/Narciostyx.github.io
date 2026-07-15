@@ -254,7 +254,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	...</span><br><span class="line">	//此函数返回一个新的shared_ptr，其计数独立于外部的shared_ptr</span><br><span class="line">	std::shared_ptr&lt;base&gt; get_self()&#123;return std::shared_ptr&lt;base&gt;(this);&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	std::shared_ptr&lt;base&gt; ptr=std::make_shared&lt;base&gt;();</span><br><span class="line">	std::shared_ptr&lt;base&gt; ptr2=ptr-&gt;get_self();</span><br><span class="line">	</span><br><span class="line">	//当主程序结束时，按照销毁顺序：</span><br><span class="line">	//销毁ptr2，合法，因为此时引用计数为1，减1并销毁this指针</span><br><span class="line">	//销毁ptr，UB，因为此时this指针被销毁，但仍调用析构函数</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>[!NOTE] Note</p>
+<p><strong>Note</strong></p>
 <ol>
 <li>必须使用公用继承</li>
 <li>对象必须被std::shared_ptr管理，即在调用<code>shared_from_this()</code>前必须有一个实例持有该对象</li>
@@ -375,7 +375,7 @@
 <h3 id="顺序容器"><a href="#顺序容器" class="headerlink" title="顺序容器"></a>顺序容器</h3><h4 id="vector"><a href="#vector" class="headerlink" title="vector"></a>vector</h4><p>#vector</p>
 <ol>
 <li>封装了动态大小数组的序列容器</li>
-<li>迭代器失效的情况<br>![](Pasted image 20260211183756.png)</li>
+<li>迭代器失效的情况<br><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211183756.png"></li>
 <li>元素访问</li>
 </ol>
 <table>
@@ -414,20 +414,20 @@
 <td></td>
 </tr>
 <tr>
-<td>![](Pasted image 20260211184338.png)</td>
+<td><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211184338.png"></td>
 <td></td>
 </tr>
 </tbody></table>
 <h4 id="list与forward-list"><a href="#list与forward-list" class="headerlink" title="list与forward_list"></a>list与forward_list</h4><p>#list<br>#forward_list</p>
 <ol>
 <li>list为双向链表，forward_list则是单向链表</li>
-<li>由于结构与STL中如vector这里容器不同，有属于自己的操作<br>![](Pasted image 20260211185133.png)</li>
+<li>由于结构与STL中如vector这里容器不同，有属于自己的操作<br><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211185133.png"></li>
 <li>forward_list没有反向迭代器，因为其是单向的</li>
 </ol>
 <h4 id="deque"><a href="#deque" class="headerlink" title="deque"></a>deque</h4><p>#deque</p>
 <ol>
 <li>双向队列，允许在开头与末尾进行快速插入与删除</li>
-<li>修改操作如下：<br>![](Pasted image 20260211185450.png)</li>
+<li>修改操作如下：<br><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211185450.png"></li>
 </ol>
 <h4 id="适配器"><a href="#适配器" class="headerlink" title="适配器"></a>适配器</h4><h5 id="queue"><a href="#queue" class="headerlink" title="queue"></a>queue</h5><p>#queue</p>
 <ol>
@@ -450,7 +450,7 @@
 <h3 id="关联容器"><a href="#关联容器" class="headerlink" title="关联容器"></a>关联容器</h3><h4 id="有序容器"><a href="#有序容器" class="headerlink" title="有序容器"></a>有序容器</h4><h5 id="set与multiset"><a href="#set与multiset" class="headerlink" title="set与multiset"></a>set与multiset</h5><p>#set<br>#multiset</p>
 <ol>
 <li>默认使用std::less对集合内元素排序，实现为红黑树，multi代表允许重复</li>
-<li>由于关联容器与顺序容器不同，其不能直接使用STL的算法库进行操作，因此有自己的方法：![](Pasted image 20260211190509.png)<br> ![](Pasted image 20260211190829.png)</li>
+<li>由于关联容器与顺序容器不同，其不能直接使用STL的算法库进行操作，因此有自己的方法：<img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211190509.png"><br> <img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211190829.png"></li>
 </ol>
 <h5 id="map与multimap"><a href="#map与multimap" class="headerlink" title="map与multimap"></a>map与multimap</h5><p>#map<br>#multimap</p>
 <ol>
@@ -459,8 +459,8 @@
 </ol>
 <h4 id="无序容器"><a href="#无序容器" class="headerlink" title="无序容器"></a>无序容器</h4><h5 id="unordered-map与unordered-multimap"><a href="#unordered-map与unordered-multimap" class="headerlink" title="unordered_map与unordered_multimap"></a>unordered_map与unordered_multimap</h5><p>#unordered_map<br>#unordered_multimap</p>
 <ol>
-<li>使用键的哈希值将对应的值存储进桶，因此无序容器还有对桶的操作<br>![](Pasted image 20260211212145.png)</li>
-<li>迭代器失效情况<br>![](Pasted image 20260211211940.png)</li>
+<li>使用键的哈希值将对应的值存储进桶，因此无序容器还有对桶的操作<br><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211212145.png"></li>
+<li>迭代器失效情况<br><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260211211940.png"></li>
 </ol>
 <h5 id="unordered-set与unordered-multiset"><a href="#unordered-set与unordered-multiset" class="headerlink" title="unordered_set与unordered_multiset"></a>unordered_set与unordered_multiset</h5><p>#unordered_set<br>#unordered_multimap </p>
 <ol>
@@ -640,7 +640,7 @@
 </blockquote>
 <h3 id="二分搜索算法"><a href="#二分搜索算法" class="headerlink" title="二分搜索算法"></a>二分搜索算法</h3><p>#搜索算法</p>
 <blockquote>
-<p>[!INFO] 注意</p>
+<p><strong>注意</strong></p>
 <ol>
 <li>需要先对序列排序</li>
 <li>lower_bound返回指向第一个小于等于val的元素迭代器，否则返回end</li>
@@ -657,7 +657,7 @@
 </ol>
 <h3 id="写容器算法"><a href="#写容器算法" class="headerlink" title="写容器算法"></a>写容器算法</h3><p>#只读不写</p>
 <blockquote>
-<p>[!INFO] 注意<br>Gen代表可调用对象</p>
+<p><strong>注意</strong><br>Gen代表可调用对象</p>
 </blockquote>
 <ol>
 <li>fill(beg,end,val)</li>
@@ -667,13 +667,13 @@
 </ol>
 <p>#写算法<br>#输入迭代器<br>5. copy(beg,end,dest)<br>6. copy(beg,end,dest,unaryPred)<br>7. copy_n(beg,n,dest)</p>
 <blockquote>
-<p>[!INFO] 注意<br>move代表对序列中的每个元素调用std::move移动到迭代器dest开始的序列中</p>
+<p><strong>注意</strong><br>move代表对序列中的每个元素调用std::move移动到迭代器dest开始的序列中</p>
 </blockquote>
 <ol start="8">
 <li>move(beg,end,dest)</li>
 </ol>
 <blockquote>
-<p>[!INFO] 注意<br>transform功能上与for_each一致，但是transform是写入到目的序列dest中，for_each则是写入原序列</p>
+<p><strong>注意</strong><br>transform功能上与for_each一致，但是transform是写入到目的序列dest中，for_each则是写入原序列</p>
 </blockquote>
 <ol start="9">
 <li>transform(beg,end,dest,unaryOp)</li>
@@ -684,7 +684,7 @@
 </ol>
 <p>#前向迭代器<br>6. iter_swap(iter1,iter2)<br>7. swap_range(beg1,end1,beg2)<br>8. replace(beg,end,old_val,new_val)<br>9. replace_if(beg,end,unaryPred,new_val)<br>#双向迭代器</p>
 <blockquote>
-<p>[!INFO] 注意<br>针对下列算法，dest代表目的序列的尾后迭代器</p>
+<p><strong>注意</strong><br>针对下列算法，dest代表目的序列的尾后迭代器</p>
 </blockquote>
 <ol start="10">
 <li>copy_backward(beg,end,dest)</li>
@@ -747,7 +747,7 @@
 <hr>
 <h2 id="string"><a href="#string" class="headerlink" title="string"></a>string</h2><p>#string</p>
 <ol>
-<li>该头文件中包含以下类及其函数：<br>![](Pasted image 20260212162715.png)<br>![](Pasted image 20260212162719.png)</li>
+<li>该头文件中包含以下类及其函数：<br><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260212162715.png"><br><img src="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/Pasted_image_20260212162719.png"></li>
 <li>char_traits 类是一个特性类模板，它为给定字符类型<strong>抽象了基本的字符和字符串操作</strong>，定义的运算集合使得通用算法几乎总能通过它实现，通过提供定制的 char_traits 类，几乎可以使用任何可能的字符或字符串类型来使用此类算法</li>
 <li>CharTraits中定义了一系列静态成员函数：<ol>
 <li>assign </li>
@@ -808,11 +808,11 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="change-link">
+                <a href="/2026/01/18/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C++多线程编程</span>
+                        <span class="text-title">C++命名修饰(C++ name mangling)</span>
                     </span>
                 </a>
             

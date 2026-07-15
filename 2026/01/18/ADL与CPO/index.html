@@ -88,7 +88,7 @@
 <li>最终与普通非限定查找结果合并，最终进行筛选（<strong>using指示被忽略，所有非函数（模板）的名称被忽略，友元函数通过ADL可见</strong>）</li>
 </ul>
 <blockquote>
-<p>[!NOTE] Note</p>
+<p><strong>Note</strong></p>
 <ul>
 <li>ADL触发条件依赖于当前是函数调用，若非函数调用则不生效</li>
 <li>ADL本身即遍历当前函数参数的命名空间与类加入考虑范围，以及其相关的类与命名空间</li>
@@ -102,7 +102,7 @@
 
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 在当前全局命名空间中没有operator声明，因此执行ADL，因为operator&lt;&lt;(std::cout,const char*)左侧参数在std命名空间中，std命名空间加入考虑范围，查找到函数std::operator&lt;&lt;(std::ostream&amp;, const char*)</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Test\n&quot;</span>;</span><br><span class="line">    <span class="comment">//同理</span></span><br><span class="line">    <span class="keyword">operator</span>&lt;&lt;(std::cout, <span class="string">&quot;Test\n&quot;</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 下为一些特例</span></span><br><span class="line">    <span class="comment">// endl并未声明在该命名空间，直接报错，此处endl为变量而非函数调用</span></span><br><span class="line">    std::cout &lt;&lt; endl;</span><br><span class="line">    <span class="comment">// 执行成功，此处endl为函数调用，ADL检查参数std::cout的命名空间std查找到std::endl</span></span><br><span class="line">    <span class="built_in">endl</span>(std::cout); </span><br><span class="line">    <span class="comment">// 执行失败，(endl)不再被视为非限制性标识符（ADL仅针对非限定标识符，这里编译器抑制了ADL）</span></span><br><span class="line">    (endl)(std::cout);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h1 id="CPO"><a href="#CPO" class="headerlink" title="CPO"></a>CPO</h1><blockquote>
-<p>[!NOTE] semiregular<br><code>template&lt;class T&gt; concept semiregular = std::copyable&lt;T&gt; &amp;&amp; std::default_initializable&lt;T&gt;;</code><br>即可复制，也默认可构造，其行为类似内置类型（e.g. int）<br><strong>operator=&#x3D;未定义</strong></p>
+<p><strong>Note — semiregular</strong><br><code>template&lt;class T&gt; concept semiregular = std::copyable&lt;T&gt; &amp;&amp; std::default_initializable&lt;T&gt;;</code><br>即可复制，也默认可构造，其行为类似内置类型（e.g. int）<br><strong>operator=&#x3D;未定义</strong></p>
 </blockquote>
 <ul>
 <li>其弥补了ADL的一些不足，比如swap函数内未使用<code>using std::swap</code>，而在CPO中，只需要调用<code>std::ranges::swap(a,b)</code><ul>
@@ -168,10 +168,10 @@
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/C++20%20concepts/" class="change-link">
+                <a href="/2026/01/18/CRTP/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C++20 concepts</span>
+                        <span class="text-title" style="text-align: right;">CRTP</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

@@ -67,7 +67,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">std::chrono::system_clock //系统实际时间</span><br><span class="line">std::chrono::steady_clock //稳定时钟，时间从不调整</span><br><span class="line">std::chrono::high_resolution //提供最小的可表达的时间间隔</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>[!NOTE] Note<br>对于上述时钟类型，其内部均含有一静态方法<code>now</code>获取该时钟对应的时间点，当前时间</p>
+<p><strong>Note</strong><br>对于上述时钟类型，其内部均含有一静态方法<code>now</code>获取该时钟对应的时间点，当前时间</p>
 <ul>
 <li>对与系统时钟还有两个静态方法，<code>to_time_t与from_time_t</code>，即转换成ctime的<code>time_t</code>类型或从其转换为<code>time_point</code></li>
 </ul>
@@ -76,15 +76,15 @@
 <li>时间点，即<code>template&lt;class Clock,class Duration = typename Clock::duration&gt; class time_point</code></li>
 </ul>
 <blockquote>
-<p>[!NOTE] Note<br>使用时间点可以计算经过的时间，即获取时间段duration</p>
+<p><strong>Note</strong><br>使用时间点可以计算经过的时间，即获取时间段duration</p>
 </blockquote>
 <ul>
 <li>时间段，即<code>template&lt;class Rep,class Period=std::ratio&lt;1&gt;&gt; class duration</code>，前一模板参数代表刻度计数，即允许该模板实例化的参数，如<code>std::chrono::duration&lt;double&gt; half_second(0.5)</code>，即<strong>0.5乘以后一模板参数刻度周期（默认为1，代表1s）为0.5秒</strong>，因此<code>std::chrono::duration&lt;int,std::ratio&lt;60&gt;&gt; minute(1)</code>代表一分钟</li>
 <li>对于duration时间段对象进行的四则运算或比较运算，均会返回一个新的<code>duration</code>对象</li>
-<li>duration特化了部分模板：<br>![](Pasted image 20260409212447.png)</li>
+<li>duration特化了部分模板：<br><img src="/2026/01/18/chrono/Pasted_image_20260409212447.png"></li>
 </ul>
 <blockquote>
-<p>[!NOTE] Note<br>时间段包含一些字面量便于直接声明，如</p>
+<p><strong>Note</strong><br>时间段包含一些字面量便于直接声明，如</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">operator&quot;&quot;h</span><br><span class="line">operator&quot;&quot;min</span><br><span class="line">...s/ms/us/ns</span><br><span class="line">如：</span><br><span class="line">auto second=1s;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>时间段的转换需要使用<code>std::chrono::duration_cast&lt;&gt;()</code></li>
@@ -132,21 +132,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/CRTP/" class="change-link">
+                <a href="/2026/01/18/epoll.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">CRTP</span>
+                        <span class="text-title">epoll函数</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/epoll.h/" class="change-link">
+                <a href="/2026/01/18/makefile%E4%B8%8Ecmake/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">epoll函数</span>
+                        <span class="text-title" style="text-align: right;">C/C++ make与cmake</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

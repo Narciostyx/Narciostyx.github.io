@@ -82,7 +82,7 @@
 <li>上述描述的对象为同步阻塞模型</li>
 </ol>
 <h1 id="多进程模型"><a href="#多进程模型" class="headerlink" title="多进程模型"></a>多进程模型</h1><ol>
-<li>基于传统的TCP socket编程，如果服务器要建立多个客户端，则可以使用fork函数新建子进程![](Pasted image 20260219180010.png)</li>
+<li>基于传统的TCP socket编程，如果服务器要建立多个客户端，则可以使用fork函数新建子进程<img src="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/Pasted_image_20260219180010.png"></li>
 <li><strong>子进程只需要已连接socket（父进程accept后使用fork传递），父进程只需要监听socket</strong></li>
 <li>当子进程退出后，内核仍然会保留对应的一些信息，因此需要调用wait与waitpid函数</li>
 <li>进程本身较为消耗资源，因此下介绍多线程模型</li>
@@ -90,7 +90,7 @@
 <h1 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h1><ol>
 <li>使用pthread_create()函数创建线程</li>
 <li>与多进程第二点一致</li>
-<li>为了尽可能减小系统开销，使用线程池来避免线程的频繁创建与销毁![](Pasted image 20260219180605.png)<ul>
+<li>为了尽可能减小系统开销，使用线程池来避免线程的频繁创建与销毁<img src="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/Pasted_image_20260219180605.png"><ul>
 <li>这个队列是全局的，需要避免多线程竞争</li>
 </ul>
 </li>
@@ -114,7 +114,7 @@
 <li>epoll使用<strong>事件驱动</strong>的机制，内核里维护了一个<strong>链表</strong>来记录就绪事件，当某个 socket 有事件发生时，通过回调函数内核会将其加入到这个就绪事件列表中，<strong>当用户调用 epoll_wait() 函数时，只会返回有事件发生的文件描述符的个数</strong>，不需要像 select&#x2F;poll 那样轮询扫描整个 socket 集合，大大提高了检测的效率</li>
 </ol>
 <blockquote>
-<p>[!INFO] 注意<br>epoll本身仍需要将数据从内核拷贝到用户空间</p>
+<p><strong>注意</strong><br>epoll本身仍需要将数据从内核拷贝到用户空间</p>
 </blockquote>
 <ol start="3">
 <li>epoll支持两种事件触发模式，分别是边缘触发（edge-triggered，ET）和水平触发（level-triggered，LT）<ol>
@@ -170,21 +170,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/boost.asio/" class="change-link">
+                <a href="/2026/01/18/C++20%20concepts/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">boost.asio</span>
+                        <span class="text-title">C++20 concepts</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/CRTP/" class="change-link">
+                <a href="/2026/01/18/Reactor%E4%B8%8EProactor/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">CRTP</span>
+                        <span class="text-title" style="text-align: right;">Reactor与Proactor模型</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

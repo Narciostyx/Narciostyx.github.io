@@ -84,10 +84,10 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">MYSQL *conn;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">//查询成功返回0，失败则返回非零值</span><br><span class="line">if(mysql_query(conn,&quot;select * from table&quot;))</span><br><span class="line">&#123;</span><br><span class="line">	perror(xxx);</span><br><span class="line">	mysql_close(conn);</span><br><span class="line">	return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">xxx</span><br><span class="line"></span><br><span class="line">mysql_close(conn);</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>[!NOTE] Note<br>即使查询成功也应该检查<code>mysql_store_result</code>与<code>mysql_use_result</code>的返回值，<strong>因为这些函数可能会在尝试检索结果时遇到错误</strong></p>
+<p><strong>Note</strong><br>即使查询成功也应该检查<code>mysql_store_result</code>与<code>mysql_use_result</code>的返回值，<strong>因为这些函数可能会在尝试检索结果时遇到错误</strong></p>
 </blockquote>
 <blockquote>
-<p>[!NOTE] P.s.<br>执行<code>select show describe explain</code>必须使用<code>mysql_store_result或mysql_use_result</code>获取结果集</p>
+<p><strong>Note — P.s.</strong><br>执行<code>select show describe explain</code>必须使用<code>mysql_store_result或mysql_use_result</code>获取结果集</p>
 </blockquote>
 <ul>
 <li><code>mysql_real_query</code>比上面那个查询函数多了字符串长度的参数，因此传入字符串不一定要以<code>\0</code>结尾</li>
@@ -107,7 +107,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">char query[1024];</span><br><span class="line">char user_input[]=&quot;Hello&#x27;s world&quot;;</span><br><span class="line">char escape_input[2*sizeof(user_input)];</span><br><span class="line">unsigned long len;</span><br><span class="line"></span><br><span class="line">len=mysql_real_escape_string(conn,escape_input,user_input,sizeof(user_input)-1);</span><br><span class="line"></span><br><span class="line">if(len==-1)</span><br><span class="line">&#123;</span><br><span class="line">	std::string str=mysql_error(conn);</span><br><span class="line">	std::cout&lt;&lt;str;</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>[!NOTE] Note</p>
+<p><strong>Note</strong></p>
 <ol>
 <li>初始化MYSQL结构体<code>mysql_init</code></li>
 <li>连接服务器<code>mysql_real_connect</code></li>
@@ -168,21 +168,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/makefile%E4%B8%8Ecmake/" class="change-link">
+                <a href="/2026/01/18/getopt.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C/C++ make与cmake</span>
+                        <span class="text-title">getopt以及getopt_long</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/pthread.h/" class="change-link">
+                <a href="/2026/01/18/boost.beast/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C多线程编程</span>
+                        <span class="text-title" style="text-align: right;">boost.beast</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

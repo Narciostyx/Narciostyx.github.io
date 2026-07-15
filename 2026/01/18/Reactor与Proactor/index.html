@@ -79,7 +79,7 @@
 <li>reactor监听请求后，通过dispatch分发给acceptor或handler</li>
 <li>如果是来着客户端的连接请求，则分发给acceptor并创建一个对应的handler</li>
 <li>如果是来着客户端的读写请求，则reactor调用对应的handler处理</li>
-<li>handler通过read-&gt;execute-&gt;send执行流程<br>![](Pasted image 20260219160841.png)</li>
+<li>handler通过read-&gt;execute-&gt;send执行流程<br><img src="/2026/01/18/Reactor%E4%B8%8EProactor/Pasted_image_20260219160841.png"></li>
 </ol>
 </li>
 </ol>
@@ -88,7 +88,7 @@
 <li>工作流程<ol>
 <li>与前者类似，但是handler不再进行业务处理（execute），仅响应事件</li>
 <li>handler通过read读取到数据后会<strong>发给processor</strong>进行业务处理</li>
-<li>processor会在<strong>独立的子线程（线程池）</strong> 内完成真正的业务处理，再返回响应给主线程的handler<br>![](Pasted image 20260219160817.png)</li>
+<li>processor会在<strong>独立的子线程（线程池）</strong> 内完成真正的业务处理，再返回响应给主线程的handler<br><img src="/Pasted_image_20260219160817.png"></li>
 </ol>
 </li>
 <li>尽管采用了多线程业务处理流程，但是由于是单reactor，瞬间高发的时候会造成reacotr的性能瓶颈</li>
@@ -97,7 +97,7 @@
 <li>工作原理<ol>
 <li>父线程中mainReactor监听连接建立事件，通过Acceptor接受，将<strong>新连接分给某个子线程</strong></li>
 <li>子线程的subReactor分配的连接加入到连接队列中并监听，同时创建对应handler处理事件</li>
-<li>此时handler与单Reactor单线程的handler职责一致<br>![](Pasted image 20260219161120.png)</li>
+<li>此时handler与单Reactor单线程的handler职责一致<br><img src="/2026/01/18/Reactor%E4%B8%8EProactor/Pasted_image_20260219161120.png"></li>
 </ol>
 </li>
 </ol>
@@ -109,7 +109,7 @@
 <li>Asynchronous Operation Processor 负责处理注册请求，并完成 I&#x2F;O 操作；</li>
 <li>Asynchronous Operation Processor 完成 I&#x2F;O 操作后通知 Proactor；</li>
 <li>Proactor 根据不同的事件类型回调不同的 Handler 进行业务处理；</li>
-<li>Handler 完成业务处理，Handler 也可以注册新的 Handler 到内核进程；<br>![](Pasted image 20260219170157.png)</li>
+<li>Handler 完成业务处理，Handler 也可以注册新的 Handler 到内核进程；<br><img src="/2026/01/18/Reactor%E4%B8%8EProactor/Pasted_image_20260219170157.png"></li>
 </ol>
 </li>
 </ol>
@@ -174,21 +174,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/C++20%20concepts/" class="change-link">
+                <a href="/2026/01/18/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C++20 concepts</span>
+                        <span class="text-title">IO复用</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/boost.beast/" class="change-link">
+                <a href="/2026/01/18/boost.asio/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">boost.beast</span>
+                        <span class="text-title" style="text-align: right;">boost.asio</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

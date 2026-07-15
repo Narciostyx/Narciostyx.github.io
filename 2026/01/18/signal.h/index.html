@@ -62,7 +62,7 @@
 
 <ol>
 <li>定义类型sig_atomic_t与sigset_t，前者为原子实体，后者表示信号集</li>
-<li>信号类型：<br>![](Pasted image 20260305220422.png)<br>![](Pasted image 20260305220453.png)</li>
+<li>信号类型：<br><img src="/2026/01/18/signal.h/Pasted_image_20260305220422.png"><br><img src="/2026/01/18/signal.h/Pasted_image_20260305220453.png"></li>
 <li>常用的库函数：</li>
 </ol>
 <ul>
@@ -72,7 +72,7 @@
 <li>int pause(void)，挂起进程直到捕捉到信号</li>
 </ul>
 <blockquote>
-<p>[!NOTE] Note<br>一般来讲，Linux下对大多数信号的默认处理程序是<code>terminate()</code></p>
+<p><strong>Note</strong><br>一般来讲，Linux下对大多数信号的默认处理程序是<code>terminate()</code></p>
 </blockquote>
 
     </section>
@@ -120,21 +120,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/select.h/" class="change-link">
+                <a href="/2026/01/18/poll.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">select函数</span>
+                        <span class="text-title">poll函数</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/stdarg.h/" class="change-link">
+                <a href="/2026/01/18/socket.h/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">VA_ARG(C 可变参数列表)</span>
+                        <span class="text-title" style="text-align: right;">socket编程</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

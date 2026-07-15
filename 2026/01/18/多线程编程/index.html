@@ -108,7 +108,7 @@
 <li>原子类型，其操作为原子操作</li>
 </ul>
 <blockquote>
-<p>[!NOTE] CAS</p>
+<p><strong>Note — CAS</strong></p>
 <ul>
 <li>即Compare and Swap操作</li>
 <li>CAS操作需要输入两个数值，一个旧值（期望检查时应该为的值）与一个新值</li>
@@ -132,7 +132,7 @@
 </li>
 </ul>
 <blockquote>
-<p>[!NOTE] Note</p>
+<p><strong>Note</strong></p>
 <ul>
 <li><strong>后续读&#x2F;写操作不会被重排到当前acquire操作之前</strong>，若另一个线程对同一个原子变量执行<em>release操作</em>，则两者<code>synchronizes-with</code>，<strong>保证release之前的所有发生的写入，在acquier操作之后都对当前线程可见（即传递给acquire操作）</strong></li>
 </ul>
@@ -140,7 +140,7 @@
 <pre><code>1. `memory_order_release`，针对store写操作，即release操作
 </code></pre>
 <blockquote>
-<p>[!NOTE] Note</p>
+<p><strong>Note</strong></p>
 <ul>
 <li>是RMW操作，则使用<code>memory_order_acq_rel</code></li>
 <li>若要建立明确的同步关系应该使用release与acquire配对</li>
@@ -170,7 +170,7 @@
 </li>
 </ul>
 <blockquote>
-<p>[!NOTE] Note<br>&lt;future&gt;头文件包含以下类与函数：</p>
+<p><strong>Note</strong><br>&lt;future&gt;头文件包含以下类与函数：</p>
 <ul>
 <li>provider类：<code>std::promise</code>与<code>std::package_task</code></li>
 <li>provider函数：<code>std::async</code></li>
@@ -189,10 +189,10 @@
 </li>
 </ul>
 <blockquote>
-<p>[!NOTE] shared_future<br>与<code>std::future</code>类似，但允许拷贝，以及<strong>允许多次get方法调用</strong></p>
+<p><strong>Note — shared_future</strong><br>与<code>std::future</code>类似，但允许拷贝，以及<strong>允许多次get方法调用</strong></p>
 </blockquote>
 <blockquote>
-<p>[!NOTE] 返回值<br><code>wait_for</code>与<code>wait_until</code>的返回值为<code>future_status</code>，其标志位有<code>ready,timeout,deferred</code></p>
+<p><strong>Note — 返回值</strong><br><code>wait_for</code>与<code>wait_until</code>的返回值为<code>future_status</code>，其标志位有<code>ready,timeout,deferred</code></p>
 </blockquote>
 <ul>
 <li><code>std::promise</code>保存某一类型T的值，该值可被future对象获取，因此其提供了一种线程同步手段，其构造时可与一个共享状态（一般<code>std::future</code>）相关联<ul>
@@ -204,7 +204,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">std::promise&lt;int&gt; prom;</span><br><span class="line">std::future&lt;int&gt; fut=prom.get_future();</span><br><span class="line">//这里func是void(*)(std::future&lt;int&gt;&amp;)</span><br><span class="line">std::thread t(func,std::ref(fut));</span><br><span class="line">prom.set_value(10);//此处与线程t保持同步</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>[!NOTE] Note<br><code>std::future</code>通常有三种方式获取，除了上面的<code>std::promise</code>，然后调用方法<code>set_value</code>外，还有：</p>
+<p><strong>Note</strong><br><code>std::future</code>通常有三种方式获取，除了上面的<code>std::promise</code>，然后调用方法<code>set_value</code>外，还有：</p>
 <ul>
 <li><code>std::async</code>:</li>
 </ul>
@@ -255,21 +255,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/" class="change-link">
+                <a href="/2026/01/18/stdarg.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C++命名修饰(C++ name mangling)</span>
+                        <span class="text-title">VA_ARG(C 可变参数列表)</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/" class="change-link">
+                <a href="/2026/01/18/%E6%A8%A1%E6%9D%BF%E5%B1%95%E5%BC%80/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C++常用类及其方法</span>
+                        <span class="text-title" style="text-align: right;">C++模板展开</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

@@ -81,7 +81,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(... &amp;&amp; pack)-&gt;true</span><br><span class="line">(... || pack)-&gt;false</span><br><span class="line">(...,pack)-&gt;void()</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>[!NOTE] Note<br>因此可以代替initialized_list的逗号展开式，如</p>
+<p><strong>Note</strong><br>因此可以代替initialized_list的逗号展开式，如</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class F,class... Ts&gt;</span><br><span class="line">void for_each(F&amp;&amp; f,Ts&amp;&amp;... xs)&#123;((f(std::forward&lt;Ts&gt;(xs))),...)&#125;</span><br></pre></td></tr></table></figure></blockquote>
 
     </section>
@@ -125,21 +125,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="change-link">
+                <a href="/2026/01/18/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C++正则表达式</span>
+                        <span class="text-title">C++多线程编程</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/%E9%9A%8F%E6%9C%BA%E6%95%B0/" class="change-link">
+                <a href="/2026/01/18/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C++随机数</span>
+                        <span class="text-title" style="text-align: right;">C++命名修饰(C++ name mangling)</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>
