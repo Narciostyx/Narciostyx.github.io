@@ -88,7 +88,7 @@
 <li>工作流程<ol>
 <li>与前者类似，但是handler不再进行业务处理（execute），仅响应事件</li>
 <li>handler通过read读取到数据后会<strong>发给processor</strong>进行业务处理</li>
-<li>processor会在<strong>独立的子线程（线程池）</strong> 内完成真正的业务处理，再返回响应给主线程的handler<br><img src="/Pasted_image_20260219160817.png"></li>
+<li>processor会在<strong>独立的子线程（线程池）</strong> 内完成真正的业务处理，再返回响应给主线程的handler<br><img src="/2026/01/18/Reactor%E4%B8%8EProactor/Pasted_image_20260219160817.png"></li>
 </ol>
 </li>
 <li>尽管采用了多线程业务处理流程，但是由于是单reactor，瞬间高发的时候会造成reacotr的性能瓶颈</li>
@@ -174,11 +174,11 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/18/C++20%20concepts/" class="change-link">
+                <a href="/2026/01/18/boost.beast/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C++20 concepts</span>
+                        <span class="text-title">boost.beast</span>
                     </span>
                 </a>
             
