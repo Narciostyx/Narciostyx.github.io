@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | TCP协议</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP%E5%A4%B4%E9%83%A8%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">TCP头部结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB"><span class="toc-number">2.</span> <span class="toc-text">TCP状态转移</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RST%E6%8A%A5%E6%96%87%E6%AE%B5"><span class="toc-number">3.</span> <span class="toc-text">RST报文段</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP%E8%BF%9E%E6%8E%A5%E4%BA%A4%E6%8D%A2%E7%9A%84%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%95%B0%E6%8D%AE"><span class="toc-number">4.</span> <span class="toc-text">TCP连接交换的应用程序数据</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B8%A6%E5%A4%96%E6%95%B0%E6%8D%AE"><span class="toc-number">5.</span> <span class="toc-text">带外数据</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP%E8%B6%85%E6%97%B6%E9%87%8D%E4%BC%A0"><span class="toc-number">6.</span> <span class="toc-text">TCP超时重传</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="toc-number">7.</span> <span class="toc-text">拥塞控制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%85%A2%E5%90%AF%E5%8A%A8%E4%B8%8E%E6%8B%A5%E5%A1%9E%E9%81%BF%E5%85%8D"><span class="toc-number">7.1.</span> <span class="toc-text">慢启动与拥塞避免</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E9%87%8D%E4%BC%A0%E5%92%8C%E5%BF%AB%E9%80%9F%E6%81%A2%E5%A4%8D"><span class="toc-number">7.2.</span> <span class="toc-text">快速重传和快速恢复</span></a></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>TCP协议</h1>
+    </section>
+    <section class="article">
+        <p>TCP协议字段、状态转移与拥塞控制</p>
+<span id="more"></span>
+<ul>
+<li>TCP协议的连接是一对一，因此基于广播和多播的应用程序不能使用TCP服务，更适合使用UDP服务</li>
+<li>TCP模块<strong>发送的TCP报文段的个数</strong>和<strong>应用程序执行的写操作次数</strong>之间<strong>没有固定数量关系</strong></li>
+<li>接收端收取TCP接收缓冲区的数据时，可以一次性全部读出，也可以分多次读取，取决于当前用户指定的应用程序缓冲区大小<ul>
+<li>UDP则不同，<strong>发送端每次执行一次写操作，UDP模块就封装发送，接收端必须即使针对每个UDP数据报进行读操作，否则就会丢包</strong></li>
+<li>若用户没有指定足够大小的缓冲区读取UDP数据，则UDP数据将被截断</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="TCP头部结构"><a href="#TCP头部结构" class="headerlink" title="TCP头部结构"></a>TCP头部结构</h1><p><img src="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE/Pasted_image_20260727203536.png"></p>
+<ul>
+<li>32位序号，一次TCP通信过程中某个传输方向的字节流的每个字节编号，<strong>其一般最开始被初始化位某个随机值I（nitial）S（equence）N（umber），后续TCP报文种的序号值会被系统设置成ISN假上该报文段所携带的数据的第一个字节在整个字节流的偏移</strong>，如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">主机A向主机B进行TCP通信</span><br><span class="line">-&gt;</span><br><span class="line">主机A发送给主机B的第一个TCP报文中，序列号为1000</span><br><span class="line">-&gt;</span><br><span class="line">假如当前TCP报文段的数据是字节流的第1025~2048字节，则该报文的序号值为1000+1025=2025</span><br></pre></td></tr></table></figure>
+<ul>
+<li>32位确认号，即将收到的TCP报文段的序号值加1用作响应，如：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">主机B收到来自主机A的第一个TCP报文，序列号为1000</span><br><span class="line">-&gt;</span><br><span class="line">主机B返回的TCP报文的确认号为1001，序号（ISN）为2000</span><br><span class="line">-&gt;</span><br><span class="line">主机A发送的TCP报文的序号值为2025，确认号为2001</span><br><span class="line"></span><br><span class="line">因此，一个TCP通信过程中，序号为自己的序号，确认号为对方发送报文的序列号加一</span><br></pre></td></tr></table></figure>
+<ul>
+<li>6位标志位，如下：<ul>
+<li>URG，表示紧急指针是否有效</li>
+<li>ACK，表示确认号是否有效（确认报文段）</li>
+<li>PSH，表示接收端应用程序应立即从TCP接收缓冲区内读走数据，为后续数据腾出空间</li>
+<li>RST，表示要求对方重新建立连接（复位报文段）</li>
+<li>SYN，表示建立一个请求（同步报文段）</li>
+<li>FIN，表示本段将关闭连接（结束报文段）</li>
+</ul>
+</li>
+<li>16位窗口大小，TCP流量控制的手段，这里的窗口指<strong>接收通告窗口RWND（Receiver Window），告诉对方本端TCP接收缓冲区还能容纳多少字节数据，便于对方控制数据发送速度</strong></li>
+<li>TCP校验和<strong>不仅包含头部，还包含数据部分，这是TCP可靠传输的一个重要保障</strong></li>
+<li>紧急指针，与序号字段的值相加表示最后一个紧急数据的下一字节序号（相当于偏移量，相对于当前序号的偏移量）</li>
+<li>头部选项，最大40字节，其结构一般为：<br><img src="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE/Pasted_image_20260727205425.png"><ul>
+<li>第一个字段代表选项类型</li>
+<li>第二个代表该选项的总长度，包含kind与length占据的两字节</li>
+<li>第三个代表具体信息</li>
+</ul>
+</li>
+<li>常见TCP选项有以下7种：<br><img src="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE/Pasted_image_20260727205558.png"></li>
+<li>从上往下依次为：<ul>
+<li>选项表结束选项</li>
+<li>空操作，通常为了将TCP选项的总长度填充为4字节的整倍数</li>
+<li>最大报文段长度选项，<strong>TCP连接初始化时，使用该选项协商最大报文长度MSS，通常其值为（MTU-最短IP头部20字节-最短TCP头部20字节），因此对于以太网来讲，通常为1460字节</strong></li>
+<li>窗口扩大因子选项，<strong>TCP连接初始化时，使用该选项协商RWND的扩大因子</strong>，在TCP头部中，RWND的最大值为65535字节（2的16次方减一），但<strong>实际TCP模块允许的RWND大小远不止这个数，因此该选项解决了这个问题</strong><ul>
+<li>假设当前RWND大小为N，窗口扩大因子为M，则实际RWND大小为N乘以2的M次方（M取值范围为0~14）</li>
+<li>可通过修改<code>/proc/sys/net/ipv4/tcp_window_scaling</code>启动或关闭该选项</li>
+<li><strong>与MSS选项用于，因为这两个选项仅用于TCP连接初始化，因此只能出现在同步报文中，否则被忽略</strong></li>
+</ul>
+</li>
+<li>SACK，即选择性确认选项<ul>
+<li><strong>TCP通信时，若某个TCP报文段丢失，则TCP模块会重发最后被确认的TCP报文后的所有报文</strong>，导致部分正确传输报文也被重复发送，降低TCP性能</li>
+<li>SACK改善该问题，只重发丢失的TCP报文段，而非重发所有后续未确认的报文</li>
+<li>修改<code>/proc/sys/net/ipv4/tcp_sack</code>启动或关闭该选项</li>
+</ul>
+</li>
+<li>SACK实际工作的选项，告诉发送方本端已收到并缓存的不连续数据块，从而让发送方检查并重发丢失的数据块<ul>
+<li><strong>每个块边沿包含一个四字节的序号</strong>，其中左边沿表示不连续块的<strong>第一个数据序号</strong>，而右边沿表示不连续块的<strong>最后一个数据序号的下一个序号</strong></li>
+<li>这样一对参数之间的数据是没有收到的，因为一个块信息占据8字节，最多可包含4个这样的不联系块</li>
+</ul>
+</li>
+<li>时间戳选项，计算双方的RTT（Round Trip Time，即回路时间），为流量控制提供信息</li>
+</ul>
+</li>
+<li><strong>三次握手与四次挥手这里不做赘述</strong></li>
+<li>TCP连接是全双工，因此允许两个方向的数据传输被独立关闭，即：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">通信一方可以发送结束报文段给对方，告诉对方本段已完成数据的发送，但允许继续接收对方的数据，直至对方也发送结束报文段，这称为（四次挥手中）半关闭状态</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>iptables</code>命令<ul>
+<li>与<code>firewalld</code>命令都是用于管理防火墙，定义其各种功能规则<ul>
+<li><code>iptables</code>基于接口设置规则，<code>firewalld</code>基于区域设置规则（与硬件防火墙设置类似）</li>
+<li>前者配置在<code>/etc/sysconfig/iptables</code>，后者一般在<code>/etc/firewalld与/usr/firewalld</code>中</li>
+<li>前者为静态防火墙，后者为动态防火墙，且可以在运行时改动</li>
+<li><code>firewall-cmd</code>进行配置，分为9个区域：trusted（允许所有流量）、public、external、home、internal、work、dmz、block（拒绝所有传入流量）与drop（丢弃所有传入流量，不产生ICMP错误响应）</li>
+<li>区域的安全程度取决于管理员设置的规则，默认情况下，<strong>均为public区域</strong></li>
+</ul>
+</li>
+<li>该命令有<code>Filter</code>（基本数据包过滤）、<code>NAT</code>（处理NAT）、<code>Mangle</code>（改变数据包）、<code>Raw</code>（在连接跟踪前配置数据包）四种规则处理类别，其中<code>Filter</code>表为其默认表（tables）</li>
+<li>有<code>INPUT OUTPUT FORWARD</code>三种处理数据包的规则（chains）</li>
+<li>规则包含一个条件及目标，<strong>满足条件就执行目标中的规则，否则执行下一条规则</strong></li>
+<li>下介绍部分选项：<ul>
+<li><code>--list或-L</code>，列举规则，如<code>iptables -t filter -L</code>列举filter表中的规则</li>
+<li><code>-t name</code>，name为具体规则处理类型（表）</li>
+<li><code>--append或-A chain</code>，追加当前规则到chain链，如<code>iptables -A INPUT -p tcp -dport 80 -j ACCEPT</code>，增加到INPUT链，允许目标端口为80的TCP连接到本机</li>
+<li><code>--jump或-j target</code>，执行对应行为，如<code>ACCEPT</code>或<code>DROP</code>行为，<code>iptables -A INPUT -s 192.168.1.100 -j DROP</code>，拒绝来自192.168.1.100的任何连接</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>TCP连接的重连操作次数由<code>/proc/sys/net/ipv4/tcp_syn_retries</code>定义，当达到目标重连次数，TCP放弃连接并通知应用程序</li>
+</ul>
+<hr>
+<h1 id="TCP状态转移"><a href="#TCP状态转移" class="headerlink" title="TCP状态转移"></a>TCP状态转移</h1><p><img src="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE/Pasted_image_20260728154833.png"></p>
+<ul>
+<li>图中粗虚线代表典型的服务器端连接的状态转移，粗实线代表客户端（<strong>CLOSED代表假想的起始点，并非一个实际状态</strong>）</li>
+<li>使用<code>netstat</code>命令可以查看当前TCP连接的状态</li>
+<li>服务器端<ol>
+<li>调用<code>listen</code>进入LISTEN监听状态，即被动打开</li>
+<li>监听到某个连接请求，将该连接放入内核等待队列中，并发送带SYN的确认报文，进入SYN_RCVD状态</li>
+<li>若服务器接受到客户端发送回的确认报文段，进入ESTABLISHED状态</li>
+<li>当客户端主动发送关闭连接时，服务器返回确认报文段并进入CLOSE_WAIT状态，即等待服务器端应用程序关闭连接，随后进入LAST_ACK状态</li>
+<li>接受到客户端的确认报文段后进入CLOSED状态</li>
+</ol>
+</li>
+<li>客户端<ul>
+<li>调用<code>connect</code>发送同步报文段，进入SYN_SENT状态<ul>
+<li>若服务器目标端口不存在，或被TIME_WAIT状态的连接占用，则服务器返回RST，调用失败</li>
+<li>若服务器端口存在但超时，调用失败</li>
+<li>调用失败返回CLOSED状态</li>
+</ul>
+</li>
+<li>客户端主动发送结束报文段，进入FIN_WAIT_1状态，<strong>若收到服务器发送的确认报文段则进入FIN_WAIT_2状态，此时服务器处于CLOSE_WAIT状态</strong>，若此时服务器也发送结束报文段，则客户端确认并进入TIME_WAIT状态</li>
+</ul>
+</li>
+<li>处于FIN_WAIT_2状态的客户端需要等待服务器发送结束报文段，否则将一直停留在该状态，此时若客户端强序退出，<strong>该连接将被内核接管，变成孤儿连接</strong><ul>
+<li><code>/proc/sys/net/ipv4/tcp_max_orphans与/proc/sys/net/ipv4/tcp_fin_timeout</code>定义了内核接管的孤儿连接数目以及生存时间</li>
+</ul>
+</li>
+<li><strong>当客户端处于TIME_WAIT状态时，客户端需要等待一段长为2MSL（Maximum Segment Life，报文段最大生存时间）的时间，才会关闭，MSL在RFC文档中建议值为2min</strong>，设置TIME_WAIT状态的原因如下：<ul>
+<li>保证TCP连接被可靠地终止（如：在TIME_WAIT状态发送给服务器的确认报文丢失，服务器会重发结束报文段，因此客户端需要停留在某个状态以处理重复收到的结束报文段）</li>
+<li>保证让迟来的TCP报文段有足够时间被识别丢弃</li>
+<li>Linux系统上，一个TCP端口不能被同时打开多次，在TIME_WAIT状态下，无法立即使用该占用端口</li>
+<li><strong>因为TCP报文段的最大生存时间是MSL，因此坚持2MSL时间的TIME_WAIT状态可以确保网络上两个传输方向上尚未接收到、迟到的TCP报文段都被丢弃</strong></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="RST报文段"><a href="#RST报文段" class="headerlink" title="RST报文段"></a>RST报文段</h1><ul>
+<li>当下列三种情况时，会发送RST报文段，通知对方关闭连接或重新建立连接<ol>
+<li>访问不存在的端口</li>
+<li>异常终止连接（一旦发送了复位报文段，发送端的所有排队等待发送的数据都将被丢弃）</li>
+<li>处理半打开连接（<strong>当某端关闭或异常终止了连接，而对方没有收到结束报文，此时这端仍维持着原本的连接，某端即使重启也不会有原来连接的任何信息，此时成为半打开状态</strong>，此时往该连接写入数据，对方将回应复位报文段）</li>
+</ol>
+</li>
+</ul>
+<hr>
+<h1 id="TCP连接交换的应用程序数据"><a href="#TCP连接交换的应用程序数据" class="headerlink" title="TCP连接交换的应用程序数据"></a>TCP连接交换的应用程序数据</h1><ul>
+<li>TCP报文段携带的应用程序数据按照长度分为两种：<ol>
+<li>交互数据，仅包含很少的字节，<strong>使用该数据的应用程序对实时性要求高</strong></li>
+<li>成块数据，<strong>使用数据的应用程序对传输效率要求高</strong></li>
+</ol>
+</li>
+<li>nagle算法（<strong>解决交互数据在广域网上数量庞大可能导致拥塞发生的问题</strong>）：一个TCP连接的通信双方在任意时刻都最多只能发送一个未被确定的TCP报文段，在该TCP报文段的确认到达之前不能发送其他TCP报文段（发送方可以在等待确认的同时收集本端需要发送的微量数据（<strong>交互数据</strong>），在收到确认报文段后全部发出），其具备自适应性，确认到达得越快，数据就发送的越快</li>
+<li><code>tcpdump</code>命令，是Linux上的网络抓包工具，下为常见选项以及过滤表达式：<ul>
+<li><code>-i dev</code>，监听指定网卡dev</li>
+<li><code>-n</code>，不解析域名</li>
+<li><code>-nn</code>，不解析域名且不解析端口服务号</li>
+<li><code>-c n</code>，抓取n个包后自动退出</li>
+<li><code>-s n</code>，抓取n字节数据包，为0代表不截断，默认68字节</li>
+<li><code>-I</code>，抓包保存到文件同时查看包的内容</li>
+<li><code>-v/-vv</code></li>
+<li><code>-w file</code>，写入文件file中（便于如wireshark分析）</li>
+<li><code>-r file</code>，读取pcap文件</li>
+<li><code>-A</code>，以ASCII码显示数据包内容</li>
+<li><code>-X</code>，以16进制与ASCII同时显示</li>
+<li>类型过滤：<code>host 192.168.1.1</code>、<code>net 192.168.22.0/24</code>、<code>port 22</code></li>
+<li>方向过滤：<code>src 10.0.0.1</code>、<code>dst port 80</code></li>
+<li>协议过滤：<code>tcp udp icmp arp</code></li>
+<li>逻辑组合：<code>and or not</code></li>
+<li>支持高级协议字段过滤，语法如下：<ol>
+<li>proto[x:y]，过滤从x字节开始的y字节数</li>
+<li>proto[x:y] &amp; z&#x3D;0，proto[x:y]和z的操作不为0</li>
+<li>e.g.<code>tcp[tcpflags] &amp; tcp-syn !=0</code>，即tcp包的标志位为SYN</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="带外数据"><a href="#带外数据" class="headerlink" title="带外数据"></a>带外数据</h1><ul>
+<li>O（ut）O（f）B（and），用于迅速通告对方本端发生的重要事件，因此其具有比普通数据更高的优先级，应该总是<strong>被立即发送，且不论缓冲区是否有排队等待发送的普通数据</strong></li>
+<li>UDP没有实现带外数据，TCP也没有真正的带外数据，但可以利用其头部的紧急指针标志与紧急指针两个字段</li>
+<li>TCP发送紧急数据（带外数据）的过程：<ul>
+<li>假定该进程已经往某个TCP连接的发送缓冲区写入N个字节的普通数据，并等待发送</li>
+<li>在发送前写入三个字节的带外数据abc，此时TCP报文段的头部将设置URG标志，并设置紧急指针为指向最后应该带外数据的下一字节，如下图：<img src="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE/Pasted_image_20260728174110.png"></li>
+<li>由图可知，只有最后一个字节被当作带外数据（字母c），其余为普通数据，并将其读入一个特殊的缓存中，<strong>这个缓存只有1个字节，成为带外缓存</strong>，若为即使取走，则会被覆盖（如果后续有其他带外数据）</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="TCP超时重传"><a href="#TCP超时重传" class="headerlink" title="TCP超时重传"></a>TCP超时重传</h1><ul>
+<li>TCP服务必须能够重传超时时间内未收到确认的TCP报文段，因此需要<strong>为每个报文段都维护一个重传定时器</strong>，定时器在报文段第一次被发出时启动，若超时，<strong>重传时间、重传次数由TCP的重传策略决定</strong></li>
+<li><code>iperf</code>是一个测量网络状况的工具，<code>-s</code>代表以服务器启动，默认监听端口5001，<strong>并丢弃当前监听端口收到的所有数据</strong></li>
+<li><code>/proc/sys/net/ipv4/tcp_retries1/2</code>，前者指定TCP最少执行的重传次数，默认为3，后者为最多可执行的重传次数，默认为15</li>
+</ul>
+<hr>
+<h1 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h1><ul>
+<li><strong>提高网络利用率、降低丢包率，并保证网络资源对每条数据流的公平性</strong>也是TCP模块的主要任务，也就是拥塞控制</li>
+<li>拥塞控制拥有四个部分：<ul>
+<li>慢启动（slow start）</li>
+<li>拥塞避免（congestion avoidance）</li>
+<li>快速重传（fast restransmit）</li>
+<li>快速恢复（fast recovery）</li>
+<li><code>/proc/sys/net/ipv4/tcp_congestion_control</code>文件指示当前机器使用的拥塞控制算法，如cubic算法、reno算法、vegas算法等</li>
+<li>拥塞控制的最终受控变量是<strong>发送端向网络一次连续写入（收到第一个数据确认之前）的数据量，即SWND（Send Window）</strong>，同时S（ender）MSS一般等于MSS</li>
+<li>发送端需要合理选择SWND大小，如果太小则会引起网络延迟，太大会导致网络拥塞，接收方可以通过RWND去控制SWND，但显然不够，因此发送端引入了拥塞窗口C（ongestion）WND的状态变量，<strong>实际的SWND值是RWND与CWND中的较小值</strong></li>
+</ul>
+</li>
+</ul>
+<h2 id="慢启动与拥塞避免"><a href="#慢启动与拥塞避免" class="headerlink" title="慢启动与拥塞避免"></a>慢启动与拥塞避免</h2><ul>
+<li>TCP连接建立后，CWND将会被设置为初始值I（nitial）W（indow），大小为2~4个SMSS（新Linux内核提高了该初始值），<strong>此后发送端每收到接收端的一个确认，其CWND就按照<code>CWND+=min(N,SMSS)</code>的方式增加，其中N为此次确认中包含的之前未被确认的字节数（即之前没被确认，接收端刚确认收到的字节数），因此CWND每轮会增加最多不超过一个SMSS的大小</strong></li>
+<li>慢启动算法的理由：TCP模块刚开始发送数据，<strong>不清楚网络当前的实际情况，需要用一种试探性的方式平滑增长CWND的大小（实际慢启动增长速度极快）</strong>，当然，<strong>若不施加其他手段，慢启动将导致CWND很快膨胀，因此TCP拥塞控制定义了另外一个状态变量：慢启动门限（ssthresh，即slow start threshold size），当CWND大小超过该值时，进入拥塞避免阶段</strong></li>
+<li>慢启动增长速度快的原因</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">假设当前SWND=W，SMSS=M</span><br><span class="line">在一个RTT内发送的数据包数量为W/M，理想情况下也会收到W/M个ACK</span><br><span class="line">按照慢启动定义每次收到确认就增加，则一个RTT内，CWND总增量为=（ACK总数）W/M*（每个ACK增量最大值）M=W</span><br><span class="line">即每个RTT结束后，CWND=2W，即每轮RTT结束后，CWND理论最大值会是原本值的两倍</span><br></pre></td></tr></table></figure>
+<ul>
+<li>拥塞避免算法使得CWND按照<strong>线性方式</strong>增加，减缓其扩大，在RFC文档中提到下列两种方式：<ol>
+<li>每个RTT时间内按照<code>CWND+=min(N,SMSS)</code>计算新的CWND，而不论该RTT时间发送端收到了多少个确认（<strong>这里N代表该RTT内累计确认的新字节数，而非单个收到确认报文段</strong>）</li>
+<li>（Linux下的主流实现）每收到一个对新数据的确认，按照<code>CWND+=SMSS*SMSS/CWND</code>来更新CWND</li>
+</ol>
+<ul>
+<li>不论哪种算法，均为让CWND<strong>每个RTT只增加1个SMSS</strong>，如下图：<img src="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE/Pasted_image_20260729173431.png"></li>
+</ul>
+</li>
+<li><strong>发送端判断拥塞发生的依据：</strong><ul>
+<li>传输超时，或TCP重传定时器溢出（慢启动与拥塞避免）</li>
+<li>接收到重复的确认报文段（快速重传与快速恢复）</li>
+<li>若为第一种情况，即发送端检测到拥塞发生是由于传输超时，将做如下调整：<code>ssthresh=max(FlightSize/2,2*SMSS) CWND&lt;=SMSS</code>（FlightSize为已发送但未收到确认的字节数），这样调整后，CWND将小于SMSS，也必然小于新的ssthresh，故而拥塞控制再次进入慢启动阶段</li>
+</ul>
+</li>
+</ul>
+<h2 id="快速重传和快速恢复"><a href="#快速重传和快速恢复" class="headerlink" title="快速重传和快速恢复"></a>快速重传和快速恢复</h2><ul>
+<li>很多情况下，发送端都可以收到重复的确认报文段，比如TCP报文段丢失，接收端收到乱序报文段并重排等，拥塞控制算法需要<strong>判断当前网络是否真的发生了拥塞（TCP报文段是否真的丢失）</strong>：发送端若<strong>连续收到3个确认报文段，就认为拥塞发生，将启动快速重传与快速恢复算法</strong>：<ol>
+<li>当收到第3个重复的确认报文段时，按照<code>ssthresh=max(FlightSize/2,2*SMSS) CWND&lt;=SMSS</code>计算ssthresh，然后立即重传丢失报文段。并按照<code>CWND=ssthresh+3*SMSS</code>设置CWND</li>
+<li>每次收到一个重复的确认时，设置CWND&#x3D;CWND+SMSS，此时发送端可以发送新的TCP报文段</li>
+<li>收到新数据的确认时，设置<code>CWND=ssthresh</code>，快速重传和快速恢复完成之后，<strong>拥塞控制将恢复到拥塞避免阶段</strong></li>
+</ol>
+</li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/TCP/" class="tag-item">
+                    TCP
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/%E8%AE%A1%E7%BD%91/" class="cate-item">
+                    计网
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE/">https://narciostyx.github.io/2026/01/28/TCP协议/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/28/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">TCP/IP协议族</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/C++20%20concepts/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++20 concepts</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
