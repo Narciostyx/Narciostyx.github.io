@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | TCP/IP协议族</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP-IP%E5%8D%8F%E8%AE%AE%E6%97%8F"><span class="toc-number">1.</span> <span class="toc-text">TCP&#x2F;IP协议族</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>TCP/IP协议族</h1>
+    </section>
+    <section class="article">
+        <p>TCP&#x2F;IP四层协议族及其各层功能</p>
+<span id="more"></span>
+<h1 id="TCP-IP协议族"><a href="#TCP-IP协议族" class="headerlink" title="TCP&#x2F;IP协议族"></a>TCP&#x2F;IP协议族</h1><ul>
+<li>四层协议，即数据链路层（包含五层协议的物理层）、网络层、传输层、应用层</li>
+<li>数据链路层，即使用<strong>物理地址（MAC地址）</strong> 搜寻计算机，因此该层常用协议为ARP协议与R（everse）ARP协议，实现IP地址与MAC地址的相互转换<ul>
+<li>ARP协议，将IP地址解析成MAC地址，其工作原理为：<strong>通过广播发送ARP请求查询目标主机IP的MAC地址，如：Who has 192.168.1.100? Tell 192.168.1.99，然后当前局域网主机发现是当前主机IP则应答：192.168.1.100 is at 11:11:11:11:11:11</strong></li>
+<li>RARP协议，即将MAC地址解析成IP地址，通常该协议用于某些无存储设备的计算机上（<strong>MAC地址通常是烧录于网卡等硬件上，不需要额外的存储介质</strong>），由运行RARP服务的计算机管理IP地址与ARP地址的映射</li>
+</ul>
+</li>
+<li>网络层，即实现数据包的选路与转发，该层最核心的协议为IP协议，其他较为的协议则有如ICMP协议等<ul>
+<li>ICMP报文，分为两大类：<strong>差错报文与查询报文</strong></li>
+<li>差错报文回应网络错误，如：目标不可达，重定向等</li>
+<li>查询报文查询网络信息</li>
+<li><strong>注：ICMP并非严格意义上的网络层协议，协议一般要求上层服务使用下层提供的服务，而ICMP依赖于同层的IP协议</strong></li>
+</ul>
+</li>
+<li>传输层，实现应用程序的端到端通信，不在乎数据包的中转过程（<strong>上层协议不关心下层协议的具体实现方法，仅使用其封装好的服务</strong>），该层协议主要有：<strong>TCP、UDP</strong>与SCTP<ul>
+<li>TCP协议基于流，其实现<strong>可靠的、面向连接（需要双方建立TCP连接，即TCP三次握手）、基于流</strong>的服务，使用超时重传，数据确认等方式确保数据包被正确发送到目的端</li>
+<li>UDP协议基于数据报，其实现<strong>不可靠的、无连接</strong>的服务，因此程序需要自己处理<strong>数据确认、超时重传等逻辑</strong></li>
+<li>S（tream）C（ontrol）T（ransmission）P，其为了在因特网上传输电话信号而设计，在此不讨论改协议</li>
+</ul>
+</li>
+<li>应用层，实现应用程序的相应逻辑，<strong>前三层要求稳定与高效，因此基本上都在内核空间实现</strong>，而应用层则是在用户空间实现，如文件传输、网络管理等，下列举一些协议：<ul>
+<li>telnet，远程登录协议</li>
+<li>OSPF，路由器更新当前局域网画像的协议，使路由器彼此交换信息</li>
+<li>DNS</li>
+<li>可通过<code>/etc/services</code>查看所有知名的应用层协议</li>
+</ul>
+</li>
+<li>上层协议使用<strong>封装</strong>使用下层协议提供的服务<br><img src="/2026/01/02/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/Pasted_image_20260727154421.png"></li>
+<li>由于TCP是面向流，<strong>通信双方需要维持应该连接，因此内核中会存储相关信息，这部分数据中的头部信息与内核缓冲区数据一起构成了TCP报文段</strong><br><img src="/2026/01/02/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/Pasted_image_20260727154626.png"></li>
+<li>以太网帧（数据链路层使用的以太网协议）MTU通常为1500字节，超过改字节则会被分片传输<br><img src="/2026/01/02/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/Pasted_image_20260727154839.png"></li>
+<li>以太网帧的<strong>类型字段</strong>决定当前数据包分发给哪一模块，如：0x800，为IP数据报，0x806，为ARP请求或应答报文等，同理IP数据报也采用<strong>协议字段</strong>区分不同协议，TCP与UDP则基于<strong>端口号</strong>区分上层应用，如DNS协议通常工作于53端口，HTTP工作于80端口</li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/IP/" class="tag-item">
+                    IP
+                </a>
+            
+                <a href="/tags/TCP/" class="tag-item">
+                    TCP
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/%E8%AE%A1%E7%BD%91/" class="cate-item">
+                    计网
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/02/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/">https://narciostyx.github.io/2026/01/02/TCP协议族/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/09/ARP%E5%8D%8F%E8%AE%AE/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">ARP协议</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/12/01/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++命名修饰(C++ name mangling)</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
