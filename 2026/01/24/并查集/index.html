@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | 并查集</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.</span> <span class="toc-text">查询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84%E5%8E%8B%E7%BC%A9"><span class="toc-number">1.1.</span> <span class="toc-text">路径压缩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6"><span class="toc-number">2.</span> <span class="toc-text">合并</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A0%E9%99%A4"><span class="toc-number">3.</span> <span class="toc-text">删除</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%A6%E6%9D%83"><span class="toc-number">4.</span> <span class="toc-text">带权</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>并查集</h1>
+    </section>
+    <section class="article">
+        <p>并查集相关概念以及合并、查询操作</p>
+<span id="more"></span>
+<p><a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/dsu/">参考文章</a></p>
+<ul>
+<li><strong>（合）并查（询）集（合）</strong>，利用森林中每棵树表示一个集合（实现是基于数组模拟的森林）</li>
+<li>合并：将两个<strong>不相交</strong>的元素合并为一个集合</li>
+<li>查询：查询两个元素是否在同一个集合内</li>
+<li>一个并查集可以定义成如下形式：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pa[i]代表元素i的父节点</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">dsu</span></span><br><span class="line">&#123;</span><br><span class="line">	std::vector&lt;<span class="type">size_t</span>&gt; pa;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 初始化所有节点父节点指向自己</span></span><br><span class="line">	<span class="function"><span class="keyword">explicit</span> <span class="title">dsu</span><span class="params">(<span class="type">size_t</span> size)</span>:pa(size) &#123;</span> std::<span class="built_in">iota</span>(pa.<span class="built_in">begin</span>(),pa.<span class="built_in">end</span>(),<span class="number">0</span>); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">并查集本身类似如下形式：</span><br><span class="line">1</span><br><span class="line">| \ \</span><br><span class="line">2 4 3</span><br><span class="line"> / \</span><br><span class="line"> 5 6</span><br><span class="line">数组形式为（假设下标代表节点，不考虑路径压缩）：</span><br><span class="line">1 1 1 1 4 4</span><br><span class="line">↑</span><br><span class="line">根节点的父节点是自己</span><br></pre></td></tr></table></figure>
+<h2 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 并查集查询是找根节点，如果当前不是根节点（父节点是自己）则递归查找</span></span><br><span class="line"><span class="function"><span class="type">size_t</span> <span class="title">dsu::find</span><span class="params">(<span class="type">size_t</span> x)</span></span>&#123; <span class="keyword">return</span> pa[x]==x?x:<span class="built_in">find</span>(pa[x]); &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="路径压缩"><a href="#路径压缩" class="headerlink" title="路径压缩"></a>路径压缩</h3><ul>
+<li>当并查集插入元素过多时，可能会变成如：<code>1&lt;-2&lt;-3&lt;-4&lt;-5&lt;-6</code>的形式，此时查询父节点递归深度会不断变大，<strong>考虑每个元素只需要保存自己的根进行路径压缩</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">| \ \</span><br><span class="line">2 4 3</span><br><span class="line"> / \</span><br><span class="line"> 5 6</span><br><span class="line">路径压缩（不一定总变成两层树，因为前提是调用find函数）：</span><br><span class="line">1</span><br><span class="line">| \ \ \ \</span><br><span class="line">2 4 3 5 6</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通常路径压缩出现在查询过程，这样可以加快后续查询速度</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">size_t</span> <span class="title">dsu::find</span><span class="params">(<span class="type">size_t</span> x)</span></span>&#123; <span class="keyword">return</span> pa[x]==x?x:pa[x]=<span class="built_in">find</span>(pa[x]); &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 合并一般来讲可以选择x合并到y，也可以选择y合并到x</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dsu::unite</span><span class="params">(<span class="type">size_t</span> x,<span class="type">size_t</span> y)</span></span>&#123;pa[<span class="built_in">find</span>(x)]=<span class="built_in">find</span>(y);&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>合并过程中，<strong>选择那棵树的根节点作为新树的根节点会影响未来操作的复杂度，因此可以将节点较少或深度较小的树连接到另外一棵树，避免发生退化</strong><ul>
+<li>考虑将矮树挂高树上：假设A树高度为3，B树高度为1，将B接到A下，新树高度仍然为3</li>
+<li>考虑将高树挂矮树上：新树高度为4</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">树A</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line"></span><br><span class="line">树B</span><br><span class="line">4</span><br><span class="line"></span><br><span class="line">情况一：</span><br><span class="line">1</span><br><span class="line">2 4</span><br><span class="line">3</span><br><span class="line"></span><br><span class="line">情况二：</span><br><span class="line">4</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3（退化成链表）</span><br></pre></td></tr></table></figure>
+<ul>
+<li>考虑进行<strong>启发式合并（指当合并两个数据结构时，总是将代价较小的数据结构合并到数据较大的数据结构中）</strong>，在并查集中考虑<strong>按大小（节点数）&#x2F;秩（深度）合并</strong><ul>
+<li>不论采取哪种方式，都需要<strong>新增数组</strong>（大小size[]&#x2F;秩rnk[]）</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 按照大小合并</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">dsu</span></span><br><span class="line">&#123;</span><br><span class="line">	std::vector&lt;<span class="type">size_t</span>&gt; pa,size;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">explicit</span> <span class="title">dsu</span><span class="params">(<span class="type">size_t</span> n)</span>:pa(n),size(n,<span class="number">1</span>)&#123;</span> std::<span class="built_in">itoa</span>(pa.<span class="built_in">begin</span>(),pa.<span class="built_in">end</span>(),<span class="number">0</span>); &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dsu::unite</span><span class="params">(<span class="type">size_t</span> x,<span class="type">size_t</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 默认x是节点数多，y是节点数小</span></span><br><span class="line">	x=<span class="built_in">find</span>(x),y=<span class="built_in">find</span>(y);</span><br><span class="line">	<span class="keyword">if</span>(x==y) <span class="keyword">return</span>;</span><br><span class="line">	<span class="keyword">if</span>( size[x]&lt;size[y] )</span><br><span class="line">		<span class="built_in">swap</span>(x,y);</span><br><span class="line">	pa[y]=x;</span><br><span class="line">	size[x]+=size[y];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 按照秩合并，默认节点高度为0</span></span><br><span class="line"><span class="comment">// find函数不更新秩</span></span><br><span class="line"><span class="comment">// 更新秩会导致find函数性能退化，且合并时利用的秩将不正确</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">dsu</span></span><br><span class="line">&#123;</span><br><span class="line">	std::vector&lt;<span class="type">size_t</span>&gt; pa,rnk;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">explicit</span> <span class="title">dsu</span><span class="params">(<span class="type">size_t</span> n)</span>:pa(n),size(n,<span class="number">0</span>)&#123;</span> std::<span class="built_in">itoa</span>(pa.<span class="built_in">begin</span>(),pa.<span class="built_in">end</span>(),<span class="number">0</span>); &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dsu::unite</span><span class="params">(<span class="type">size_t</span> x,<span class="type">size_t</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 默认x是秩较大，y是秩较小</span></span><br><span class="line">	x=<span class="built_in">find</span>(x),y=<span class="built_in">find</span>(y);</span><br><span class="line">	<span class="keyword">if</span>(x==y) <span class="keyword">return</span>;</span><br><span class="line">	<span class="keyword">if</span>( rnk[x]&lt;rnk[y] )</span><br><span class="line">		<span class="built_in">swap</span>(x,y);</span><br><span class="line">	pa[y]=x;</span><br><span class="line">	<span class="keyword">if</span>(rank[x]==rank[y])</span><br><span class="line">		rank[x]++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><ul>
+<li>普通的并查集不支持且无法实现删除功能，为了实现删除功能，需要引入<strong>虚点（保证实际存储的数据节点始终是叶子节点）</strong><ul>
+<li><strong>删除单个节点需要为其新建立一个虚点作为其父节点</strong></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;numeric&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">DSU</span> &#123;</span><br><span class="line">  <span class="type">size_t</span> id;</span><br><span class="line">  std::vector&lt;<span class="type">size_t</span>&gt; pa, size;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 预分配内存，m为操作数，保证容纳全部可能出现的数据</span></span><br><span class="line">  <span class="function"><span class="keyword">explicit</span> <span class="title">DSU</span><span class="params">(<span class="type">size_t</span> size_, <span class="type">size_t</span> m)</span></span></span><br><span class="line"><span class="function">      : id(size_ * <span class="number">2</span>), pa(size_ * <span class="number">2</span> + m), size(size_ * <span class="number">2</span> + m, <span class="number">1</span>) &#123;</span></span><br><span class="line">    <span class="comment">// size 的前半段其实没有使用，只是为了让下标计算更简单</span></span><br><span class="line">    <span class="comment">// 因为size是维护的虚点下挂了多少数据节点，所以前半段并没有什么用</span></span><br><span class="line">    std::<span class="built_in">iota</span>(pa.<span class="built_in">begin</span>(), pa.<span class="built_in">begin</span>() + size_,</span><br><span class="line">              size_);  <span class="comment">// 令 i 指向现在设置的虚点 i + size_</span></span><br><span class="line">    std::<span class="built_in">iota</span>(pa.<span class="built_in">begin</span>() + size_, pa.<span class="built_in">end</span>(), size_);  <span class="comment">// 所有虚点指向它自身</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">size_t</span> <span class="title">find</span><span class="params">(<span class="type">size_t</span> x)</span> </span>&#123; <span class="keyword">return</span> pa[x] == x ? x : pa[x] = <span class="built_in">find</span>(pa[x]); &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">unite</span><span class="params">(<span class="type">size_t</span> x, <span class="type">size_t</span> y)</span> </span>&#123;</span><br><span class="line">    x = <span class="built_in">find</span>(x), y = <span class="built_in">find</span>(y);</span><br><span class="line">    <span class="keyword">if</span> (x == y) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (size[x] &lt; size[y]) std::<span class="built_in">swap</span>(x, y);</span><br><span class="line">    pa[y] = x;</span><br><span class="line">    size[x] += size[y];</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">erase</span><span class="params">(<span class="type">size_t</span> x)</span> </span>&#123;</span><br><span class="line">    <span class="type">size_t</span> y = <span class="built_in">find</span>(x);</span><br><span class="line">    --size[y];</span><br><span class="line">    <span class="comment">// 使其脱离原集合</span></span><br><span class="line">    pa[x] = id++;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n, m, case_id = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> ((std::cin &gt;&gt; n &gt;&gt; m), n) &#123;</span><br><span class="line">    <span class="function">DSU <span class="title">dsu</span><span class="params">(n, m)</span></span>;</span><br><span class="line">    <span class="keyword">for</span> (; m; --m) &#123;</span><br><span class="line">      <span class="type">char</span> ch;</span><br><span class="line">      std::cin &gt;&gt; ch;</span><br><span class="line">      <span class="keyword">if</span> (ch == <span class="string">&#x27;M&#x27;</span>) &#123;</span><br><span class="line">        <span class="type">int</span> x, y;</span><br><span class="line">        std::cin &gt;&gt; x &gt;&gt; y;</span><br><span class="line">        dsu.<span class="built_in">unite</span>(x, y);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ch == <span class="string">&#x27;S&#x27;</span>) &#123;</span><br><span class="line">        <span class="type">int</span> x;</span><br><span class="line">        std::cin &gt;&gt; x;</span><br><span class="line">        dsu.<span class="built_in">erase</span>(x);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = n; i &lt; dsu.id; ++i) &#123;</span><br><span class="line">      <span class="keyword">if</span> (dsu.size[i] &amp;&amp; i == dsu.<span class="built_in">find</span>(i)) &#123;</span><br><span class="line">        ++res;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Case #&quot;</span> &lt;&lt; (++case_id) &lt;&lt; <span class="string">&quot;: &quot;</span> &lt;&lt; res &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="带权"><a href="#带权" class="headerlink" title="带权"></a>带权</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;numeric&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">int</span> M = <span class="number">998244353</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">DSU</span> &#123;</span><br><span class="line">  <span class="comment">// dist[i]表示节点i到父节点pa[i]的边权</span></span><br><span class="line">  std::vector&lt;<span class="type">size_t</span>&gt; pa, size, dist;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">explicit</span> <span class="title">DSU</span><span class="params">(<span class="type">size_t</span> size_)</span> : pa(size_), size(size_, <span class="number">1</span>), dist(size_) &#123;</span></span><br><span class="line">    std::<span class="built_in">iota</span>(pa.<span class="built_in">begin</span>(), pa.<span class="built_in">end</span>(), <span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">size_t</span> <span class="title">find</span><span class="params">(<span class="type">size_t</span> x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (pa[x] == x) <span class="keyword">return</span> x;</span><br><span class="line">    <span class="type">size_t</span> y = <span class="built_in">find</span>(pa[x]);</span><br><span class="line">    <span class="comment">// 计算权重：dist[x-&gt;old_parent]+dist[old_parent-&gt;root]</span></span><br><span class="line">    (dist[x] += dist[pa[x]]) %= M;</span><br><span class="line">    <span class="comment">// 路径更新</span></span><br><span class="line">    <span class="keyword">return</span> pa[x] = y;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// d为x与y的权值</span></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">unite</span><span class="params">(<span class="type">size_t</span> x, <span class="type">size_t</span> y, <span class="type">int</span> d)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 这里执行了路径压缩，pa[x]与pa[y]已经指向各自的根</span></span><br><span class="line">    <span class="comment">// dist[x]与dist[y]为各自到根的权值</span></span><br><span class="line">    <span class="built_in">find</span>(x), <span class="built_in">find</span>(y);</span><br><span class="line">    <span class="comment">// 已知：</span></span><br><span class="line">    <span class="comment">// rx(x-&gt;root)=dist[x], ry(y-&gt;root)=dist[y]</span></span><br><span class="line">    <span class="comment">// 假设d为y-&gt;x的权值，则应该满足以下关系：</span></span><br><span class="line">    <span class="comment">// dist[y]+w(ry-&gt;rx)-dist[x]=d</span></span><br><span class="line">    <span class="comment">// w(rx-&gt;ry)=d+dist[x]-dist[y]</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 等价于d=d-dist[y]</span></span><br><span class="line">    <span class="comment">// 因为C++复数的取模会得到负数，这里加上M保证其为非负</span></span><br><span class="line">    (d += M - dist[y]) %= M;</span><br><span class="line">    <span class="comment">// 同理d=d+dist[x]</span></span><br><span class="line">    (d += dist[x]) %= M;</span><br><span class="line">    </span><br><span class="line">    x = pa[x], y = pa[y];</span><br><span class="line">    <span class="keyword">if</span> (x == y) <span class="keyword">return</span> d == <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (size[x] &lt; size[y]) &#123;</span><br><span class="line">      std::<span class="built_in">swap</span>(x, y);</span><br><span class="line">      d = (M - d) % M;</span><br><span class="line">    &#125;</span><br><span class="line">    pa[y] = x;</span><br><span class="line">    size[x] += size[y];</span><br><span class="line">    dist[y] = d;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 查询节点x与y的权值，y-&gt;x</span></span><br><span class="line">  <span class="function"><span class="type">int</span> <span class="title">check</span><span class="params">(<span class="type">size_t</span> x, <span class="type">size_t</span> y)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">find</span>(x), <span class="built_in">find</span>(y);</span><br><span class="line">    <span class="comment">// 不属于同一个集合，无法定义关系</span></span><br><span class="line">    <span class="keyword">if</span> (pa[x] != pa[y]) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="comment">// 属于一个集合，此时有共同的根</span></span><br><span class="line">    <span class="keyword">return</span> (dist[y] - dist[x] + M) % M;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n, m;</span><br><span class="line">  std::cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line">  <span class="function">DSU <span class="title">dsu</span><span class="params">(n)</span></span>;</span><br><span class="line">  <span class="keyword">for</span> (; m; --m) &#123;</span><br><span class="line">    <span class="type">int</span> op;</span><br><span class="line">    std::cin &gt;&gt; op;</span><br><span class="line">    <span class="keyword">if</span> (op) &#123;</span><br><span class="line">      <span class="type">int</span> u, v;</span><br><span class="line">      std::cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">      std::cout &lt;&lt; dsu.<span class="built_in">check</span>(u, v) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="type">int</span> u, v, x;</span><br><span class="line">      std::cin &gt;&gt; u &gt;&gt; v &gt;&gt; x;</span><br><span class="line">      std::cout &lt;&lt; dsu.<span class="built_in">unite</span>(u, v, x) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E5%B9%B6%E6%9F%A5%E9%9B%86/" class="tag-item">
+                    并查集
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="cate-item">
+                    数据结构
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/24/%E5%B9%B6%E6%9F%A5%E9%9B%86/">https://narciostyx.github.io/2026/01/24/并查集/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/24/%E8%B7%B3%E8%A1%A8/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">跳表</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

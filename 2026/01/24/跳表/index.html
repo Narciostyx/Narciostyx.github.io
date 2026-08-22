@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | 跳表</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E5%AE%9A%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">节点定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E5%B1%82%E6%95%B0%E7%9A%84%E7%94%9F%E6%88%90"><span class="toc-number">1.1.</span> <span class="toc-text">随机层数的生成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE"><span class="toc-number">2.</span> <span class="toc-text">查找</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%92%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">插入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A0%E9%99%A4"><span class="toc-number">4.</span> <span class="toc-text">删除</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>跳表</h1>
+    </section>
+    <section class="article">
+        <p>跳表相关概念以及查询、插入与删除</p>
+<span id="more"></span>
+<ul>
+<li>跳表是基于单链表，为实现高效查找的数据结构，<strong>核心思想是用空间换时间：在原链表之上建立多级索引，通过索引跳过大量节点，使查找、插入、删除的时间复杂度均降为O(logn)</strong></li>
+<li><strong>跳表与红黑树、AVL树一样，可以支持有序性操作（如区间查找、按排名访问等），但实现更简单、更适合并发场景</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">单链表，如:</span><br><span class="line">1-&gt;3-&gt;4-&gt;5-&gt;7-&gt;9-&gt;11-&gt;12-&gt;14-&gt;18-&gt;23-&gt;nullptr</span><br><span class="line">如果查找节点18，即使链表有序，也需要遍历链表</span><br><span class="line"></span><br><span class="line">每两个建立一级索引：</span><br><span class="line">1----&gt;4----&gt;7----&gt;11-----&gt;14-----&gt;23-&gt;nullptr</span><br><span class="line">|     |     |     |       |       |</span><br><span class="line">1-&gt;3-&gt;4-&gt;5-&gt;7-&gt;9-&gt;11-&gt;12-&gt;14-&gt;18-&gt;23-&gt;nullptr</span><br><span class="line"></span><br><span class="line">此时查找节点18，18大于14而小于23，因此下沉，继续遍历就可以找到节点18</span><br><span class="line">建立一级索引后只需要遍历7个节点，而原始链表需要遍历10个节点，索引加快了查找效率</span><br><span class="line"></span><br><span class="line">增加二级索引：</span><br><span class="line">1----------&gt;7------------&gt;14---------&gt;nullptr</span><br><span class="line">|           |             |</span><br><span class="line">1----&gt;4----&gt;7----&gt;11-----&gt;14-----&gt;23-&gt;nullptr</span><br><span class="line">|     |     |     |       |       |</span><br><span class="line">1-&gt;3-&gt;4-&gt;5-&gt;7-&gt;9-&gt;11-&gt;12-&gt;14-&gt;18-&gt;23-&gt;nullptr</span><br><span class="line">此时查找节点18只需要遍历6个节点</span><br><span class="line"></span><br><span class="line">链表加上多级索引的结构就是跳表</span><br></pre></td></tr></table></figure>
+<ul>
+<li>跳表查询的时间复杂度为O(logn)，空间复杂度为O(n)</li>
+<li>时间复杂度是因为<strong>一般默认索引标准倍数为2（即概率因子p&#x3D;1&#x2F;2，每个位于第i层的节点有p的概率出现在i+1层）</strong><ul>
+<li>概率因子可以为其他值，如1&#x2F;4（Redis的ZSET默认值，因为其值越小，越省内存，最大层数上限为32层）</li>
+<li>跳表插入也依赖于概率因子</li>
+</ul>
+</li>
+</ul>
+<h2 id="节点定义"><a href="#节点定义" class="headerlink" title="节点定义"></a>节点定义</h2><ul>
+<li>跳表节点存储键值对与<strong>每层的后继指针数组forward</strong>，forward[i]指向该节点在第i层的下一个节点</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">SkipListNode</span></span><br><span class="line">&#123;</span><br><span class="line">	K key;</span><br><span class="line">	V value;</span><br><span class="line">	<span class="comment">// forward[i]：该节点在第i层的后继节点（第0层即原始链表）</span></span><br><span class="line">	<span class="comment">// 比如：</span></span><br><span class="line">	<span class="comment">// 1----------&gt;7------------&gt;14---------&gt;nullptr</span></span><br><span class="line">	<span class="comment">// |           |             |</span></span><br><span class="line">	<span class="comment">// 1----&gt;4----&gt;7----&gt;11-----&gt;14-----&gt;23-&gt;nullptr</span></span><br><span class="line">	<span class="comment">// |     |     |     |       |       |</span></span><br><span class="line">	<span class="comment">// 1-&gt;3-&gt;4-&gt;5-&gt;7-&gt;9-&gt;11-&gt;12-&gt;14-&gt;18-&gt;23-&gt;nullptr</span></span><br><span class="line">	<span class="comment">// 针对节点4的实例，其forward数组为：</span></span><br><span class="line">	<span class="comment">// forward[0]保存节点5的地址（因为第1层4的后继节点为5）</span></span><br><span class="line">	<span class="comment">// forward[1]保存节点7的地址</span></span><br><span class="line">	<span class="comment">// forward[2]是nullptr（因为节点4并没有二级索引）</span></span><br><span class="line">	vector&lt;SkipListNode*&gt; forward;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">SkipListNode</span>(<span class="type">const</span> K&amp; k, <span class="type">const</span> V&amp; v, <span class="type">int</span> level)</span><br><span class="line">		: <span class="built_in">key</span>(k), <span class="built_in">value</span>(v), forward(level, <span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>跳表本身维护头节点、当前实际层数、节点个数与概率因子：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SkipList</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	SkipListNode&lt;K,V&gt;* head;   <span class="comment">// 头节点，不存储数据，forward长度为MAX_LEVEL</span></span><br><span class="line">	<span class="type">int</span> level_count;           <span class="comment">// 当前跳表实际使用的层数（从1开始）</span></span><br><span class="line">	<span class="type">int</span> length;                <span class="comment">// 节点个数</span></span><br><span class="line">	<span class="type">double</span> p;                  <span class="comment">// 概率因子，默认0.5</span></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">random_level</span><span class="params">()</span></span>;        <span class="comment">// 随机生成新节点的层数</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function">SkipListNode&lt;K,V&gt;* <span class="title">search</span><span class="params">(<span class="type">const</span> K&amp; key)</span></span>;</span><br><span class="line">	<span class="function"><span class="type">bool</span> <span class="title">insert</span><span class="params">(<span class="type">const</span> K&amp; key, <span class="type">const</span> V&amp; value)</span></span>;</span><br><span class="line">	<span class="function"><span class="type">bool</span> <span class="title">remove</span><span class="params">(<span class="type">const</span> K&amp; key)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="随机层数的生成"><a href="#随机层数的生成" class="headerlink" title="随机层数的生成"></a>随机层数的生成</h3><ul>
+<li>*<em>新节点的层数由概率因子p随机决定：从第1层开始，每层有p的概率晋升到下一层，直到达到最大层数MAX_LEVEL，或者1-p的概率停止</em></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// p=1/2时即等价于不断抛硬币，正面则层数+1，反面则停止</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">SkipList::random_level</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">int</span> level = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">while</span> ((<span class="built_in">rand</span>() / (<span class="type">double</span>)RAND_MAX) &lt; p &amp;&amp; level &lt; MAX_LEVEL)</span><br><span class="line">		level++;</span><br><span class="line">	<span class="keyword">return</span> level;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><ul>
+<li>查找过程：<strong>从最高层开始，在每一层沿着forward向前找到最后一个键值小于目标值的节点，然后下沉到下一层继续，直到第0层；最后判断第0层当前节点的后继是否为目标节点</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">SkipListNode&lt;K,V&gt;* <span class="title">SkipList::search</span><span class="params">(<span class="type">const</span> K&amp; key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	SkipListNode&lt;K,V&gt;* cur = head;</span><br><span class="line">	<span class="comment">// 从最高层向下逐层查找</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = level_count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 在当前层找到最后一个键值小于key的节点</span></span><br><span class="line">		<span class="keyword">while</span> (cur-&gt;forward[i] &amp;&amp; cur-&gt;forward[i]-&gt;key &lt; key)</span><br><span class="line">			cur = cur-&gt;forward[i];</span><br><span class="line">		<span class="comment">// 下沉到下一层</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 此时cur为所有层中最后一个键值小于key的节点，判断其后继</span></span><br><span class="line">	cur = cur-&gt;forward[<span class="number">0</span>];</span><br><span class="line">	<span class="keyword">return</span> (cur &amp;&amp; cur-&gt;key == key) ? cur : <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h2><ul>
+<li>插入过程分为三步：<ol>
+<li><strong>查找插入位置</strong>：从最高层开始逐层记录每一层中最后一个键值小于key的节点，存入update数组（第i层的前驱）</li>
+<li><strong>随机生成层数</strong>：通过random_level()决定新节点的层数，若超过当前最大层数，则超出部分的前驱均为head，并更新level_count</li>
+<li><strong>逐层插入</strong>：从第0层到new_level-1层，将新节点插入update[i]之后</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">SkipList::insert</span><span class="params">(<span class="type">const</span> K&amp; key, <span class="type">const</span> V&amp; value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// update[i]记录第i层待插入位置的前驱节点</span></span><br><span class="line">	vector&lt;SkipListNode&lt;K,V&gt;*&gt; <span class="built_in">update</span>(MAX_LEVEL, <span class="literal">nullptr</span>);</span><br><span class="line">	SkipListNode&lt;K,V&gt;* cur = head;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 1. 查找插入位置，记录每层前驱</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = level_count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">while</span> (cur-&gt;forward[i] &amp;&amp; cur-&gt;forward[i]-&gt;key &lt; key)</span><br><span class="line">			cur = cur-&gt;forward[i];</span><br><span class="line">		update[i] = cur;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cur = cur-&gt;forward[<span class="number">0</span>];</span><br><span class="line">	<span class="comment">// 键已存在：直接更新值（跳表不允许重复键）</span></span><br><span class="line">	<span class="keyword">if</span> (cur &amp;&amp; cur-&gt;key == key)</span><br><span class="line">	&#123;</span><br><span class="line">		cur-&gt;value = value;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 2. 随机生成新节点层数</span></span><br><span class="line">	<span class="type">int</span> new_level = <span class="built_in">random_level</span>();</span><br><span class="line">	<span class="keyword">if</span> (new_level &gt; level_count)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 新层数超过当前层数，超出部分的前驱均为head</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = level_count; i &lt; new_level; i++)</span><br><span class="line">			update[i] = head;</span><br><span class="line">		level_count = new_level;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 3. 创建新节点并逐层插入</span></span><br><span class="line">	SkipListNode&lt;K,V&gt;* new_node = <span class="keyword">new</span> <span class="built_in">SkipListNode</span>&lt;K,V&gt;(key, value, new_level);</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; new_level; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		new_node-&gt;forward[i] = update[i]-&gt;forward[i];</span><br><span class="line">		update[i]-&gt;forward[i] = new_node;</span><br><span class="line">	&#125;</span><br><span class="line">	length++;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">e.g.</span><br><span class="line">插入1，随机层数为2</span><br><span class="line">head-&gt;1-&gt;nullptr</span><br><span class="line">|     |</span><br><span class="line">head-&gt;1-&gt;nullptr</span><br><span class="line"></span><br><span class="line">插入2，随机层数为1</span><br><span class="line">head-&gt;1----&gt;nullptr</span><br><span class="line">|     |</span><br><span class="line">head-&gt;1-&gt;2-&gt;nullptr</span><br><span class="line"></span><br><span class="line">插入3，随机层数为3</span><br><span class="line">head-------&gt;3-&gt;nullptr</span><br><span class="line">|           |</span><br><span class="line">head-&gt;1----&gt;3-&gt;nullptr</span><br><span class="line">|     |     |</span><br><span class="line">head-&gt;1-&gt;2-&gt;3-&gt;nullptr</span><br></pre></td></tr></table></figure>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><ul>
+<li>删除过程与插入类似：<ol>
+<li><strong>查找目标节点</strong>，同样记录每层前驱到update数组</li>
+<li><strong>逐层删除</strong>：从第0层开始，若update[i]的后继恰好是目标节点则将其跳过，否则说明更高层不存在该节点，直接跳出</li>
+<li><strong>收缩层数</strong>：若删除后最高层没有节点了，则降低level_count，避免无意义的层数浪费xc</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">SkipList::remove</span><span class="params">(<span class="type">const</span> K&amp; key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	vector&lt;SkipListNode&lt;K,V&gt;*&gt; <span class="built_in">update</span>(MAX_LEVEL, <span class="literal">nullptr</span>);</span><br><span class="line">	SkipListNode&lt;K,V&gt;* cur = head;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 1. 查找目标节点，记录每层前驱</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = level_count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">while</span> (cur-&gt;forward[i] &amp;&amp; cur-&gt;forward[i]-&gt;key &lt; key)</span><br><span class="line">			cur = cur-&gt;forward[i];</span><br><span class="line">		update[i] = cur;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cur = cur-&gt;forward[<span class="number">0</span>];</span><br><span class="line">	<span class="comment">// 节点不存在</span></span><br><span class="line">	<span class="keyword">if</span> (!cur || cur-&gt;key != key)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 2. 逐层删除</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; level_count; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 只有该层存在目标节点时才需要修改指针</span></span><br><span class="line">		<span class="keyword">if</span> (update[i]-&gt;forward[i] == cur)</span><br><span class="line">			update[i]-&gt;forward[i] = cur-&gt;forward[i];</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			<span class="keyword">break</span>; <span class="comment">// 更高层不存在该节点</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 3. 收缩层数：最高层无节点则降低层数</span></span><br><span class="line">	<span class="keyword">while</span> (level_count &gt; <span class="number">1</span> &amp;&amp; !head-&gt;forward[level_count - <span class="number">1</span>])</span><br><span class="line">		level_count--;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">delete</span> cur;</span><br><span class="line">	length--;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E8%B7%B3%E8%A1%A8/" class="tag-item">
+                    跳表
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="cate-item">
+                    数据结构
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/24/%E8%B7%B3%E8%A1%A8/">https://narciostyx.github.io/2026/01/24/跳表/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/24/%E5%B9%B6%E6%9F%A5%E9%9B%86/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">并查集</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/23/B%E6%A0%91%E4%B8%8EB+%E6%A0%91/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">B树与B+树</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
