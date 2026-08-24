@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -64,7 +66,7 @@
 <li>函数原型<code>int poll(struct pollfd *fds, nfds_t nfds, int timeout)</code></li>
 <li>pollfd结构体定义如下：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct pollfd &#123;</span><br><span class="line">    int   fd;         // 文件描述符</span><br><span class="line">    short events;     // 监视的事件类型</span><br><span class="line">    short revents;    // 实际发生的事件类型</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">struct pollfd &#123;<br>    int   fd;         // 文件描述符<br>    short events;     // 监视的事件类型<br>    short revents;    // 实际发生的事件类型<br>&#125;;<br></code></pre></td></tr></table></figure>
 <ol>
 <li>events使用|指定监听类型，如POLLIN，POLLOUT，POLLPRI等</li>
 <li>revents由poll返回，表示实际发生事件</li>
@@ -80,7 +82,7 @@
 </li>
 <li>e.g.</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">struct pollfd fds[MAX_CLIENTS+1];</span><br><span class="line"></span><br><span class="line">//初始化pollfd结构体数组</span><br><span class="line">fds[0].fd = server_socket;</span><br><span class="line">fds[0].events = POLLIN;</span><br><span class="line"></span><br><span class="line">for (i = 1; i &lt; MAX_CLIENTS + 1; i++) </span><br><span class="line">&#123;</span><br><span class="line">    fds[i].fd = -1;</span><br><span class="line">    fds[i].events = POLLIN;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">while(true)</span><br><span class="line">&#123;</span><br><span class="line">	//-1代表无限等待</span><br><span class="line">	ret=poll(fds,MAX_CLIENTS+1,-1);</span><br><span class="line">	if(ret&lt;0)</span><br><span class="line">		perror(&quot;Poll errror.&quot;);</span><br><span class="line">	</span><br><span class="line">	if(fds[0].revents&amp;POLLIN)</span><br><span class="line">	&#123;...&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">struct pollfd fds[MAX_CLIENTS+1];<br><br>//初始化pollfd结构体数组<br>fds[0].fd = server_socket;<br>fds[0].events = POLLIN;<br><br>for (i = 1; i &lt; MAX_CLIENTS + 1; i++) <br>&#123;<br>    fds[i].fd = -1;<br>    fds[i].events = POLLIN;<br>&#125;<br><br>while(true)<br>&#123;<br>	//-1代表无限等待<br>	ret=poll(fds,MAX_CLIENTS+1,-1);<br>	if(ret&lt;0)<br>		perror(&quot;Poll errror.&quot;);<br>	<br>	if(fds[0].revents&amp;POLLIN)<br>	&#123;...&#125;<br>	<br>&#125;<br></code></pre></td></tr></table></figure>
     </section>
 
     
@@ -122,21 +124,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2026/01/20/AVL%E6%A0%91/" class="change-link">
+                <a href="/2026/01/18/mysql.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">AVL树</span>
+                        <span class="text-title">C++ MYSQL编程</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2026/01/18/mysql.h/" class="change-link">
+                <a href="/2026/01/18/pthread.h/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C++ MYSQL编程</span>
+                        <span class="text-title" style="text-align: right;">C多线程编程</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

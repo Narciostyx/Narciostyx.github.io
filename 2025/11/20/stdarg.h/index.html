@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -65,7 +67,7 @@
 <li>类型va_list，宏函数va_start，va_arg，va_end</li>
 <li>e.g.</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdar.h&gt;</span><br><span class="line"></span><br><span class="line">int sum(int count,...)</span><br><span class="line">&#123;</span><br><span class="line">	int total=0;</span><br><span class="line">	va_list args;</span><br><span class="line">	</span><br><span class="line">	//依赖于传入的最后一个参数位置</span><br><span class="line">	//原理是从栈帧获取对应列表</span><br><span class="line">	va_start(args,count);</span><br><span class="line">	for(int i=0;i&lt;count;i++)</span><br><span class="line">		total+=va_arg(args,int);</span><br><span class="line">	va_end(args);</span><br><span class="line">	</span><br><span class="line">	return total;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	printf(&quot;Sum of 1,2,3: %d\n&quot;,sum(3,1,2,3));</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#include &lt;stdio.h&gt;<br>#include &lt;stdar.h&gt;<br><br>int sum(int count,...)<br>&#123;<br>	int total=0;<br>	va_list args;<br>	<br>	//依赖于传入的最后一个参数位置<br>	//原理是从栈帧获取对应列表<br>	va_start(args,count);<br>	for(int i=0;i&lt;count;i++)<br>		total+=va_arg(args,int);<br>	va_end(args);<br>	<br>	return total;<br>&#125;<br><br>int main()<br>&#123;<br>	printf(&quot;Sum of 1,2,3: %d\n&quot;,sum(3,1,2,3));<br>	return 0;<br>&#125;<br></code></pre></td></tr></table></figure>
     </section>
 
     
@@ -118,10 +120,10 @@
         </div>
         <div class="next">
             
-                <a href="/2025/11/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="change-link">
+                <a href="/2025/11/20/time.h/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C++多线程编程</span>
+                        <span class="text-title" style="text-align: right;">time头文件</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>

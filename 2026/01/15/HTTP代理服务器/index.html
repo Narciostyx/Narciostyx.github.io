@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -85,7 +87,7 @@
 <li>拥有CDN机制的网站，<strong>CDN服务商会提供一个专有域名的CNAME记录</strong></li>
 <li>CDN访问过程</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CDN访问依赖于DNS重定向技术</span><br><span class="line">用户访问某个URL:xxx.com</span><br><span class="line">-&gt;</span><br><span class="line">本地DNS服务器解析URL，并向上级查找找到域名xxx.com.cdn.yyy.com(CNAME记录而非A记录)</span><br><span class="line">-&gt;</span><br><span class="line">查询CDN服务商的DNS服务器（即cdn.yyy.com域名），该服务器收到请求计算当前节点负载，算出最优边缘节点IP，返回给本地DNS服务器</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">CDN访问依赖于DNS重定向技术<br>用户访问某个URL:xxx.com<br>-&gt;<br>本地DNS服务器解析URL，并向上级查找找到域名xxx.com.cdn.yyy.com(CNAME记录而非A记录)<br>-&gt;<br>查询CDN服务商的DNS服务器（即cdn.yyy.com域名），该服务器收到请求计算当前节点负载，算出最优边缘节点IP，返回给本地DNS服务器<br></code></pre></td></tr></table></figure>
 <ul>
 <li>静态加速：对网页的静态资源进行CDN缓存，是的用户访问网页的静态资源时，直接调取CDN边缘节点缓存</li>
 <li>动态加速：提供CDN<strong>总多节点找到一条去源站点最快的路由，获取源服务器的数据</strong></li>

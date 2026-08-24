@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -82,7 +84,7 @@
 <li>D1: 完全析构函数（用于直接析构对象）</li>
 <li>D2: 基类析构函数（用于派生类析构函数中调用基类部分）</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class Myclass</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	Myclass()&#123;&#125;</span><br><span class="line">	~Myclass()&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">_ZN7MyclassC1Ev</span><br><span class="line">_ZN7MyclassD1Ev</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">class Myclass<br>&#123;<br>public:<br>	Myclass()&#123;&#125;<br>	~Myclass()&#123;&#125;<br>&#125;<br><br>_ZN7MyclassC1Ev<br>_ZN7MyclassD1Ev<br></code></pre></td></tr></table></figure>
 <ul>
 <li>部分类型编码表</li>
 </ul>
@@ -222,7 +224,7 @@
 <td></td>
 </tr>
 </tbody></table>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">e.g:</span><br><span class="line">_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE5c_strEv</span><br><span class="line"></span><br><span class="line">std::__cxx11::basic_string&lt;char,__cxx11::char_traits&lt;char&gt;,std::allocator&lt;char&gt;::c_str()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">e.g:<br>_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE5c_strEv<br><br>std::__cxx11::basic_string&lt;char,__cxx11::char_traits&lt;char&gt;,std::allocator&lt;char&gt;::c_str()<br></code></pre></td></tr></table></figure>
 <h1 id="MSVC"><a href="#MSVC" class="headerlink" title="MSVC"></a>MSVC</h1><ul>
 <li>以<code>?</code>开头</li>
 <li>函数名称</li>
@@ -230,7 +232,7 @@
 <li>命名空间，以类似<code>@namespace</code>的方式，如<code>namespace myspace{ void __cdecl func(); }</code>：<code>?func@myspace@@YAXXZ</code>，**嵌套命名空间（从内向外）**则为<code>@Inner@Outer</code></li>
 <li>类与成员修饰，如</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Myclass</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	Myclass(int x)&#123;&#125;</span><br><span class="line">	void __thiscall func(int x)&#123;...&#125;</span><br><span class="line">	static int static_var;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">??0Myclass@@QAEHH@Z（??0是构造函数前缀，??1则是析构函数前缀）</span><br><span class="line">?func@Myclass@@QAEHH@Z</span><br><span class="line">?static_var@Myclass@@2HA</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">class Myclass<br>&#123;<br>public:<br>	Myclass(int x)&#123;&#125;<br>	void __thiscall func(int x)&#123;...&#125;<br>	static int static_var;<br>&#125;<br><br>??0Myclass@@QAEHH@Z（??0是构造函数前缀，??1则是析构函数前缀）<br>?func@Myclass@@QAEHH@Z<br>?static_var@Myclass@@2HA<br></code></pre></td></tr></table></figure>
 <ul>
 <li>MSVC模板修饰非常冗余，不做赘述</li>
 <li>使用undname工具可以解析MSVC命名修饰函数</li>

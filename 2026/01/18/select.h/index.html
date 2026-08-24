@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -76,9 +78,9 @@
 </li>
 <li>e.g.</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">fd_set readfds;</span><br><span class="line">...</span><br><span class="line">while(true)</span><br><span class="line">&#123;</span><br><span class="line">	//清空文件描述符</span><br><span class="line">	FD_ZERO(&amp;readfds);</span><br><span class="line">	//将server_socket添加进readfds可读文件描述符集合</span><br><span class="line">	FD_SET(server_socket,&amp;readfds);</span><br><span class="line">	...</span><br><span class="line">	int activity=select(max_sd+1，&amp;readfds,NULL,NULL,NULL);</span><br><span class="line">	if(activity&lt;0)</span><br><span class="line">		perror(&quot;select error.&quot;);</span><br><span class="line">	if(FD_ISSET(server_socket,&amp;readfds))</span><br><span class="line">	&#123;...&#125;	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">...<br>fd_set readfds;<br>...<br>while(true)<br>&#123;<br>	//清空文件描述符<br>	FD_ZERO(&amp;readfds);<br>	//将server_socket添加进readfds可读文件描述符集合<br>	FD_SET(server_socket,&amp;readfds);<br>	...<br>	int activity=select(max_sd+1，&amp;readfds,NULL,NULL,NULL);<br>	if(activity&lt;0)<br>		perror(&quot;select error.&quot;);<br>	if(FD_ISSET(server_socket,&amp;readfds))<br>	&#123;...&#125;	<br>	<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>宏：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FD_ZERO</span><br><span class="line">FD_SET</span><br><span class="line">FD_ISSET</span><br><span class="line">FD_CLR</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">FD_ZERO<br>FD_SET<br>FD_ISSET<br>FD_CLR<br></code></pre></td></tr></table></figure>
     </section>
 
     

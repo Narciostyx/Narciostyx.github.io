@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -64,11 +66,11 @@
 <li>奇异递归模板模式，实现编译时多态（静态多态）</li>
 <li>如：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class T&gt;</span><br><span class="line">class Y&#123;&#125;;</span><br><span class="line"></span><br><span class="line">class X:public Y&lt;X&gt; &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">template&lt;class T&gt;<br>class Y&#123;&#125;;<br><br>class X:public Y&lt;X&gt; &#123;&#125;;<br></code></pre></td></tr></table></figure>
 <ul>
 <li>e.g</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class Derived&gt;</span><br><span class="line">struct Base</span><br><span class="line">&#123;</span><br><span class="line">    void name() &#123; static_cast&lt;Derived*&gt;(this)-&gt;impl(); &#125;</span><br><span class="line">protected:</span><br><span class="line">    Base() = default; // prohibits the creation of Base objects, which is UB</span><br><span class="line">&#125;;</span><br><span class="line">struct D1 : public Base&lt;D1&gt; &#123; void impl() &#123; std::puts(&quot;D1::impl()&quot;); &#125; &#125;;</span><br><span class="line">struct D2 : public Base&lt;D2&gt; &#123; void impl() &#123; std::puts(&quot;D2::impl()&quot;); &#125; &#125;;</span><br><span class="line"></span><br><span class="line">//在C++23中可以简写为</span><br><span class="line">struct Base &#123; void name(this auto&amp;&amp; self) &#123; self.impl(); &#125; &#125;;</span><br><span class="line">struct D1 : public Base &#123; void impl() &#123; std::puts(&quot;D1::impl()&quot;); &#125; &#125;;</span><br><span class="line">struct D2 : public Base &#123; void impl() &#123; std::puts(&quot;D2::impl()&quot;); &#125; &#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	D1 d1; d1.name();</span><br><span class="line">	D2 d2; d2.name();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">template &lt;class Derived&gt;<br>struct Base<br>&#123;<br>    void name() &#123; static_cast&lt;Derived*&gt;(this)-&gt;impl(); &#125;<br>protected:<br>    Base() = default; // prohibits the creation of Base objects, which is UB<br>&#125;;<br>struct D1 : public Base&lt;D1&gt; &#123; void impl() &#123; std::puts(&quot;D1::impl()&quot;); &#125; &#125;;<br>struct D2 : public Base&lt;D2&gt; &#123; void impl() &#123; std::puts(&quot;D2::impl()&quot;); &#125; &#125;;<br><br>//在C++23中可以简写为<br>struct Base &#123; void name(this auto&amp;&amp; self) &#123; self.impl(); &#125; &#125;;<br>struct D1 : public Base &#123; void impl() &#123; std::puts(&quot;D1::impl()&quot;); &#125; &#125;;<br>struct D2 : public Base &#123; void impl() &#123; std::puts(&quot;D2::impl()&quot;); &#125; &#125;;<br><br>int main()<br>&#123;<br>	D1 d1; d1.name();<br>	D2 d2; d2.name();<br>&#125;<br></code></pre></td></tr></table></figure>
     </section>
 
     

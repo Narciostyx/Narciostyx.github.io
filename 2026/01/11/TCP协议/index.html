@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -73,11 +75,11 @@
 <ul>
 <li>32位序号，一次TCP通信过程中某个传输方向的字节流的每个字节编号，<strong>其一般最开始被初始化位某个随机值I（nitial）S（equence）N（umber），后续TCP报文种的序号值会被系统设置成ISN假上该报文段所携带的数据的第一个字节在整个字节流的偏移</strong>，如：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">主机A向主机B进行TCP通信</span><br><span class="line">-&gt;</span><br><span class="line">主机A发送给主机B的第一个TCP报文中，序列号为1000</span><br><span class="line">-&gt;</span><br><span class="line">假如当前TCP报文段的数据是字节流的第1025~2048字节，则该报文的序号值为1000+1025=2025</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">主机A向主机B进行TCP通信<br>-&gt;<br>主机A发送给主机B的第一个TCP报文中，序列号为1000<br>-&gt;<br>假如当前TCP报文段的数据是字节流的第1025~2048字节，则该报文的序号值为1000+1025=2025<br></code></pre></td></tr></table></figure>
 <ul>
 <li>32位确认号，即将收到的TCP报文段的序号值加1用作响应，如：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">主机B收到来自主机A的第一个TCP报文，序列号为1000</span><br><span class="line">-&gt;</span><br><span class="line">主机B返回的TCP报文的确认号为1001，序号（ISN）为2000</span><br><span class="line">-&gt;</span><br><span class="line">主机A发送的TCP报文的序号值为2025，确认号为2001</span><br><span class="line"></span><br><span class="line">因此，一个TCP通信过程中，序号为自己的序号，确认号为对方发送报文的序列号加一</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">主机B收到来自主机A的第一个TCP报文，序列号为1000<br>-&gt;<br>主机B返回的TCP报文的确认号为1001，序号（ISN）为2000<br>-&gt;<br>主机A发送的TCP报文的序号值为2025，确认号为2001<br><br>因此，一个TCP通信过程中，序号为自己的序号，确认号为对方发送报文的序列号加一<br></code></pre></td></tr></table></figure>
 <ul>
 <li>6位标志位，如下：<ul>
 <li>URG，表示紧急指针是否有效</li>
@@ -125,7 +127,7 @@
 <li><strong>三次握手与四次挥手这里不做赘述</strong></li>
 <li>TCP连接是全双工，因此允许两个方向的数据传输被独立关闭，即：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">通信一方可以发送结束报文段给对方，告诉对方本段已完成数据的发送，但允许继续接收对方的数据，直至对方也发送结束报文段，这称为（四次挥手中）半关闭状态</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">通信一方可以发送结束报文段给对方，告诉对方本段已完成数据的发送，但允许继续接收对方的数据，直至对方也发送结束报文段，这称为（四次挥手中）半关闭状态<br></code></pre></td></tr></table></figure>
 <ul>
 <li><code>iptables</code>命令<ul>
 <li>与<code>firewalld</code>命令都是用于管理防火墙，定义其各种功能规则<ul>
@@ -263,7 +265,7 @@
 <li>慢启动算法的理由：TCP模块刚开始发送数据，<strong>不清楚网络当前的实际情况，需要用一种试探性的方式平滑增长CWND的大小（实际慢启动增长速度极快）</strong>，当然，<strong>若不施加其他手段，慢启动将导致CWND很快膨胀，因此TCP拥塞控制定义了另外一个状态变量：慢启动门限（ssthresh，即slow start threshold size），当CWND大小超过该值时，进入拥塞避免阶段</strong></li>
 <li>慢启动增长速度快的原因</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">假设当前SWND=W，SMSS=M</span><br><span class="line">在一个RTT内发送的数据包数量为W/M，理想情况下也会收到W/M个ACK</span><br><span class="line">按照慢启动定义每次收到确认就增加，则一个RTT内，CWND总增量为=（ACK总数）W/M*（每个ACK增量最大值）M=W</span><br><span class="line">即每个RTT结束后，CWND=2W，即每轮RTT结束后，CWND理论最大值会是原本值的两倍</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">假设当前SWND=W，SMSS=M<br>在一个RTT内发送的数据包数量为W/M，理想情况下也会收到W/M个ACK<br>按照慢启动定义每次收到确认就增加，则一个RTT内，CWND总增量为=（ACK总数）W/M*（每个ACK增量最大值）M=W<br>即每个RTT结束后，CWND=2W，即每轮RTT结束后，CWND理论最大值会是原本值的两倍<br></code></pre></td></tr></table></figure>
 <ul>
 <li>拥塞避免算法使得CWND按照<strong>线性方式</strong>增加，减缓其扩大，在RFC文档中提到下列两种方式：<ol>
 <li>每个RTT时间内按照<code>CWND+=min(N,SMSS)</code>计算新的CWND，而不论该RTT时间发送端收到了多少个确认（<strong>这里N代表该RTT内累计确认的新字节数，而非单个收到确认报文段</strong>）</li>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -65,18 +67,18 @@
 <li>makefile文件包含目标（可执行文件），依赖（文件或目标），命令</li>
 <li>makefile支持自查找依赖，如</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">main: main.o</span><br><span class="line">	g++ main.o -o main</span><br><span class="line">	![[pcap_analysis_report]]</span><br><span class="line">main.o: main.cpp</span><br><span class="line">	g++ main.cpp -c main.o</span><br><span class="line">	</span><br><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">	rm -f main</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">main: main.o<br>	g++ main.o -o main<br>	![[pcap_analysis_report]]<br>main.o: main.cpp<br>	g++ main.cpp -c main.o<br>	<br>.PHONY: clean<br>clean:<br>	rm -f main<br></code></pre></td></tr></table></figure>
 <ul>
 <li>注释以#开头</li>
 <li>e.g:</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">target: dependencies</span><br><span class="line">	command</span><br><span class="line">	</span><br><span class="line">main: main.cpp</span><br><span class="line">	g++ main.cpp -o main</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">target: dependencies<br>	command<br>	<br>main: main.cpp<br>	g++ main.cpp -o main<br></code></pre></td></tr></table></figure>
 <pre><code>- command前必须以tab开头
 </code></pre>
 <ul>
 <li>makefile支持定义![[chat_export_20260609_225644]]变量，如：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CC = g++</span><br><span class="line">CFLAGS = -Wall -g</span><br><span class="line"></span><br><span class="line">main: main.cpp</span><br><span class="line">	$(CC) $(CFLAGS) main.cpp -o main</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">CC = g++<br>CFLAGS = -Wall -g<br><br>main: main.cpp<br>	$(CC) $(CFLAGS) main.cpp -o main<br></code></pre></td></tr></table></figure>
 <pre><code>- makefile内置了一些变量，如：
 	- $@，表示目标文件
 	- $^，表示所有的依赖文件
@@ -84,16 +86,16 @@
 	- CC与CXX，代表gcc与g++
 - e.g.
 </code></pre>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main: main.cpp</span><br><span class="line">	$(CC) $^ -o $@</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">main: main.cpp<br>	$(CC) $^ -o $@<br></code></pre></td></tr></table></figure>
 <ul>
 <li>伪目标，即phony targets，以.PHONY开头，代表没有依赖文件，属于makefile内的内容，而非当前目录下同命的文件，且仅有make调用才会执行：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">	rm -f main</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">.PHONY: clean<br>clean:<br>	rm -f main<br></code></pre></td></tr></table></figure>
 <p>只有当执行<code>make clean</code>时才会执行</p>
 <ul>
 <li>执行makefile的脚本时，如：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">build:</span><br><span class="line">	echo &quot;xxx&quot;</span><br><span class="line">	g++ hello.cpp -o hello</span><br><span class="line">	echo &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">build:<br>	echo &quot;xxx&quot;<br>	g++ hello.cpp -o hello<br>	echo &quot;xxx&quot;<br></code></pre></td></tr></table></figure>
 <p>命令会各自在一个shell内执行，除非使用;隔开，即<code>echo &quot;xxx&quot;;gcc hello.cpp -o hello;echo &quot;xxx&quot;</code>或者使用&amp;&amp;连接</p>
 <blockquote>
 <p><strong>Note</strong><br>main.cpp<br>-&gt;<code>g++ -c</code><br>main.o<br>-&gt;<code>g++ -o</code><br>main</p>
@@ -136,26 +138,26 @@
 <li>CMake配置文件中，使用<code>cmakedefine</code>，如<code>#cmakedefine USE_MYMATH</code></li>
 <li>在CMakeLists.txt中设置的变量，可以在config.h.in中以@variable_name@的方式使用：</li>
 </ul>
-  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">--CMakeLists.txt</span><br><span class="line">set(Demo_VERSION_MAJOR 1)</span><br><span class="line">set(Demo_VERSION_MINOR 0)</span><br><span class="line"></span><br><span class="line">--config.h.in</span><br><span class="line">#define Demo_VERSION_MAJOR @Demo_VERSION_MAJOR@</span><br><span class="line">同理</span><br></pre></td></tr></table></figure>
-  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#加入配置头文件</span><br><span class="line">configure_file(</span><br><span class="line">	#输入的模板文件</span><br><span class="line">	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h.in&quot;</span><br><span class="line">	#输出的最终配置文件</span><br><span class="line">	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h&quot;</span><br><span class="line">)</span><br><span class="line">#添加选项，且默认值为ON</span><br><span class="line">option(USE_MYMATH &quot;Use self-defined library&quot; ON)</span><br><span class="line"></span><br><span class="line">if(USE_MYMATH)</span><br><span class="line">	include_directories(&quot;$&#123;PROJECT_SOURCE_DIR&#125;/math&quot;)</span><br><span class="line">	add_subdirectory(math)</span><br><span class="line">	set(EXTRA_LIBS $&#123;EXTRA_LIBS&#125; MathFuncs)</span><br><span class="line">endif(USE_MYMATH)</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">--CMakeLists.txt<br>set(Demo_VERSION_MAJOR 1)<br>set(Demo_VERSION_MINOR 0)<br><br>--config.h.in<br>#define Demo_VERSION_MAJOR @Demo_VERSION_MAJOR@<br>同理<br></code></pre></td></tr></table></figure>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#加入配置头文件<br>configure_file(<br>	#输入的模板文件<br>	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h.in&quot;<br>	#输出的最终配置文件<br>	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h&quot;<br>)<br>#添加选项，且默认值为ON<br>option(USE_MYMATH &quot;Use self-defined library&quot; ON)<br><br>if(USE_MYMATH)<br>	include_directories(&quot;$&#123;PROJECT_SOURCE_DIR&#125;/math&quot;)<br>	add_subdirectory(math)<br>	set(EXTRA_LIBS $&#123;EXTRA_LIBS&#125; MathFuncs)<br>endif(USE_MYMATH)<br></code></pre></td></tr></table></figure>
 <ul>
 <li>修改源文件，增加宏定义</li>
 </ul>
-  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifdef USE_MYMATH</span><br><span class="line">	#include &quot;math/MathFuncs&quot;</span><br><span class="line">#else</span><br><span class="line">	#include &lt;math.h&gt;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure></li>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#ifdef USE_MYMATH<br>	#include &quot;math/MathFuncs&quot;<br>#else<br>	#include &lt;math.h&gt;<br>#endif<br></code></pre></td></tr></table></figure></li>
 </ul>
 <h2 id="安装与测试"><a href="#安装与测试" class="headerlink" title="安装与测试"></a>安装与测试</h2><ul>
 <li>安装规则</li>
 <li>TARGETS关键字指定<code>add_executable,add_library</code>创建的目标</li>
 <li>FILES关键字指定要安装的文件，并指定目录</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">install(TARGETS MathFuncs DESTINATION bin)</span><br><span class="line">install(FILES MathFuncs DESTINATION include)</span><br><span class="line"></span><br><span class="line">install(TARGETS Demo DESTINATION bin)</span><br><span class="line">insatll(FILES &quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot; DESTINATION include)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">install(TARGETS MathFuncs DESTINATION bin)<br>install(FILES MathFuncs DESTINATION include)<br><br>install(TARGETS Demo DESTINATION bin)<br>insatll(FILES &quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot; DESTINATION include)<br></code></pre></td></tr></table></figure>
 <pre><code>- 执行后，MathFuncs.h与config.h会被复制到cmake工作目录的include目录下
 - 同理，MathFuncs.o会被复制到bin目录下
 </code></pre>
 <ul>
 <li>测试</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动测试</span><br><span class="line">enable_testing()</span><br><span class="line"></span><br><span class="line">#测试程序能否正常运行</span><br><span class="line">add_test(test_run Demo 5 2)</span><br><span class="line"></span><br><span class="line">add_test (test_usage Demo)</span><br><span class="line">set_tests_properties (test_usage PROPERTIES PASS_REGULAR_EXPRESSION &quot;Usage: .* base exponent&quot;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#启动测试<br>enable_testing()<br><br>#测试程序能否正常运行<br>add_test(test_run Demo 5 2)<br><br>add_test (test_usage Demo)<br>set_tests_properties (test_usage PROPERTIES PASS_REGULAR_EXPRESSION &quot;Usage: .* base exponent&quot;)<br></code></pre></td></tr></table></figure>
     </section>
 
     

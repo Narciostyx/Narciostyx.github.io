@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -64,7 +66,7 @@
 <li>跟ctime类似，是表示与处理时间的标准库，包含三大功能<strong>时钟、时间段与时间点</strong></li>
 <li>时钟</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">std::chrono::system_clock //系统实际时间</span><br><span class="line">std::chrono::steady_clock //稳定时钟，时间从不调整</span><br><span class="line">std::chrono::high_resolution //提供最小的可表达的时间间隔</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">...<br>std::chrono::system_clock //系统实际时间<br>std::chrono::steady_clock //稳定时钟，时间从不调整<br>std::chrono::high_resolution //提供最小的可表达的时间间隔<br></code></pre></td></tr></table></figure>
 
 <blockquote>
 <p><strong>Note</strong><br>对于上述时钟类型，其内部均含有一静态方法<code>now</code>获取该时钟对应的时间点，当前时间</p>
@@ -85,7 +87,7 @@
 </ul>
 <blockquote>
 <p><strong>Note</strong><br>时间段包含一些字面量便于直接声明，如</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">operator&quot;&quot;h</span><br><span class="line">operator&quot;&quot;min</span><br><span class="line">...s/ms/us/ns</span><br><span class="line">如：</span><br><span class="line">auto second=1s;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">operator&quot;&quot;h<br>operator&quot;&quot;min<br>...s/ms/us/ns<br>如：<br>auto second=1s;<br></code></pre></td></tr></table></figure>
 <ul>
 <li>时间段的转换需要使用<code>std::chrono::duration_cast&lt;&gt;()</code></li>
 </ul>

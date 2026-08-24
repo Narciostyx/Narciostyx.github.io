@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,8 @@
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
     
 
     
@@ -99,7 +101,7 @@
 <li>获取格式化时间字符串前，必须使用localtime或gmtime函数获取tm结构体，再使用strftime或strptime获取格式化字符串</li>
 </ol>
 </blockquote>
-<h1 id="e-g"><a href="#e-g" class="headerlink" title="e.g."></a>e.g.</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//返回当前时间戳</span><br><span class="line">time_t now=time(nullptr);</span><br><span class="line"></span><br><span class="line">//转化为tm结构体</span><br><span class="line">tm* local_time=localtime(&amp;now);</span><br><span class="line"></span><br><span class="line">char buffer[n];</span><br><span class="line">strftime(buffer,sizeof(buffer),&quot;%Y-%m-%d %H:%M:%S&quot;,local_time)</span><br></pre></td></tr></table></figure>
+<h1 id="e-g"><a href="#e-g" class="headerlink" title="e.g."></a>e.g.</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">//返回当前时间戳<br>time_t now=time(nullptr);<br><br>//转化为tm结构体<br>tm* local_time=localtime(&amp;now);<br><br>char buffer[n];<br>strftime(buffer,sizeof(buffer),&quot;%Y-%m-%d %H:%M:%S&quot;,local_time)<br></code></pre></td></tr></table></figure>
     </section>
 
     
@@ -141,21 +143,21 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2025/11/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="change-link">
+                <a href="/2025/11/20/stdarg.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">C++多线程编程</span>
+                        <span class="text-title">VA_ARG(C 可变参数列表)</span>
                     </span>
                 </a>
             
         </div>
         <div class="next">
             
-                <a href="/2025/11/20/%E6%A8%A1%E6%9D%BF%E5%B1%95%E5%BC%80/" class="change-link">
+                <a href="/2025/11/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="change-link">
                     <span class="text">
                         <span class="identify" style="text-align: right;">下一篇</span>
-                        <span class="text-title" style="text-align: right;">C++模板展开</span>
+                        <span class="text-title" style="text-align: right;">C++多线程编程</span>
                     </span>
                     <span class="icon"><i class="fa fa-angle-double-right"></i></span>
                 </a>
