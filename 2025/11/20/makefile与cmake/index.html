@@ -51,7 +51,7 @@
             </section>
             <aside class="toc-container">
     <!-- sticky toc -->
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#makefile"><span class="toc-number">1.</span> <span class="toc-text">makefile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#cmake"><span class="toc-number">2.</span> <span class="toc-text">cmake</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BC%96%E8%AF%91%E9%80%89%E9%A1%B9"><span class="toc-number">2.1.</span> <span class="toc-text">自定义编译选项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="toc-number">2.2.</span> <span class="toc-text">安装与测试</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#makefile"><span class="toc-number">1.</span> <span class="toc-text">makefile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#cmake"><span class="toc-number">2.</span> <span class="toc-text">cmake</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BC%96%E8%AF%91%E9%80%89%E9%A1%B9"><span class="toc-number">2.1.</span> <span class="toc-text">自定义编译选项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="toc-number">2.2.</span> <span class="toc-text">安装与测试</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#gcc-%E4%B8%8E-g"><span class="toc-number">3.</span> <span class="toc-text">gcc 与 g++</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BA%E5%88%AB"><span class="toc-number">3.1.</span> <span class="toc-text">区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">3.2.</span> <span class="toc-text">常用命令</span></a></li></ol></li></ol>
 </aside>
 
 <article class="markdown-container">
@@ -61,103 +61,224 @@
     <section class="article">
         <p>C&#x2F;C++ 项目构建工具 make 与 cmake 的使用指南</p>
 <span id="more"></span>
-
 <h1 id="makefile"><a href="#makefile" class="headerlink" title="makefile"></a>makefile</h1><ul>
-<li>linux使用命令make执行，根据当前工作目录的makefile文件</li>
-<li>makefile文件包含目标（可执行文件），依赖（文件或目标），命令</li>
-<li>makefile支持自查找依赖，如</li>
+<li>linux 下使用 <code>make</code> 命令构建，make 会查找当前工作目录下的 makefile 文件（GNU make 的查找顺序为 <code>GNUmakefile</code> → <code>makefile</code> → <code>Makefile</code>，取第一个找到的）</li>
+<li>makefile 的基本单元是规则：目标（target）、依赖（prerequisites）、命令（recipe）</li>
+<li>make <strong>不会自动发现依赖</strong>，依赖必须显式写出；make 通过比较目标与依赖的<strong>时间戳</strong>判断是否需要重新执行命令（依赖比目标新 → 执行），从而实现增量构建</li>
+<li>示例：</li>
 </ul>
-<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-section">main: main.o</span><br>	g++ main.o -o main<br>	![[pcap_analysis_report]]<br><span class="hljs-section">main.o: main.cpp</span><br>	g++ main.cpp -c main.o<br>	<br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f main<br></code></pre></td></tr></table></figure>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-section">main: main.o</span><br>	g++ main.o -o main<br><br><span class="hljs-section">main.o: main.cpp</span><br>	g++ -c main.cpp -o main.o<br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f main main.o<br></code></pre></td></tr></table></figure>
 <ul>
-<li>注释以#开头</li>
+<li>注释以 <code>#</code> 开头</li>
+<li>每条命令必须以 <strong>Tab</strong> 开头（不能是空格）</li>
 <li>e.g:</li>
 </ul>
-<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-section">target: dependencies</span><br>	command<br>	<br><span class="hljs-section">main: main.cpp</span><br>	g++ main.cpp -o main<br></code></pre></td></tr></table></figure>
-<pre><code>- command前必须以tab开头
-</code></pre>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-section">target: dependencies</span><br>	command<br><br><span class="hljs-section">main: main.cpp</span><br>	g++ main.cpp -o main<br></code></pre></td></tr></table></figure>
 <ul>
-<li>makefile支持定义![[chat_export_20260609_225644]]变量，如：</li>
+<li>makefile 支持定义变量，如：</li>
 </ul>
-<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs make">CC = g++<br>CFLAGS = -Wall -g<br><br><span class="hljs-section">main: main.cpp</span><br>	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> main.cpp -o main<br></code></pre></td></tr></table></figure>
-<pre><code>- makefile内置了一些变量，如：
-	- $@，表示目标文件
-	- $^，表示所有的依赖文件
-	- $&lt;，表示第一个依赖文件
-	- CC与CXX，代表gcc与g++
-- e.g.
-</code></pre>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">main: main.cpp<br>	$(CC) $^ -o $@<br></code></pre></td></tr></table></figure>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs make">CXX = g++<br>CXXFLAGS = -Wall -g<br><br><span class="hljs-section">main: main.cpp</span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$(CXXFLAGS)</span> main.cpp -o main<br></code></pre></td></tr></table></figure>
 <ul>
-<li>伪目标，即phony targets，以.PHONY开头，代表没有依赖文件，属于makefile内的内容，而非当前目录下同命的文件，且仅有make调用才会执行：</li>
+<li>自动变量（automatic variables），在命令中自动展开：<ul>
+<li><code>$@</code>，目标名</li>
+<li><code>$^</code>，所有依赖（去重后）</li>
+<li><code>$&lt;</code>，第一个依赖</li>
+<li><code>$?</code>，比目标新的依赖</li>
 </ul>
-<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f main<br></code></pre></td></tr></table></figure>
-<p>只有当执行<code>make clean</code>时才会执行</p>
+</li>
+<li>预定义变量：<code>CC</code>（默认 <code>cc</code>）、<code>CXX</code>（默认 <code>g++</code>）、<code>CFLAGS</code>、<code>CXXFLAGS</code>、<code>LDFLAGS</code> 等。C 项目用 <code>$(CC) $(CFLAGS)</code>，C++ 项目用 <code>$(CXX) $(CXXFLAGS)</code></li>
+<li>e.g.</li>
+</ul>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-section">main: main.o</span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$^</span> -o <span class="hljs-variable">$@</span><br></code></pre></td></tr></table></figure>
 <ul>
-<li>执行makefile的脚本时，如：</li>
+<li>伪目标（phony target）：用 <code>.PHONY</code> 声明该名字<strong>不对应任何真实文件</strong>，make 总是认为它需要执行；即使当前目录恰好存在同名文件（比如一个叫 <code>clean</code> 的文件）也会照常执行。只有执行 <code>make &lt;名字&gt;</code> 时才会触发：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">build:<br>	echo &quot;xxx&quot;<br>	g++ hello.cpp -o hello<br>	echo &quot;xxx&quot;<br></code></pre></td></tr></table></figure>
-<p>命令会各自在一个shell内执行，除非使用;隔开，即<code>echo &quot;xxx&quot;;gcc hello.cpp -o hello;echo &quot;xxx&quot;</code>或者使用&amp;&amp;连接</p>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f main main.o<br></code></pre></td></tr></table></figure>
+<ul>
+<li>命令的执行方式：每条命令默认在<strong>独立的 shell</strong> 中执行；同一行内用 <code>;</code> 或 <code>&amp;&amp;</code> 连接才能保证在同一 shell 中按顺序执行，如 <code>echo &quot;xxx&quot;; g++ hello.cpp -o hello; echo &quot;xxx&quot;</code>（<code>&amp;&amp;</code> 表示前一条成功才执行后一条）</li>
+<li>make 常用参数：<ul>
+<li><code>make -j8</code>，并行构建（同时跑 8 个任务）</li>
+<li><code>make -n</code>，只打印将要执行的命令，不真正执行（调试用）</li>
+<li><code>make -B</code>，强制全部重建（忽略时间戳）</li>
+<li><code>make -f mymakefile</code>，指定 makefile 文件名</li>
+<li><code>make -C dir</code>，先进入 dir 目录再执行 make</li>
+<li><code>make target</code>，只构建指定目标，如 <code>make clean</code></li>
+<li>命令行覆盖变量：<code>make CXXFLAGS=&quot;-O2&quot;</code> 会覆盖 makefile 中的赋值</li>
+</ul>
+</li>
+<li>常用写法补充（文章原来没写的）：<ul>
+<li>模式规则（pattern rule）：<code>%.o: %.cpp</code> 一条规则匹配所有 .cpp → .o 的转换</li>
+</ul>
+  <figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs make">CXX = g++<br>CXXFLAGS = -std=c++20 -Wall -g<br>OBJS = main.o util.o<br><br><span class="hljs-section">app: <span class="hljs-variable">$(OBJS)</span></span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$^</span> -o <span class="hljs-variable">$@</span><br><br><span class="hljs-section">%.o: %.cpp</span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$(CXXFLAGS)</span> -c <span class="hljs-variable">$&lt;</span> -o <span class="hljs-variable">$@</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f app <span class="hljs-variable">$(OBJS)</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>自动生成头文件依赖（配合 gcc&#x2F;g++ 的 <code>-MMD -MP</code>，头文件改动也能正确触发重编）：</li>
+</ul>
+  <figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs make">CXX = g++<br>CXXFLAGS = -std=c++20 -Wall -g -MMD -MP<br>SRCS = main.cpp util.cpp<br>OBJS = $(SRCS:.cpp=.o)<br>DEPS = $(OBJS:.o=.d)<br><br><span class="hljs-section">app: <span class="hljs-variable">$(OBJS)</span></span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$^</span> -o <span class="hljs-variable">$@</span><br><br><span class="hljs-section">%.o: %.cpp</span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$(CXXFLAGS)</span> -c <span class="hljs-variable">$&lt;</span> -o <span class="hljs-variable">$@</span><br><br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(DEPS)</span>        <span class="hljs-comment"># 引入 .d 依赖文件；文件不存在也不会报错</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f app <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(DEPS)</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>通配与字符串处理：<code>SRCS = $(wildcard *.cpp)</code> 收集所有 .cpp 文件；<code>$(SRCS:.cpp=.o)</code> 把后缀替换为 .o</li>
+<li>用 <code>include other.mk</code> 引入其他 makefile 的内容</li>
+</ul>
+</li>
+</ul>
 <blockquote>
-<p><strong>Note</strong><br>main.cpp<br>-&gt;<code>g++ -c</code><br>main.o<br>-&gt;<code>g++ -o</code><br>main</p>
+<p>Note<br>main.cpp<br>-&gt; <code>g++ -c main.cpp -o main.o</code><br>main.o<br>-&gt; <code>g++ main.o -o main</code><br>main</p>
 </blockquote>
 <h1 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h1><ul>
-<li>平台无关构建项目的构建系统，使用CMakeLists.txt，可以生成MakeFile，Sln工程项目</li>
+<li>平台无关的跨平台构建系统生成器，使用 CMakeLists.txt 描述构建，可以生成 Makefile、Ninja、Visual Studio 工程（.sln）等</li>
 <li>语法<ol>
-<li><code>cmake_minimum_required(VERSION x.x) #最低版本要求</code></li>
-<li><code>project(name [language]) #项目信息与语言信息</code></li>
-<li><code>add_executable(Demo main.cc) #指定生成目标（将main.cc编译成名为Demo的可执行文件）</code><ol>
-<li>当同一目录下源文件很多时，可以使用<code>aux_source_directory(&lt;dir&gt; &lt;variable&gt;)</code>查找dir目录下的所有源文件并把名称保存到variable中，如<code>aux_source_directory(. DIR_SRCS)</code>，<code>add_executable(Demo ${DIR_SRCS})</code></li>
+<li><code>cmake_minimum_required(VERSION 3.16) #最低版本要求，必须放在第一行</code></li>
+<li><code>project(Demo VERSION 1.0 LANGUAGES CXX) #项目名、版本号、使用的语言</code></li>
+<li><code>add_executable(Demo main.cpp) #指定生成目标（将 main.cpp 编译成名为 Demo 的可执行文件）</code><ol>
+<li>当同一目录下源文件很多时，可以使用 <code>aux_source_directory(&lt;dir&gt; &lt;variable&gt;)</code> 查找 dir 目录下的所有源文件并把名称保存到 variable 中（旧式写法，CMake 3.27 起已弃用），如 <code>aux_source_directory(. DIR_SRCS)</code>，<code>add_executable(Demo ${DIR_SRCS})</code>；也可以 <code>file(GLOB DIR_SRCS *.cpp)</code>（注意：GLOB 在新增文件后不会自动重新配置，可加 <code>CONFIGURE_DEPENDS</code>）。最稳妥的是显式列出源文件</li>
 </ol>
 </li>
-<li>当使用<code>add_subdirectory(&lt;paht&gt;)</code>时，该目录下的CMakeLists.txt与源代码也会被包含</li>
-<li><code>target_link_libraries(Demo MathFuncs) #添加链接库</code>，指明可执行文件需要一个名为MathFuncs的链接库</li>
-<li><code>add_library(Mathfuncs ${DIR_LIB_SRCS})</code>，生成静态链接库</li>
-<li><code>include_directories(&lt;dir&gt;)</code>，寻找dir目录下的头文件</li>
-<li><code>add_compile_options(&lt;string&gt;)</code>，增加编译器选项，如<code>add_compile_options(-std=c++20 -Wall -O2)</code></li>
-<li><code>set(&lt;variable&gt; &lt;value&gt;)</code>，设置variable的值value</li>
-<li><code>find_package(&lt;name&gt;)</code>，搜寻指定库，如<code>find_package(Boost 1.70 REQUIRED)</code>，指定查找路径<code>find_package(OpenCV REQUIRED PATHS /path/to/opencv)</code></li>
+<li>当使用 <code>add_subdirectory(&lt;path&gt;)</code> 时，该目录下的 CMakeLists.txt 与源代码也会被包含</li>
+<li><code>add_library(MathFuncs STATIC math/MathFuncs.cpp) #生成库（STATIC 静态库 / SHARED 动态库）</code></li>
+<li><code>target_link_libraries(Demo PRIVATE MathFuncs) #添加链接库，PRIVATE/PUBLIC/INTERFACE 控制依赖是否传递</code></li>
+<li><code>target_include_directories(Demo PRIVATE include) #指定头文件搜索路径（现代写法，替代 include_directories）</code></li>
+<li><code>add_compile_options(-Wall -O2) #给当前目录及以下所有目标增加编译器选项</code></li>
+<li><code>set(&lt;variable&gt; &lt;value&gt;) #设置变量</code></li>
+<li><code>find_package(Boost 1.70 REQUIRED) #搜寻指定库；指定查找路径常用 set(OpenCV_DIR /path/to/opencv) 或设置 CMAKE_PREFIX_PATH</code>，找到后通过 <code>target_link_libraries(Demo PRIVATE OpenCV::core)</code> 使用</li>
+<li><code>message(STATUS &quot;xxx&quot;) #打印信息，调试配置时常用</code></li>
 </ol>
 </li>
-<li>cmake系统变量<ul>
-<li><strong>可使用set设置值</strong></li>
+<li>cmake 常用变量<ul>
+<li><code>CMAKE_SOURCE_DIR</code> &#x2F; <code>CMAKE_BINARY_DIR</code>：顶层源码目录 &#x2F; 顶层构建目录</li>
+<li><code>PROJECT_SOURCE_DIR</code> &#x2F; <code>PROJECT_BINARY_DIR</code>：当前 project 的源码目录 &#x2F; 构建目录（顶层时与上面两个相同）</li>
+<li><code>CMAKE_CURRENT_SOURCE_DIR</code> &#x2F; <code>CMAKE_CURRENT_BINARY_DIR</code>：当前 CMakeLists.txt 所在目录</li>
+<li><code>CMAKE_BUILD_TYPE</code>，构建类型：<code>Debug</code> &#x2F; <code>Release</code> &#x2F; <code>RelWithDebInfo</code> &#x2F; <code>MinSizeRel</code>（只对 Makefile、Ninja 这类单配置生成器生效）</li>
+<li><code>CMAKE_CXX_STANDARD</code>，如 <code>set(CMAKE_CXX_STANDARD 20)</code>；或 <code>target_compile_features(Demo PRIVATE cxx_std_20)</code></li>
+<li><code>EXECUTABLE_OUTPUT_PATH</code> &#x2F; <code>LIBRARY_OUTPUT_PATH</code>，可执行文件 &#x2F; 库的输出目录（旧式变量；新式写法用 <code>set_target_properties(... PROPERTIES RUNTIME_OUTPUT_DIRECTORY ...)</code>）</li>
+<li><code>CMAKE_CXX_FLAGS</code>，C++ 编译器的全局标志（对所有 C++ 目标生效，与只影响当前目录的 add_compile_options 不完全等同）</li>
+<li><code>CMAKE_INSTALL_PREFIX</code>，安装前缀，Linux 默认 <code>/usr/local</code></li>
 </ul>
-<ol>
-<li>PROJECT_BINARY_DIR，即cmake命令执行的目录，如当在build目录下执行cmake，这个变量值为build</li>
-<li>LIBRARY_OUTPUT_PATH，指定库生成的目录</li>
-<li>EXECUTABLE_OUTPUT_PATH，指定可执行文件生成的目录</li>
-<li>CMAKE_SOURCE(BINARY)_DIR，顶层CMakeLists.txt所在的源目录（构建目录）</li>
-<li>CMAKE_BUILD_TYPE，构建类型，如“Debug”，“Release”等</li>
-<li>CMAKE_CXX_FLAGS，等同于add_compiler_options</li>
-<li>CMAKE_CXX_FLAGS_DEBUG(RELEASE)，指定Debug（Release）模式下的编译器标志</li>
-</ol>
+</li>
+<li>命令行常用用法（文章原来没写的）<ul>
+<li>配置：<code>cmake -S . -B build</code>（-S 指定源码目录，-B 指定构建目录；推荐 out-of-source 构建，不要把生成文件写进源码目录）</li>
+<li>构建：<code>cmake --build build -j8</code>（自动识别生成器，相当于 make）</li>
+<li>安装：<code>cmake --install build</code>（相当于 make install；可加 <code>--prefix</code> 覆盖安装前缀）</li>
+<li>选择生成器：<code>cmake -S . -B build -G &quot;Ninja&quot;</code></li>
+<li>传缓存变量：<code>cmake -S . -B build -DCMAKE_BUILD_TYPE=Release</code></li>
+<li>只构建某个目标：<code>cmake --build build --target Demo</code></li>
+<li>清理：<code>cmake --build build --target clean</code></li>
+<li>运行测试：<code>ctest --test-dir build --output-on-failure</code></li>
+</ul>
 </li>
 </ul>
 <h2 id="自定义编译选项"><a href="#自定义编译选项" class="headerlink" title="自定义编译选项"></a>自定义编译选项</h2><ul>
-<li>前提：将MathFuncs库设置为一个可选库，即根据配置决定使用该库还是标准库<ul>
-<li>加入配置条件</li>
-<li>CMake配置文件中，使用<code>cmakedefine</code>，如<code>#cmakedefine USE_MYMATH</code></li>
-<li>在CMakeLists.txt中设置的变量，可以在config.h.in中以@variable_name@的方式使用：</li>
+<li>目的：把 MathFuncs 库设置为一个可选库，即根据配置决定使用该库还是标准库</li>
+<li>思路：<code>option()</code> 定义开关 → <code>configure_file()</code> 把 CMake 变量注入头文件模板 → 源文件里用 <code>#ifdef</code> 分支</li>
+<li>注意：<strong><code>option()</code> 必须写在 <code>configure_file()</code> 之前</strong>，否则变量还没定义，<code>#cmakedefine</code> 会展开成 <code>/* #undef USE_MYMATH */</code>，选项永远不生效；生成的头文件应输出到 <code>${PROJECT_BINARY_DIR}</code>（构建目录），不要写进源码目录</li>
 </ul>
-  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">--CMakeLists.txt<br>set(Demo_VERSION_MAJOR 1)<br>set(Demo_VERSION_MINOR 0)<br><br>--config.h.in<br>#define Demo_VERSION_MAJOR @Demo_VERSION_MAJOR@<br>同理<br></code></pre></td></tr></table></figure>
-  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#加入配置头文件<br>configure_file(<br>	#输入的模板文件<br>	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h.in&quot;<br>	#输出的最终配置文件<br>	&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h&quot;<br>)<br>#添加选项，且默认值为ON<br>option(USE_MYMATH &quot;Use self-defined library&quot; ON)<br><br>if(USE_MYMATH)<br>	include_directories(&quot;$&#123;PROJECT_SOURCE_DIR&#125;/math&quot;)<br>	add_subdirectory(math)<br>	set(EXTRA_LIBS $&#123;EXTRA_LIBS&#125; MathFuncs)<br>endif(USE_MYMATH)<br></code></pre></td></tr></table></figure>
-<ul>
-<li>修改源文件，增加宏定义</li>
-</ul>
-  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#ifdef USE_MYMATH<br>	#include &quot;math/MathFuncs&quot;<br>#else<br>	#include &lt;math.h&gt;<br>#endif<br></code></pre></td></tr></table></figure></li>
-</ul>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs cmake">--CMakeLists.txt（顶层）<br><span class="hljs-keyword">cmake_minimum_required</span>(VERSION <span class="hljs-number">3.16</span>)<br><span class="hljs-keyword">project</span>(Demo)<br><br><span class="hljs-keyword">set</span>(Demo_VERSION_MAJOR <span class="hljs-number">1</span>)<br><span class="hljs-keyword">set</span>(Demo_VERSION_MINOR <span class="hljs-number">0</span>)<br><br><span class="hljs-comment"># 1. 先定义选项（默认值为 ON）</span><br><span class="hljs-keyword">option</span>(USE_MYMATH <span class="hljs-string">&quot;Use self-defined math library&quot;</span> <span class="hljs-keyword">ON</span>)<br><br><span class="hljs-comment"># 2. 再生成配置头文件（把变量写入模板）</span><br><span class="hljs-keyword">configure_file</span>(<br>	<span class="hljs-comment">#输入的模板文件</span><br>	<span class="hljs-string">&quot;$&#123;PROJECT_SOURCE_DIR&#125;/config.h.in&quot;</span><br>	<span class="hljs-comment">#输出的最终配置文件</span><br>	<span class="hljs-string">&quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot;</span><br>)<br><br><span class="hljs-comment"># 3. 按选项组织目标</span><br><span class="hljs-keyword">if</span>(USE_MYMATH)<br>	<span class="hljs-keyword">add_subdirectory</span>(<span class="hljs-keyword">math</span>)   <span class="hljs-comment"># math/CMakeLists.txt 中定义 add_library(MathFuncs ...)</span><br><span class="hljs-keyword">endif</span>()<br><br><span class="hljs-keyword">add_executable</span>(Demo main.cpp)<br><span class="hljs-keyword">target_include_directories</span>(Demo PRIVATE <span class="hljs-string">&quot;$&#123;PROJECT_BINARY_DIR&#125;&quot;</span>)  <span class="hljs-comment"># 让 main.cpp 能找到生成的 config.h</span><br><span class="hljs-keyword">if</span>(USE_MYMATH)<br>	<span class="hljs-keyword">target_include_directories</span>(Demo PRIVATE <span class="hljs-string">&quot;$&#123;PROJECT_SOURCE_DIR&#125;/math&quot;</span>)<br>	<span class="hljs-keyword">target_link_libraries</span>(Demo PRIVATE MathFuncs)<br><span class="hljs-keyword">endif</span>()<br><br>--config.h.in（模板）<br><span class="hljs-comment">#cmakedefine USE_MYMATH</span><br><br><span class="hljs-comment">#define Demo_VERSION_MAJOR @Demo_VERSION_MAJOR@</span><br><span class="hljs-comment">#define Demo_VERSION_MINOR @Demo_VERSION_MINOR@</span><br><br>--main.cpp<br><span class="hljs-comment">#include &quot;config.h&quot;   # 必须包含，宏才会生效</span><br><br><span class="hljs-comment">#ifdef USE_MYMATH</span><br>	<span class="hljs-comment">#include &quot;MathFuncs.h&quot;</span><br>	<span class="hljs-comment"># ...使用自定义数学库</span><br><span class="hljs-comment">#else</span><br>	<span class="hljs-comment">#include &lt;cmath&gt;</span><br>	<span class="hljs-comment"># ...使用标准库</span><br><span class="hljs-comment">#endif</span><br></code></pre></td></tr></table></figure>
 <h2 id="安装与测试"><a href="#安装与测试" class="headerlink" title="安装与测试"></a>安装与测试</h2><ul>
-<li>安装规则</li>
-<li>TARGETS关键字指定<code>add_executable,add_library</code>创建的目标</li>
-<li>FILES关键字指定要安装的文件，并指定目录</li>
+<li><code>install()</code> 只登记安装规则，<strong>配置&#x2F;构建阶段不会复制任何文件</strong>；要执行 <code>cmake --install build</code>（或 <code>make install</code>）才会安装到 <code>CMAKE_INSTALL_PREFIX</code>（Linux 默认 &#x2F;usr&#x2F;local）下</li>
+<li><code>TARGETS</code> 关键字用于 <code>add_executable</code> &#x2F; <code>add_library</code> 创建的目标；<code>FILES</code> 关键字必须写<strong>真实文件的路径</strong>（不能写目标名）</li>
 </ul>
-<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">install</span>(TARGETS MathFuncs DESTINATION bin)<br><span class="hljs-keyword">install</span>(FILES MathFuncs DESTINATION <span class="hljs-keyword">include</span>)<br><br><span class="hljs-keyword">install</span>(TARGETS Demo DESTINATION bin)<br>insatll(FILES <span class="hljs-string">&quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot;</span> DESTINATION <span class="hljs-keyword">include</span>)<br></code></pre></td></tr></table></figure>
-<pre><code>- 执行后，MathFuncs.h与config.h会被复制到cmake工作目录的include目录下
-- 同理，MathFuncs.o会被复制到bin目录下
-</code></pre>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 库装到 lib，头文件装到 include，可执行文件装到 bin</span><br><span class="hljs-keyword">install</span>(TARGETS MathFuncs DESTINATION lib)<br><span class="hljs-keyword">install</span>(FILES <span class="hljs-keyword">math</span>/MathFuncs.h DESTINATION <span class="hljs-keyword">include</span>)<br><br><span class="hljs-keyword">install</span>(TARGETS Demo DESTINATION bin)<br><span class="hljs-keyword">install</span>(FILES <span class="hljs-string">&quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot;</span> DESTINATION <span class="hljs-keyword">include</span>)<br></code></pre></td></tr></table></figure>
 <ul>
+<li>安装的是 <code>libMathFuncs.a</code>（静态库）&#x2F; <code>libMathFuncs.so</code>（动态库），不是 <code>.o</code> 文件</li>
 <li>测试</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#启动测试<br>enable_testing()<br><br>#测试程序能否正常运行<br>add_test(test_run Demo 5 2)<br><br>add_test (test_usage Demo)<br>set_tests_properties (test_usage PROPERTIES PASS_REGULAR_EXPRESSION &quot;Usage: .* base exponent&quot;)<br></code></pre></td></tr></table></figure>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment">#启动测试</span><br><span class="hljs-keyword">enable_testing</span>()<br><br><span class="hljs-comment">#测试程序能否正常运行（现代写法）</span><br><span class="hljs-keyword">add_test</span>(NAME test_run <span class="hljs-keyword">COMMAND</span> Demo <span class="hljs-number">5</span> <span class="hljs-number">2</span>)<br><br><span class="hljs-keyword">add_test</span>(NAME test_usage <span class="hljs-keyword">COMMAND</span> Demo)<br><span class="hljs-keyword">set_tests_properties</span>(test_usage PROPERTIES PASS_REGULAR_EXPRESSION <span class="hljs-string">&quot;Usage: .* base exponent&quot;</span>)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>运行测试：<code>ctest --test-dir build --output-on-failure</code></li>
+</ul>
+<h1 id="gcc-与-g"><a href="#gcc-与-g" class="headerlink" title="gcc 与 g++"></a>gcc 与 g++</h1><h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><ul>
+<li>两者都是 GNU 编译器套件的驱动程序，底层调用同一个编译器后端（cc1 &#x2F; cc1plus）</li>
+<li><strong>g++</strong> 按 C++ 处理源文件（包括 <code>.c</code> 文件），并在链接阶段<strong>自动链接 C++ 标准库（libstdc++）</strong></li>
+<li><strong>gcc</strong> 按 C 处理；即使编译 C++ 源文件，链接时也<strong>不会自动链接 libstdc++</strong>，会出现 <code>undefined reference to &#39;std::cout&#39;</code> 之类的错误</li>
+<li>结论：<strong>编译&#x2F;链接 C 用 gcc，编译&#x2F;链接 C++ 一律用 g++</strong></li>
+<li>注意：<code>gcc -c foo.cpp</code>（只编译不链接）通常能通过，因为没到链接标准库这一步；<strong>链接阶段</strong>必须用 g++。也可以用 <code>gcc -x c++ foo.cpp -lstdc++ -o foo</code> 强行走 C++ 路径，但没有必要</li>
+</ul>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p>编译（生成目标文件，不链接）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ -c main.cpp            <span class="hljs-comment"># 生成 main.o</span><br>g++ -c main.cpp -o main.o  <span class="hljs-comment"># 显式指定输出文件名</span><br></code></pre></td></tr></table></figure>
+<p>一步编译并链接成可执行文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ main.cpp -o main<br>g++ main.cpp -o main -std=c++20 -Wall -g -O2<br></code></pre></td></tr></table></figure>
+<p>多文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 一步编译链接所有源文件</span><br>g++ main.cpp util.cpp -o app<br><br><span class="hljs-comment"># 或先各自编译成 .o，再统一链接（增量构建：改一个文件只需重编一个 .o）</span><br>g++ -c main.cpp -o main.o<br>g++ -c util.cpp -o util.o<br>g++ main.o util.o -o app<br></code></pre></td></tr></table></figure>
+<p>头文件与库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ main.cpp -I include -o app        <span class="hljs-comment"># -I：头文件搜索路径</span><br>g++ main.cpp -L lib -lfoo -o app      <span class="hljs-comment"># -L：库搜索路径；-lfoo：链接 libfoo（-lm 链接 libm）</span><br>g++ main.o -lfoo -o app               <span class="hljs-comment"># 库一般放在源文件/目标文件之后</span><br>g++ main.cpp -o app -static           <span class="hljs-comment"># 静态链接</span><br>g++ -shared -fPIC foo.cpp -o libfoo.so  <span class="hljs-comment"># 生成动态库</span><br></code></pre></td></tr></table></figure>
+<p>常用选项速查表：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-o &lt;file&gt;</code></td>
+<td>指定输出文件名</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>只编译不链接，生成 .o</td>
+</tr>
+<tr>
+<td><code>-std=c++20</code> &#x2F; <code>-std=c++17</code></td>
+<td>指定语言标准</td>
+</tr>
+<tr>
+<td><code>-Wall -Wextra</code></td>
+<td>开启常用警告</td>
+</tr>
+<tr>
+<td><code>-g</code></td>
+<td>生成调试信息（配合 gdb）</td>
+</tr>
+<tr>
+<td><code>-O0 / -O1 / -O2 / -O3 / -Os</code></td>
+<td>优化等级</td>
+</tr>
+<tr>
+<td><code>-DNAME=VALUE</code></td>
+<td>定义宏（<code>-DUSE_MYMATH</code> 等价于 <code>#define USE_MYMATH</code>）</td>
+</tr>
+<tr>
+<td><code>-UNAME</code></td>
+<td>取消宏定义</td>
+</tr>
+<tr>
+<td><code>-E</code></td>
+<td>只做预处理，输出到标准输出</td>
+</tr>
+<tr>
+<td><code>-S</code></td>
+<td>生成汇编文件 .s</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>显示详细编译过程</td>
+</tr>
+<tr>
+<td><code>-fPIC</code></td>
+<td>生成位置无关代码（编译共享库必需）</td>
+</tr>
+<tr>
+<td><code>-shared</code></td>
+<td>生成动态库</td>
+</tr>
+<tr>
+<td><code>-MMD -MP</code></td>
+<td>生成头文件依赖文件 .d（配合 make 自动追踪头文件）</td>
+</tr>
+<tr>
+<td><code>-pthread</code></td>
+<td>链接 pthread（多线程程序）</td>
+</tr>
+<tr>
+<td><code>-fsanitize=address</code></td>
+<td>开启 AddressSanitizer（检测内存错误）</td>
+</tr>
+<tr>
+<td><code>-Wl,-rpath,&lt;dir&gt;</code></td>
+<td>指定运行时动态库搜索路径</td>
+</tr>
+</tbody></table>
+<p>生成库与查看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 静态库（本质上是 .o 的打包）</span><br>g++ -c foo.cpp -o foo.o<br>ar rcs libfoo.a foo.o<br><br><span class="hljs-comment"># 动态库</span><br>g++ -shared -fPIC foo.cpp -o libfoo.so<br><br><span class="hljs-comment"># 查看符号 / 动态库依赖 / 反汇编</span><br>nm libfoo.a<br>ldd app<br>objdump -d app<br></code></pre></td></tr></table></figure>
+
     </section>
 
     
