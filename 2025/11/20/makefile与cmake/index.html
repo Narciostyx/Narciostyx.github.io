@@ -106,7 +106,7 @@
 <li>命令行覆盖变量：<code>make CXXFLAGS=&quot;-O2&quot;</code> 会覆盖 makefile 中的赋值</li>
 </ul>
 </li>
-<li>常用写法补充（文章原来没写的）：<ul>
+<li>常用写法补充：<ul>
 <li>模式规则（pattern rule）：<code>%.o: %.cpp</code> 一条规则匹配所有 .cpp → .o 的转换</li>
 </ul>
   <figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs make">CXX = g++<br>CXXFLAGS = -std=c++20 -Wall -g<br>OBJS = main.o util.o<br><br><span class="hljs-section">app: <span class="hljs-variable">$(OBJS)</span></span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$^</span> -o <span class="hljs-variable">$@</span><br><br><span class="hljs-section">%.o: %.cpp</span><br>	<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$(CXXFLAGS)</span> -c <span class="hljs-variable">$&lt;</span> -o <span class="hljs-variable">$@</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f app <span class="hljs-variable">$(OBJS)</span><br></code></pre></td></tr></table></figure>
@@ -153,7 +153,7 @@
 <li><code>CMAKE_INSTALL_PREFIX</code>，安装前缀，Linux 默认 <code>/usr/local</code></li>
 </ul>
 </li>
-<li>命令行常用用法（文章原来没写的）<ul>
+<li>命令行常用用法<ul>
 <li>配置：<code>cmake -S . -B build</code>（-S 指定源码目录，-B 指定构建目录；推荐 out-of-source 构建，不要把生成文件写进源码目录）</li>
 <li>构建：<code>cmake --build build -j8</code>（自动识别生成器，相当于 make）</li>
 <li>安装：<code>cmake --install build</code>（相当于 make install；可加 <code>--prefix</code> 覆盖安装前缀）</li>
@@ -324,11 +324,11 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2025/11/20/epoll.h/" class="change-link">
+                <a href="/2025/11/20/getopt.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">epoll函数</span>
+                        <span class="text-title">getopt以及getopt_long</span>
                     </span>
                 </a>
             
