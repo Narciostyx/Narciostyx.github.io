@@ -67,18 +67,18 @@
 <li>makefile文件包含目标（可执行文件），依赖（文件或目标），命令</li>
 <li>makefile支持自查找依赖，如</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">main: main.o<br>	g++ main.o -o main<br>	![[pcap_analysis_report]]<br>main.o: main.cpp<br>	g++ main.cpp -c main.o<br>	<br>.PHONY: clean<br>clean:<br>	rm -f main<br></code></pre></td></tr></table></figure>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-section">main: main.o</span><br>	g++ main.o -o main<br>	![[pcap_analysis_report]]<br><span class="hljs-section">main.o: main.cpp</span><br>	g++ main.cpp -c main.o<br>	<br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f main<br></code></pre></td></tr></table></figure>
 <ul>
 <li>注释以#开头</li>
 <li>e.g:</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">target: dependencies<br>	command<br>	<br>main: main.cpp<br>	g++ main.cpp -o main<br></code></pre></td></tr></table></figure>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-section">target: dependencies</span><br>	command<br>	<br><span class="hljs-section">main: main.cpp</span><br>	g++ main.cpp -o main<br></code></pre></td></tr></table></figure>
 <pre><code>- command前必须以tab开头
 </code></pre>
 <ul>
 <li>makefile支持定义![[chat_export_20260609_225644]]变量，如：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">CC = g++<br>CFLAGS = -Wall -g<br><br>main: main.cpp<br>	$(CC) $(CFLAGS) main.cpp -o main<br></code></pre></td></tr></table></figure>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs make">CC = g++<br>CFLAGS = -Wall -g<br><br><span class="hljs-section">main: main.cpp</span><br>	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> main.cpp -o main<br></code></pre></td></tr></table></figure>
 <pre><code>- makefile内置了一些变量，如：
 	- $@，表示目标文件
 	- $^，表示所有的依赖文件
@@ -90,7 +90,7 @@
 <ul>
 <li>伪目标，即phony targets，以.PHONY开头，代表没有依赖文件，属于makefile内的内容，而非当前目录下同命的文件，且仅有make调用才会执行：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">.PHONY: clean<br>clean:<br>	rm -f main<br></code></pre></td></tr></table></figure>
+<figure class="highlight make"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs make"><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><span class="hljs-section">clean:</span><br>	rm -f main<br></code></pre></td></tr></table></figure>
 <p>只有当执行<code>make clean</code>时才会执行</p>
 <ul>
 <li>执行makefile的脚本时，如：</li>
@@ -150,7 +150,7 @@
 <li>TARGETS关键字指定<code>add_executable,add_library</code>创建的目标</li>
 <li>FILES关键字指定要安装的文件，并指定目录</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">install(TARGETS MathFuncs DESTINATION bin)<br>install(FILES MathFuncs DESTINATION include)<br><br>install(TARGETS Demo DESTINATION bin)<br>insatll(FILES &quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot; DESTINATION include)<br></code></pre></td></tr></table></figure>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">install</span>(TARGETS MathFuncs DESTINATION bin)<br><span class="hljs-keyword">install</span>(FILES MathFuncs DESTINATION <span class="hljs-keyword">include</span>)<br><br><span class="hljs-keyword">install</span>(TARGETS Demo DESTINATION bin)<br>insatll(FILES <span class="hljs-string">&quot;$&#123;PROJECT_BINARY_DIR&#125;/config.h&quot;</span> DESTINATION <span class="hljs-keyword">include</span>)<br></code></pre></td></tr></table></figure>
 <pre><code>- 执行后，MathFuncs.h与config.h会被复制到cmake工作目录的include目录下
 - 同理，MathFuncs.o会被复制到bin目录下
 </code></pre>
@@ -203,11 +203,11 @@
     <section class="flex-between" style="margin: 20px 0;">
         <div class="pre">
             
-                <a href="/2025/11/20/getopt.h/" class="change-link">
+                <a href="/2025/11/20/epoll.h/" class="change-link">
                     <span class="icon"><i class="fa fa-angle-double-left"></i></span>
                     <span class="text">
                         <span class="identify">上一篇</span>
-                        <span class="text-title">getopt以及getopt_long</span>
+                        <span class="text-title">epoll函数</span>
                     </span>
                 </a>
             
