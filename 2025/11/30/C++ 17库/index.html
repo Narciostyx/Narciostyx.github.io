@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++17标准库</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">&lt;variant&gt;</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#-1"><span class="toc-number">2.</span> <span class="toc-text">&lt;optional&gt;</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#-2"><span class="toc-number">3.</span> <span class="toc-text">&lt;any&gt;</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#-3"><span class="toc-number">4.</span> <span class="toc-text">&lt;filesystem&gt;</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB"><span class="toc-number">4.1.</span> <span class="toc-text">类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0"><span class="toc-number">4.2.</span> <span class="toc-text">函数</span></a></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++17标准库</h1>
+    </section>
+    <section class="article">
+        <p>C++ 17新增的&lt;variant&gt;, &lt;optional&gt;, &lt;any&gt;, &lt;filesystem&gt;库</p>
+<span id="more"></span>
+<h2 id=""><a href="#" class="headerlink" title="&lt;variant&gt;"></a>&lt;variant&gt;</h2><ul>
+<li>类模板<code>std::variant</code>表示<strong>一个类型安全的联合体</strong>，其实例在给定时间内，要么持有其可选类型之一的一个值，要么在发生错误时不持有任何值</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 所有可能存储的类型必须满足可析构要求</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">class</span>... Types&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">variant</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-built_in">index</span>() <span class="hljs-comment">// 返回当前存储类型的索引，若无值，返回std::variant_npos</span><br>	<span class="hljs-built_in">emplace</span>() <span class="hljs-comment">// emplace需要传入对应的类型索引</span><br>	...<br>&#125;;<br><br><span class="hljs-comment">// 非成员函数</span><br>visit<br>get<br>get_if<br>holds_alternative <span class="hljs-comment">// 检查variant当前是否持有给定类型</span><br><br><span class="hljs-comment">// 辅助类</span><br><span class="hljs-function">bad_variant_access</span><br><span class="hljs-function"><span class="hljs-title">variant_size</span><span class="hljs-params">(_v)</span></span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><strong>不允许持有引用、数组或<code>void</code>类型</strong></li>
+<li><strong>若第一个类型不是默认构造，则<code>std::variant</code>也不是默认构造</strong></li>
+<li>使用<code>std::monostate</code>作为第一个类型，<code>std::variant</code>可表示<strong>无值</strong>状态</li>
+<li>其与<code>union</code>类似，采用存储类型的最大大小</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta"># e.g.</span><br><span class="hljs-comment">// 若未使用值初始化，则使用第一个类型进行初始化，此时v应该为0</span><br><span class="hljs-comment">// 若第一个类型没有默认构造函数将会报错</span><br>std::variant&lt;<span class="hljs-type">int</span>,<span class="hljs-type">float</span>,std::string&gt; v;<br><br>v=<span class="hljs-number">14</span>;<br>std::cout&lt;&lt;std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-type">int</span>&gt;(v)&lt;&lt;<span class="hljs-string">&quot; &quot;</span>&lt;&lt;v.<span class="hljs-built_in">index</span>()&lt;&lt;std::endl; <span class="hljs-comment">// 打印42 0</span><br>v=<span class="hljs-number">18.9f</span>;<br>std::cout&lt;&lt;std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-type">float</span>&gt;(v)&lt;&lt;<span class="hljs-string">&quot; &quot;</span>&lt;&lt;v.<span class="hljs-built_in">index</span>()&lt;&lt;std::endl; <span class="hljs-comment">// 打印18.9 1</span><br>v=<span class="hljs-string">&quot;hello world&quot;</span><br>std::cout&lt;&lt;std::<span class="hljs-built_in">get</span>&lt;std::string&gt;(v)&lt;&lt;<span class="hljs-string">&quot; &quot;</span>&lt;&lt;v.<span class="hljs-built_in">index</span>()&lt;&lt;std::endl; <span class="hljs-comment">// 打印hello world 2</span><br><br><span class="hljs-comment">// C++17允许if语句初始化变量</span><br><span class="hljs-comment">// 该变量作用域仅在if-else语句块内</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">auto</span> intPtr=std::<span class="hljs-built_in">get_if</span>&lt;<span class="hljs-type">int</span>&gt;(&amp;v);intPtr) <span class="hljs-comment">// auto推导为int*</span><br>	std::cout&lt;&lt;<span class="hljs-string">&quot;Int:&quot;</span>&lt;&lt;*intPtr&lt;&lt;std::endl;<br><span class="hljs-keyword">else</span><br>	std::cout&lt;&lt;<span class="hljs-string">&quot;Not an int type!&quot;</span>&lt;&lt;std::endl;<br><span class="hljs-comment">// 或者</span><br><span class="hljs-comment">// get会抛出异常</span><br><span class="hljs-keyword">try</span><br>&#123; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-type">int</span>&gt;(v); &#125;<br><span class="hljs-built_in">catch</span>(<span class="hljs-type">const</span> std::bad_variant_access&amp; e)<br>&#123;<br>	std::cout&lt;&lt;e.<span class="hljs-built_in">what</span>()&lt;&lt;std::endl;	<br>&#125;<br><span class="hljs-comment">// 再或者</span><br><span class="hljs-keyword">if</span>(std::<span class="hljs-built_in">hold_alternative</span>&lt;<span class="hljs-type">int</span>&gt;(v))<br>	std::cout&lt;&lt;<span class="hljs-string">&quot;Now it holds an int data.&quot;</span>&lt;&lt;std::endl;<br><span class="hljs-keyword">else</span><br>	std::cout&lt;&lt;<span class="hljs-string">&quot;It holds a non-int data.&quot;</span>&lt;&lt;std::endl;<br>	<br><span class="hljs-comment">// visit函数要求提供一个&quot;访问者&quot;，其根据当前variant存储的类型调用对应的类型的重载方法</span><br><span class="hljs-comment">// 这个函数可以返回值</span><br>std::<span class="hljs-built_in">visit</span>([](<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; value)&#123;<br>	std::cout&lt;&lt;value&lt;&lt;std::endl;<br>&#125;,v);<br><br>std::<span class="hljs-built_in">visit</span>([](<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; value)&#123;<br>	<span class="hljs-keyword">using</span> T=std::<span class="hljs-type">decay_t</span>&lt;<span class="hljs-keyword">decltype</span>(value)&gt;&gt;;<br>	<span class="hljs-comment">// C++17</span><br>	<span class="hljs-keyword">if</span> <span class="hljs-built_in">constexpr</span>(std::is_same_v&lt;T,<span class="hljs-type">int</span>&gt;)<br>		std::cout&lt;&lt;<span class="hljs-string">&quot;int:&quot;</span>&lt;&lt;value&lt;&lt;std::endl;<br>	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">constexpr</span>(std::is_same_v&lt;T,<span class="hljs-type">float</span>&gt;)<br>		std::cout&lt;&lt;<span class="hljs-string">&quot;float:&quot;</span>&lt;&lt;value&lt;&lt;std::endl;<br>	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">constexpr</span>(std::is_same_v&lt;T,std::string&gt;)<br>		std::cout&lt;&lt;<span class="hljs-string">&quot;std::string:&quot;</span>&lt;&lt;value&lt;&lt;std::endl;<br>&#125;);<br><br><span class="hljs-comment">// C++17 Overload Pattern</span><br><span class="hljs-comment">// 简化visit</span><br><span class="hljs-comment">// 考虑下列代码：</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">class</span>... Ts&gt;<br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">overloaded</span>:Ts... <span class="hljs-comment">// 展开为T1 T2 ... Tn</span><br>&#123; <span class="hljs-function"><span class="hljs-keyword">using</span> <span class="hljs-title">Ts::operator</span><span class="hljs-params">()</span>... &#125;</span>; <span class="hljs-comment">// 展开为 T1::operator(),T2::operator(),...,Tn::operator()</span><br><br><span class="hljs-comment">// 因此，其本质是将基类的函数调用运算符拉入自己作用域</span><br><br><span class="hljs-comment">// 推导指引，即帮助编译器根据参数类型推导模板参数类型(C++17 CTAD类模板参数推导引入)</span><br><span class="hljs-comment">// 本质是声明语句</span><br><span class="hljs-comment">// 左边为构造函数调用，右边类似最终生成类的类型</span><br><span class="hljs-comment">// 如果overloaded的参数类型集合为Ts，则其模板参数类型集合也为Ts</span><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">class</span>... Ts&gt;</span><br><span class="hljs-function"><span class="hljs-title">overloaded</span><span class="hljs-params">(Ts...)</span>-&gt;overloaded&lt;Ts...&gt;</span>;<br><br>std::<span class="hljs-built_in">visit</span>(overloaded&#123;<br>	[](<span class="hljs-type">int</span> i)&#123;std::cout&lt;&lt;<span class="hljs-string">&quot;int\n&quot;</span>;&#125;,<br>	[](<span class="hljs-type">float</span> f)&#123;std::cout&lt;&lt;<span class="hljs-string">&quot;float\n&quot;</span>;&#125;,<br>	[](<span class="hljs-type">const</span> std::string&amp; s)&#123;std::cout&lt;&lt;<span class="hljs-string">&quot;string\n&quot;</span>;&#125;<br>&#125;,v)<br></code></pre></td></tr></table></figure>
+<h1 id="-1"><a href="#-1" class="headerlink" title="&lt;optional&gt;"></a>&lt;optional&gt;</h1><ul>
+<li>类模板<code>std::optional</code>关联一个可选的包含值，即一个可能存在也可能不存在的值（因此常用于可能失败函数的返回值）</li>
+<li>任何给定时间，任何<code>optional</code>实例要么包含一个值，要么不包含一个值</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">class</span> <span class="hljs-title class_">T</span>&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">optional</span><br>&#123;<br>pulic:<br>	T* val; <span class="hljs-comment">// 指向包含对象（如果存在）的指针</span><br>	<span class="hljs-built_in">has_value</span>() <span class="hljs-comment">// optional本身也重载了bool运算符，包含值返回true，反之false</span><br>	<span class="hljs-built_in">value</span>() <span class="hljs-comment">// 返回</span><br>	<span class="hljs-built_in">value_or</span>() <span class="hljs-comment">// 如果不包含则返回另外一个值</span><br>	<span class="hljs-built_in">transform</span>() <span class="hljs-comment">// 如果存在包含的值则返回一个包含转化值的optional，否则返回空的optional</span><br>	reset<br>	emplace<br>	<span class="hljs-comment">// C++23</span><br>	and_then <span class="hljs-comment">// 如果存在包含的值，则返回给定函数对该值的结果，否则返回空optional</span><br>	or_else <span class="hljs-comment">// 如果包含值，则返回optional本身，否则返回给定函数的值</span><br>	...<br>&#125;<br><br><span class="hljs-comment">// 非成员函数</span><br>make_optional<br><br><span class="hljs-comment">// 辅助类</span><br><span class="hljs-type">nullopt_t</span><br>bad_optional_access<br><br><span class="hljs-comment">// 辅助函数</span><br><span class="hljs-literal">nullopt</span> <span class="hljs-comment">// nullopt_t类型的对象（常量）</span><br>in_place <span class="hljs-comment">// 原地构造标签，in_place_t类型</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><strong>不允许可选的引用、函数、数组或（可能带cv限定符的）void</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// std::optional支持拷贝、移动</span><br><span class="hljs-comment">// 介绍in_place，考虑下列代码</span><br>std::optional&lt;std::string&gt; opt1=<span class="hljs-string">&quot;hello&quot;</span>; <span class="hljs-comment">// 临时对象构造、移动、析构</span><br><span class="hljs-function">std::optional&lt;std::string&gt; <span class="hljs-title">opt2</span><span class="hljs-params">(std::in_place,<span class="hljs-string">&quot;hello&quot;</span>)</span></span>; <span class="hljs-comment">// 就地构造</span><br><span class="hljs-comment">// 在单参数下，与std::optional&lt;std::string&gt; opt(&quot;hello&quot;)一致</span><br><span class="hljs-comment">// 但in_place支持多参数（与emplace行为一致）：</span><br><span class="hljs-function">std::optional&lt;std::string&gt; <span class="hljs-title">opt3</span><span class="hljs-params">(std::in_place,<span class="hljs-number">5</span>,<span class="hljs-string">&#x27;a&#x27;</span>)</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-keyword">auto</span> opt4</span>=std::make_optional&lt;std::vector&lt;<span class="hljs-type">char</span>&gt;&gt;(&#123;<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-string">&#x27;c&#x27;</span>&#125;);<br><br><span class="hljs-type">int</span> n;<br>std::cin&gt;&gt;n;<br>std::optional&lt;<span class="hljs-type">int</span>&gt; even=n%<span class="hljs-number">2</span>?n:std::<span class="hljs-literal">nullopt</span>;<br><br><span class="hljs-keyword">if</span>(even) <span class="hljs-comment">// 等价于even.has_value()或even!=std::nullopt</span><br>	std::cout&lt;&lt;even.<span class="hljs-built_in">value</span>()&lt;&lt;std::endl; <span class="hljs-comment">// 或*even</span><br><span class="hljs-keyword">else</span><br>	std::cout&lt;&lt;<span class="hljs-string">&quot;Null\n&quot;</span>;<br>	<br>even.<span class="hljs-built_in">emplace</span>(<span class="hljs-number">18</span>); <span class="hljs-comment">// emplace会清除之前的值，与reset行为一样，先调用value().T::~T()，再进行构造</span><br><br>std::optional&lt;<span class="hljs-type">int</span>&gt; wrong;<br><span class="hljs-keyword">try</span><br>&#123;<br>	wrong.<span class="hljs-built_in">value</span>();<br>&#125;<span class="hljs-built_in">catch</span>(<span class="hljs-type">const</span> std::bad_optional_access&amp; e)<br>&#123;<br>	std::cout&lt;&lt;e.<span class="hljs-built_in">what</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="-2"><a href="#-2" class="headerlink" title="&lt;any&gt;"></a>&lt;any&gt;</h1><ul>
+<li>类<code>any</code>描述一个类型安全的容器，用于存储<strong>任意可复制构造</strong>类型的单个值</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">any</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>	emplace<br>	reset<br>	has_value<br>	type<br>	...<br>&#125;<br><br><span class="hljs-comment">// 非成员函数</span><br>any_cast <span class="hljs-comment">// 提供安全访问</span><br>make_any<br><br><span class="hljs-comment">// 辅助类</span><br>bad_any_cast<br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs cpp">std::any a=<span class="hljs-number">1</span>;<br><span class="hljs-comment">// std::any包含成员函数type()获取类型信息</span><br><span class="hljs-comment">// 若使用typeid则永远都是std::any，因此any提供返回值类型的type方法</span><br>std::cout&lt;&lt;a.<span class="hljs-built_in">type</span>().<span class="hljs-built_in">name</span>()&lt;&lt;<span class="hljs-string">&quot;:&quot;</span>&lt;&lt;std::<span class="hljs-built_in">any_cast</span>&lt;<span class="hljs-type">int</span>&gt;(a)&lt;&lt;<span class="hljs-string">&quot;\n&quot;</span>;<br>a=<span class="hljs-number">3.15</span>;<br>std::cout&lt;&lt;a.<span class="hljs-built_in">type</span>().<span class="hljs-built_in">name</span>()&lt;&lt;<span class="hljs-string">&quot;:&quot;</span>&lt;&lt;std::<span class="hljs-built_in">any_cast</span>&lt;<span class="hljs-type">float</span>&gt;(a)&lt;&lt;<span class="hljs-string">&quot;\n&quot;</span>;<br>a=<span class="hljs-literal">true</span>;<br>std::cout&lt;&lt;a.<span class="hljs-built_in">type</span>().<span class="hljs-built_in">name</span>()&lt;&lt;<span class="hljs-string">&quot;:&quot;</span>&lt;&lt;std::<span class="hljs-built_in">any_cast</span>&lt;<span class="hljs-type">bool</span>&gt;(a)&lt;&lt;<span class="hljs-string">&quot;\n&quot;</span>;<br><br><span class="hljs-keyword">try</span><br>&#123;<br>	a=<span class="hljs-number">1</span>;<br>	std::cout&lt;&lt;a.<span class="hljs-built_in">type</span>().<span class="hljs-built_in">name</span>()&lt;&lt;<span class="hljs-string">&quot;:&quot;</span>&lt;&lt;std::<span class="hljs-built_in">any_cast</span>&lt;<span class="hljs-type">float</span>&gt;(a)&lt;&lt;<span class="hljs-string">&quot;\n&quot;</span>;<br>&#125;<span class="hljs-built_in">catch</span>(<span class="hljs-type">const</span> std::bad_any_cast&amp; e)<br>&#123;<br>	std::cout&lt;&lt;e.<span class="hljs-built_in">what</span>();<br>&#125;<br><br>a=<span class="hljs-number">2</span>;<br><span class="hljs-keyword">if</span>(a.<span class="hljs-built_in">has_value</span>())<br>	std::cout&lt;&lt;a.<span class="hljs-built_in">type</span>().<span class="hljs-built_in">name</span>()&lt;&lt;<span class="hljs-string">&quot;:&quot;</span>&lt;&lt;std::<span class="hljs-built_in">any_cast</span>&lt;<span class="hljs-type">int</span>&gt;(a)&lt;&lt;<span class="hljs-string">&quot;\n&quot;</span>;<br><br>a.<span class="hljs-built_in">reset</span>();<br><br><span class="hljs-keyword">auto</span> a1=std::<span class="hljs-built_in">make_any</span>&lt;std::string&gt;(<span class="hljs-string">&quot;hello&quot;</span>);<br></code></pre></td></tr></table></figure>
+<h1 id="-3"><a href="#-3" class="headerlink" title="&lt;filesystem&gt;"></a>&lt;filesystem&gt;</h1><ul>
+<li>由<code>boost.filesystem</code>合并到ISO C++，执行文件系统及其组件上的操作</li>
+</ul>
+<h3 id="类"><a href="#类" class="headerlink" title="类"></a>类</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// &lt;filesystem&gt;</span><br><span class="hljs-comment">// 定义于命名空间std::filesystem</span><br><br><span class="hljs-comment">// 表示和操作文件系统的路径，支持拼接、分解、比较</span><br><span class="hljs-comment">// path类重载了/=与+=操作，前者会追加目录分隔符，后者不会</span><br><span class="hljs-comment">// 分解操作如：root_name, root_directory, root_path, filename等</span><br><span class="hljs-comment">// 其余操作类比字符串操作</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">path</span>; <br><span class="hljs-keyword">class</span> <span class="hljs-title class_">filesystem_error</span>; <span class="hljs-comment">// 异常类</span><br><span class="hljs-comment">// 目录条目，在目录迭代期间还可以存储额外的文件属性</span><br><span class="hljs-comment">// 支持检查目录项的性质</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">directory_entry</span>;<br><span class="hljs-comment">// 迭代器略</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">file_status</span>; <span class="hljs-comment">// 文件状态</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">space_info</span>; <span class="hljs-comment">// 空间信息</span><br><span class="hljs-comment">// 枚举类</span><br><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">file_type</span> &#123;<br>    none = <span class="hljs-comment">/* 未指定 */</span>,  <br>    not_found = <span class="hljs-comment">/* 未指定 */</span>,  <br>    regular = <span class="hljs-comment">/* 未指定 */</span>,  <br>    directory = <span class="hljs-comment">/* 未指定 */</span>,  <br>    symlink = <span class="hljs-comment">/* 未指定 */</span>,  <br>    block = <span class="hljs-comment">/* 未指定 */</span>,  <br>    character = <span class="hljs-comment">/* 未指定 */</span>,  <br>    fifo = <span class="hljs-comment">/* 未指定 */</span>,  <br>    socket = <span class="hljs-comment">/* 未指定 */</span>,  <br>    unknown = <span class="hljs-comment">/* 未指定 */</span>,  <br>    <span class="hljs-comment">/* 由实现定义 */</span>  <br>&#125;;<br><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">perms</span>;<br><span class="hljs-comment">// 指定权限操作</span><br><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">perm_options</span> &#123;  <br>    replace = <span class="hljs-comment">/* 未指定 */</span>,  <br>    add = <span class="hljs-comment">/* 未指定 */</span>,  <br>    remove = <span class="hljs-comment">/* 未指定 */</span>,  <br>    nofollow = <span class="hljs-comment">/* 未指定 */</span>  <br>&#125;;<br><span class="hljs-comment">// 为copy()与copy_file()提供复制选项</span><br><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">copy_options</span> &#123;  <br>    none = <span class="hljs-comment">/* 未指定 */</span>,  <br>    skip_existing = <span class="hljs-comment">/* 未指定 */</span>,  <br>    overwrite_existing = <span class="hljs-comment">/* 未指定 */</span>,  <br>    update_existing = <span class="hljs-comment">/* 未指定 */</span>,  <br>    recursive = <span class="hljs-comment">/* 未指定 */</span>,  <br>    copy_symlinks = <span class="hljs-comment">/* 未指定 */</span>,  <br>    skip_symlinks = <span class="hljs-comment">/* 未指定 */</span>,  <br>    directories_only = <span class="hljs-comment">/* 未指定 */</span>,  <br>    create_symlinks = <span class="hljs-comment">/* 未指定 */</span>,  <br>    create_hard_links = <span class="hljs-comment">/* 未指定 */</span>  <br>&#125;;<br><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">directory_options</span> &#123;  <br>    none = <span class="hljs-comment">/* 未指定 */</span>,  <br>    follow_directory_symlink = <span class="hljs-comment">/* 未指定 */</span>,  <br>    skip_permission_denied = <span class="hljs-comment">/* 未指定 */</span>  <br>&#125;;<br><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">file_time_type</span>;<br></code></pre></td></tr></table></figure>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://cppreference.cn/w/cpp/filesystem/perms">perms枚举类</a>，总体来讲分为：prefix_read，prefix_write，prefix_exec，prefix_all（前缀有：owner、group、others、all）与特殊的mask、set_uid、set_gid等</li>
+</ul>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://cppreference.cn/w/cpp/header/filesystem">参考来源</a></li>
+<li>路径操作</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 默认返回值均为std::filesystem::path</span><br><span class="hljs-comment">// 部分函数支持传入std::error_code获得报错码</span><br><span class="hljs-comment">// using std::filesystem</span><br><span class="hljs-built_in">absolute</span>(<span class="hljs-type">const</span> path&amp; p) <span class="hljs-comment">// 返回p的绝对路径</span><br><span class="hljs-built_in">canonical</span>(<span class="hljs-type">const</span> path&amp; p) <span class="hljs-comment">// 返回p的规范化（解析符号链接，去除相对路径的.与..）后的绝对路径</span><br><span class="hljs-built_in">relative</span>(<span class="hljs-type">const</span> path&amp; p, <span class="hljs-type">const</span> path&amp; base=<span class="hljs-built_in">current_path</span>()) <span class="hljs-comment">// 返回p相对于base的相对路径</span><br><span class="hljs-built_in">current_path</span>() <span class="hljs-comment">// 返回当前工作目录</span><br><span class="hljs-built_in">temp_directory_path</span>() <span class="hljs-comment">// 返回操作系统用于存放临时文件的目录</span><br>...<br></code></pre></td></tr></table></figure>
+<ul>
+<li>文件系统信息</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-built_in">exists</span>(<span class="hljs-type">const</span> path&amp; p)<br><span class="hljs-built_in">is_directory</span>(<span class="hljs-type">const</span> path&amp; p)<br><span class="hljs-built_in">is_regular_file</span>(<span class="hljs-type">const</span> path&amp; p)<br><span class="hljs-built_in">is_symlink</span>(<span class="hljs-type">const</span> path&amp; p)<br><span class="hljs-built_in">is_empty</span>(<span class="hljs-type">const</span> path&amp; p) <span class="hljs-comment">// 是否p指向一个空文件或空目录</span><br><span class="hljs-built_in">file_size</span>(<span class="hljs-type">const</span> path&amp; p) <span class="hljs-comment">// 单位为字节</span><br>...<br></code></pre></td></tr></table></figure>
+<ul>
+<li>具体操作</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 创建</span><br><span class="hljs-built_in">create_directory</span>(<span class="hljs-type">const</span> path&amp; p)<br><span class="hljs-built_in">create_directories</span>(<span class="hljs-type">const</span> path&amp; p) <span class="hljs-comment">// 创建目录及其所有不存在的父目录</span><br>create_hard_link/create_symlink/<span class="hljs-built_in">create_directory_link</span>(<span class="hljs-type">const</span> path&amp; target, <span class="hljs-type">const</span> path&amp; link)<br><br><span class="hljs-comment">// 复制</span><br><span class="hljs-built_in">copy</span>(<span class="hljs-type">const</span> path&amp; from, <span class="hljs-type">const</span> path&amp; to) <span class="hljs-comment">// 复制文件或目录</span><br><span class="hljs-built_in">copy_file</span>(...) <span class="hljs-comment">// 复制单个文件的内容</span><br><br><span class="hljs-comment">// 移动/重命名</span><br><span class="hljs-built_in">rename</span>(<span class="hljs-type">const</span> path&amp;old_p, <span class="hljs-type">const</span> path&amp; new_p)<br><br><span class="hljs-comment">// 删除</span><br>remove/<span class="hljs-built_in">remove_all</span>(<span class="hljs-type">const</span> path&amp; p) <span class="hljs-comment">// 后者是递归删除递归文件或目录及其所有内容</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>示例</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fstream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;filesystem&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;exception&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> fs = std::filesystem;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        fs::path home = <span class="hljs-string">&quot;/home/user&quot;</span>;<br>        fs::path tmp = home / <span class="hljs-string">&quot;tmp&quot;</span>;           <span class="hljs-comment">// &quot;/home/user/tmp&quot;</span><br>        fs::path src = tmp / <span class="hljs-string">&quot;test.txt&quot;</span>;       <span class="hljs-comment">// 原文件路径</span><br>        fs::path dst = tmp / <span class="hljs-string">&quot;test&quot;</span>;           <span class="hljs-comment">// 目标文件路径（无扩展名）</span><br><br>        <span class="hljs-comment">// 创建目录（若不存在）</span><br>        <span class="hljs-keyword">if</span> (!fs::<span class="hljs-built_in">exists</span>(tmp)) &#123;<br>            fs::<span class="hljs-built_in">create_directory</span>(tmp);<br>        &#125;<br><br>        <span class="hljs-comment">// 写入文件</span><br>        &#123;<br>            <span class="hljs-function">std::ofstream <span class="hljs-title">file</span><span class="hljs-params">(src)</span></span>;<br>            <span class="hljs-keyword">if</span> (!file) &#123;<br>                std::cerr &lt;&lt; <span class="hljs-string">&quot;Failed to open file for writing.\n&quot;</span>;<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>            &#125;<br>            file &lt;&lt; <span class="hljs-string">&quot;Hello, this is a test file.&quot;</span>;<br>        &#125;<br><br>        <span class="hljs-comment">// 检查文件是否存在并获取大小</span><br>        <span class="hljs-keyword">if</span> (fs::<span class="hljs-built_in">exists</span>(src)) &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Created file with size: &quot;</span> &lt;&lt; fs::<span class="hljs-built_in">file_size</span>(src) &lt;&lt; <span class="hljs-string">&quot; bytes.\n&quot;</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;File was not created.\n&quot;</span>;<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br><br>        <span class="hljs-comment">// 重命名文件</span><br>        fs::<span class="hljs-built_in">rename</span>(src, dst);<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;Moved (renamed) successfully.\n&quot;</span>;<br><br>        fs::<span class="hljs-built_in">remove</span>(dst);<br>    &#125; <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; e) &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Filesystem error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/variant/" class="tag-item">
+                    variant
+                </a>
+            
+                <a href="/tags/optional/" class="tag-item">
+                    optional
+                </a>
+            
+                <a href="/tags/any/" class="tag-item">
+                    any
+                </a>
+            
+                <a href="/tags/filesystem/" class="tag-item">
+                    filesystem
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/30/C++%2017%E5%BA%93/">https://narciostyx.github.io/2025/11/30/C++ 17库/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/30/ADL%E4%B8%8ECPO/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">ADL与CPO</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/28/C++%20Redis/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">Redis C++开发</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
