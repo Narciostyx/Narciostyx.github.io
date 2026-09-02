@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++协程</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++协程</h1>
+    </section>
+    <section class="article">
+        <p>C++20 &lt;coroutine&gt;</p>
+<span id="more"></span>
+<p><a target="_blank" rel="noopener" href="https://cppreference.cn/w/cpp/language/coroutines">参考文章</a></p>
+<ul>
+<li>协程，一种可以暂停执行并以后恢复的函数，C++是无栈协程（<strong>没有自己独立的调用栈，通过返回给调用者来暂停执行，并且恢复执行所需的数据与栈分开存储（因此允许顺序代码以异步方式执行）</strong>）</li>
+<li>当函数定义包含下列任意一项，则该函数是协程：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// co_await 用于暂停执行直到恢复</span><br>task&lt;&gt; <span class="hljs-built_in">tcp_echo_server</span>()<br>&#123;<br>    <span class="hljs-type">char</span> data[<span class="hljs-number">1024</span>];<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>)<br>    &#123;<br>        std::<span class="hljs-type">size_t</span> n = <span class="hljs-keyword">co_await</span> socket.<span class="hljs-built_in">async_read_some</span>(<span class="hljs-built_in">buffer</span>(data));<br>        <span class="hljs-function"><span class="hljs-keyword">co_await</span> <span class="hljs-title">async_write</span><span class="hljs-params">(socket, buffer(data, n))</span></span>;<br>    &#125;<br>&#125;<br><span class="hljs-comment">// co_yield 用于暂停执行并返回一个值</span><br><span class="hljs-function">generator&lt;<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>&gt; <span class="hljs-title">iota</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> n = <span class="hljs-number">0</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>)<br>        <span class="hljs-keyword">co_yield</span> n++;<br>&#125;<br><span class="hljs-comment">// co_return 用于完成执行并返回一个值</span><br><span class="hljs-function">lazy&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">f</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">co_return</span> <span class="hljs-number">7</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>C++协程函数的返回类型<strong>必须包含一个子类型承诺（promise）对象，即如下所述：</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">result</span><br>&#123;<br>	<span class="hljs-keyword">struct</span> <span class="hljs-title class_">promise_type</span><br>	&#123;<br>		<span class="hljs-comment">// 内部必须实现部分接口，如</span><br>		<span class="hljs-comment">// 生成协程函数的返回对象</span><br>		get_return_object<br>		<span class="hljs-comment">// 初始化后，协程函数的执行行为，返回值为awaiter（等待体，co_await调用的对象，下文阐述）</span><br>		<span class="hljs-comment">// 返回值为std::suspend_always代表协程启动后立即挂起</span><br>		<span class="hljs-comment">// 返回值为std::suspend_never代表协程启动后不立即挂起</span><br>		<span class="hljs-comment">// 也可以自定义，但必须满足Awaitable类型，即通常实现：</span><br>		<span class="hljs-comment">// await_ready, await_suspend, await_resume三个接口</span><br>		initial_suspend<br>		<span class="hljs-comment">// 协程退出的执行行为，返回std::suspend_never时，协程帧会被立即销毁，此时使用句柄即use-after-free</span><br>		<span class="hljs-comment">// 若返回std::suspend_always则需要用户调用handle.destroy()销毁</span><br>		<span class="hljs-comment">// 同样可以返回一个Awaitable类型自定义</span><br>		final_suspend<br>		<span class="hljs-comment">// 调用co_return会调用该函数</span><br>		return_void <span class="hljs-comment">// 或return_value</span><br>		<span class="hljs-comment">// 调用co_yield会调用该函数</span><br>		<span class="hljs-comment">// 返回值与上述一致，std::suspend_always挂起，std::suspend_never不挂起</span><br>		yield_value<br>		<span class="hljs-comment">// 未处理异常</span><br>		unhandled_exception<br>		...<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>等待体</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 例如：co_await awaiter</span><br><span class="hljs-comment">// 或co_await func()，其中func返回一个awaiter对象</span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">awaiter</span><br>&#123;<br>	<span class="hljs-comment">// 返回true，代表结果已经就绪，无需挂起，执行await_resume</span><br>	<span class="hljs-comment">// 返回false，代表结果未就绪，必须挂起</span><br>	<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">await_ready</span><span class="hljs-params">()</span> ...</span><br><span class="hljs-function">	<span class="hljs-comment">// 协程挂起后的行为，当协程挂起后，协程句柄会被传进来</span></span><br><span class="hljs-function">	<span class="hljs-comment">// 返回值为void，协程挂起后，控制权立即返回调用者</span></span><br><span class="hljs-function">	<span class="hljs-comment">// 返回值为bool：</span></span><br><span class="hljs-function">	<span class="hljs-comment">// true：继续挂起，false：恢复协程（相当于重新执行await_ready检查）</span></span><br><span class="hljs-function">	<span class="hljs-comment">// std::coroutine_handle立即恢复另外一个协程</span></span><br><span class="hljs-function">	<span class="hljs-comment">// 标准库为std::coroutine_handle&lt;Promise&gt;定义转换运算符，可以转化为std::coroutine_handle&lt;&gt;</span></span><br><span class="hljs-function">	<span class="hljs-comment">// 以保证任何协程句柄都能传入</span></span><br><span class="hljs-function">	<span class="hljs-comment">// 通常来讲，除非当前逻辑需要读取或修改承诺对象的数据时，一般不保留具体类型</span></span><br><span class="hljs-function">	<span class="hljs-keyword">auto</span> <span class="hljs-title">await_suspend</span><span class="hljs-params">(std::coroutine_handle&lt;&gt;)</span> ...</span><br><span class="hljs-function">	<span class="hljs-comment">// 外部调用handle.resume唤醒后执行</span></span><br><span class="hljs-function">	<span class="hljs-comment">// 其返回值就为co_await expr表达式的值</span></span><br><span class="hljs-function">	<span class="hljs-keyword">auto</span> <span class="hljs-title">await_resume</span><span class="hljs-params">()</span> ...</span><br><span class="hljs-function">&#125;</span><br><span class="hljs-function"><span class="hljs-comment">// 等待体的一个特化类型</span></span><br><span class="hljs-function"><span class="hljs-keyword">struct</span> std::suspend_never</span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-type">bool</span> <span class="hljs-title">await_ready</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> <span class="hljs-keyword">noexcept</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; &#125;<br>	<span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-type">void</span> <span class="hljs-title">await_suspend</span><span class="hljs-params">(std::coroutine_handle&lt;&gt;)</span> <span class="hljs-type">const</span> <span class="hljs-keyword">noexcept</span> </span>&#123;&#125;<br>	<span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-type">void</span> <span class="hljs-title">await_resume</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> <span class="hljs-keyword">noexcept</span> </span>&#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>每个协程都与下面对象关联：<ul>
+<li><em><code>promise</code>对象</em>，在协程内部操作，通过其提交结果或异常（<strong>与<code>std::promise</code>没有任何关系</strong>）</li>
+<li><em>协程句柄</em>，在协程外部操作，非拥有句柄，用于恢复执行或销毁协程帧</li>
+<li><em><strong>协程状态</strong></em>，内部、动态分配的存储（除非被优化），包含：<ul>
+<li><code>promise</code>对象</li>
+<li>参数（<strong>全部按值复制或移动</strong>）</li>
+<li>当前暂停点的一些表示</li>
+<li>生命周期跨越当前暂停点的局部变量与临时变量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>协程开始时，执行以下操作<ol>
+<li>使用<code>operator new</code>分配协程状态对象（协程帧）</li>
+<li>复制所有函数参数到协程状态（<strong>按引用参数仍然是引用，如果在引用对象生命周期结束后协程恢复，可能变成悬空引用</strong>）</li>
+<li>调用承诺对象的构造函数（如果存在一个接受所有协程参数的构造函数，则使用复制后的协程参数调用，否则调用默认构造函数）</li>
+<li>调用<code>promise.get_return_object()</code>并将结果存入局部变量，当协程首次暂停时，返回该结果给调用者</li>
+<li>调用<code>promise.initial_suspend()</code>并<code>co_await</code>其结果（典型返回<code>std::suspend_always或std::suspend_never</code>）</li>
+<li>当<code>co_await promise.initial_suspend()</code>恢复时，执行协程主体</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 简单示例</span><br><span class="hljs-comment">// 协程初始化是将promise_type在协程帧中构造，然后调用get_return_object构造result对象并返回调用者</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;coroutine&gt;</span></span><br><br><span class="hljs-comment">// 通常result会保存协程句柄，一个指向协程帧的指针</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">result</span><br>&#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">promise_type</span>;<br>    <span class="hljs-keyword">using</span> handle_type = std::coroutine_handle&lt;promise_type&gt;;<br><br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">promise_type</span><br>    &#123;<br>        <span class="hljs-built_in">promise_type</span>(T data) : <span class="hljs-built_in">data_</span>(data)<br>        &#123;<br>        &#125;<br><br>        ~<span class="hljs-built_in">promise_type</span>() = <span class="hljs-keyword">default</span>;<br><br>        <span class="hljs-comment">// 定义承诺对象必须实现的接口</span><br>        <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">get_return_object</span><span class="hljs-params">()</span></span><br><span class="hljs-function">        </span>&#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;get_return_object function called.\n&quot;</span>;<br>            <span class="hljs-comment">// 调用静态方法返回promise对象的协程句柄</span><br>            <span class="hljs-keyword">return</span> result&lt;T&gt;&#123;handle_type::<span class="hljs-built_in">from_promise</span>(*<span class="hljs-keyword">this</span>)&#125;;<br>        &#125;<br>        <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">initial_suspend</span><span class="hljs-params">()</span></span><br><span class="hljs-function">        </span>&#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;initial_suspend function called.\n&quot;</span>;<br>            <span class="hljs-comment">// 协程初始化立即挂起</span><br>            <span class="hljs-keyword">return</span> std::suspend_always&#123;&#125;;<br>        &#125;<br>        <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">final_suspend</span><span class="hljs-params">()</span> <span class="hljs-keyword">noexcept</span></span><br><span class="hljs-function">        </span>&#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;final_suspend function called.\n&quot;</span>;<br>            <span class="hljs-comment">// 协程结束立即挂起</span><br>            <span class="hljs-comment">// result在离开作用域后会自行调用handle_.destroy销毁协程帧</span><br>            <span class="hljs-keyword">return</span> std::suspend_always&#123;&#125;;<br>        &#125;<br>        <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">yield_value</span><span class="hljs-params">(T data)</span></span><br><span class="hljs-function">        </span>&#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;yield_value function called by value &quot;</span>;<br>            data_ = data;<br>            std::cout &lt;&lt; data_ &lt;&lt; std::endl;<br>            <span class="hljs-keyword">return</span> std::suspend_always&#123;&#125;;<br>        &#125;<br>        <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">return_value</span><span class="hljs-params">(T data)</span></span><br><span class="hljs-function">        </span>&#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;return_value function called.\n&quot;</span>;<br>            data_ = data;<br>        &#125;<br>        <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">unhandled_exception</span><span class="hljs-params">()</span></span><br><span class="hljs-function">        </span>&#123;<br>            std::<span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>        &#125;<br><br>        <span class="hljs-comment">// 保存数据</span><br>        T data_;<br>    &#125;;<br><br>    <span class="hljs-built_in">result</span>(handle_type handle) : <span class="hljs-built_in">handle_</span>(handle)<br>    &#123;<br>    &#125;<br><br>    ~<span class="hljs-built_in">result</span>()<br>    &#123;<br>        <span class="hljs-keyword">if</span> (handle_)<br>            handle_.<span class="hljs-built_in">destroy</span>();<br>    &#125;<br><br>    <span class="hljs-comment">// 通常，result不可拷贝但可移动</span><br>    <span class="hljs-built_in">result</span>(<span class="hljs-type">const</span> result&amp;) = <span class="hljs-keyword">delete</span>;<br>    result&amp; <span class="hljs-keyword">operator</span>=(<span class="hljs-type">const</span> result&amp;) = <span class="hljs-keyword">delete</span>;<br>    <span class="hljs-built_in">result</span>(result&amp;&amp; other) <span class="hljs-keyword">noexcept</span> : <span class="hljs-built_in">handle_</span>(other.handle_)<br>    &#123;<br>        other.handle_ = <span class="hljs-literal">nullptr</span>;<br>    &#125;<br>    result&amp; <span class="hljs-keyword">operator</span>=(result&amp;&amp; other) <span class="hljs-keyword">noexcept</span><br>    &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span> != &amp;other)<br>        &#123;<br>            <span class="hljs-keyword">if</span> (handle_) handle_.<span class="hljs-built_in">destroy</span>();<br>            handle_ = other.handle_;<br>            other.handle_ = <span class="hljs-literal">nullptr</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> *<span class="hljs-keyword">this</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 恢复协程</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">goahead</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">if</span> (handle_.<span class="hljs-built_in">done</span>()) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        handle_.<span class="hljs-built_in">resume</span>();<br>        <span class="hljs-keyword">return</span> handle_.<span class="hljs-built_in">done</span>();<br>    &#125;<br><br>    <span class="hljs-comment">// 获取当前承诺对象数据值</span><br>    <span class="hljs-function">T <span class="hljs-title">get</span><span class="hljs-params">()</span> </span>&#123; <span class="hljs-keyword">return</span> handle_.<span class="hljs-built_in">promise</span>().data_; &#125;<br><br><span class="hljs-keyword">private</span>:<br>    handle_type handle_;<br>&#125;;<br><br><span class="hljs-comment">// 自定义Awaitable类型</span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">result_awaiter</span><br>&#123;<br>    <span class="hljs-comment">// 必须实现的三个接口</span><br>    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">await_ready</span><span class="hljs-params">()</span> <span class="hljs-keyword">noexcept</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; &#125;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">await_suspend</span><span class="hljs-params">(std::coroutine_handle&lt;&gt;)</span> </span>&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;Into suspend.\n&quot;</span>; &#125;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">await_resume</span><span class="hljs-params">()</span> </span>&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;Resume from suspend.\n&quot;</span>; &#125;<br>&#125;;<br><br><span class="hljs-comment">// 协程函数</span><br><span class="hljs-function">result&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span></span><br><span class="hljs-function"></span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Now enter into the coroutine function\n&quot;</span>;<br>    <span class="hljs-keyword">co_await</span> result_awaiter&#123;&#125;;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Coroutine awaked.\nNow co_yield:\n&quot;</span>;<br>    <span class="hljs-keyword">co_yield</span> <span class="hljs-number">12</span>;<br>    <span class="hljs-keyword">co_yield</span> <span class="hljs-number">13</span>;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;No suspend.\n&quot;</span>;<br>    <span class="hljs-keyword">co_await</span> std::suspend_never&#123;&#125;;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Now co_return.\n&quot;</span>;<br>    <span class="hljs-keyword">co_return</span> <span class="hljs-number">40</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">bool</span> done = <span class="hljs-literal">false</span>;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Ready to perform the coroutine function.\n&quot;</span>;<br>    <span class="hljs-keyword">auto</span> ret = <span class="hljs-built_in">func</span>(<span class="hljs-number">10</span>);<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Coroutine suspend caused by initial_suspend.\n&quot;</span> &lt;&lt; (done ? <span class="hljs-string">&quot;Done.\n&quot;</span> : <span class="hljs-string">&quot;Not done.\n&quot;</span>) &lt;&lt; <span class="hljs-string">&quot;Value:&quot;</span> &lt;&lt;<br>            ret.<span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br>    done = ret.<span class="hljs-built_in">goahead</span>();<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Coroutine suspend caused by co_await result_awaiter&#123;&#125;.\n&quot;</span> &lt;&lt; (done ? <span class="hljs-string">&quot;Done.\n&quot;</span> : <span class="hljs-string">&quot;Not done.\n&quot;</span>) &lt;&lt;<br>            <span class="hljs-string">&quot;Value:&quot;</span> &lt;&lt; ret.<span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br>    done = ret.<span class="hljs-built_in">goahead</span>();<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Coroutine suspend caused by co_yield 12.\n&quot;</span> &lt;&lt; (done ? <span class="hljs-string">&quot;Done.\n&quot;</span> : <span class="hljs-string">&quot;Not done.\n&quot;</span>) &lt;&lt; <span class="hljs-string">&quot;Value:&quot;</span> &lt;&lt; ret.<br>            <span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br>    done = ret.<span class="hljs-built_in">goahead</span>();<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Coroutine suspend caused by co_yield 13.\n&quot;</span> &lt;&lt; (done ? <span class="hljs-string">&quot;Done.\n&quot;</span> : <span class="hljs-string">&quot;Not done.\n&quot;</span>) &lt;&lt; <span class="hljs-string">&quot;Value:&quot;</span> &lt;&lt; ret.<br>            <span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br>    done = ret.<span class="hljs-built_in">goahead</span>();<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Coroutine finished.\n&quot;</span> &lt;&lt; (done ? <span class="hljs-string">&quot;Done.\n&quot;</span> : <span class="hljs-string">&quot;Not done.\n&quot;</span>) &lt;&lt; <span class="hljs-string">&quot;Value:&quot;</span> &lt;&lt; ret.<span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><br><span class="hljs-comment">// 运行结果：</span><br>Ready to perform the coroutine function.<br><span class="hljs-comment">// 构造result对象</span><br>get_return_object function called.<br><span class="hljs-comment">// 进入协程函数立即挂起</span><br>initial_suspend function called.<br>Coroutine suspend caused by initial_suspend.<br>Not done.<br><span class="hljs-comment">// 该值为协程函数参数传递</span><br><span class="hljs-comment">// 如果promise_type没有默认构造函数，则协程函数必须提供参数进行构造，否则编译器报错</span><br>Value:<span class="hljs-number">10</span><br><span class="hljs-comment">// 真正协程函数开始</span><br>Now enter into the coroutine function<br><span class="hljs-comment">// 自定义awaiter被调用，实际先调用了await_ready，返回false则调用await_suspend</span><br>Into suspend.<br><span class="hljs-comment">// 协程挂起，返回主线程</span><br>Coroutine suspend caused by <span class="hljs-keyword">co_await</span> result_awaiter&#123;&#125;.<br>Not done.<br>Value:<span class="hljs-number">10</span><br><span class="hljs-comment">// 调用await_resume，协程从co_await返回</span><br>Resume from suspend.<br>Coroutine awaked.<br>Now <span class="hljs-keyword">co_yield</span>:<br><span class="hljs-comment">// co_yield挂起协程</span><br>yield_value function called by value <span class="hljs-number">12</span><br>Coroutine suspend caused by <span class="hljs-keyword">co_yield</span> <span class="hljs-number">12.</span><br>Not done.<br>Value:<span class="hljs-number">12</span><br>yield_value function called by value <span class="hljs-number">13</span><br>Coroutine suspend caused by <span class="hljs-keyword">co_yield</span> <span class="hljs-number">13.</span><br>Not done.<br>Value:<span class="hljs-number">13</span><br>No suspend.<br>Now <span class="hljs-keyword">co_return</span>.<br><span class="hljs-comment">// 调用co_return，即return_value</span><br>return_value function called.<br><span class="hljs-comment">// 协程结束，调用final_suspend，挂起协程</span><br>final_suspend function called.<br>Coroutine finished.<br>Done.<br><span class="hljs-comment">// 最终数据为40</span><br>Value:<span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/coroutine/" class="tag-item">
+                    coroutine
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/12/08/C++20%20coroutine/">https://narciostyx.github.io/2025/12/08/C++20 coroutine/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/02/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">TCP/IP协议族</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/12/01/%E5%91%BD%E5%90%8D%E4%BF%AE%E9%A5%B0/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++命名修饰(C++ name mangling)</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
