@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | 高级I/O函数</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pipe"><span class="toc-number">1.</span> <span class="toc-text">pipe</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dup%E4%B8%8Edup2"><span class="toc-number">2.</span> <span class="toc-text">dup与dup2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#readv%E4%B8%8Ewritev"><span class="toc-number">3.</span> <span class="toc-text">readv与writev</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sendfile"><span class="toc-number">4.</span> <span class="toc-text">sendfile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mmap%E4%B8%8Emunmap"><span class="toc-number">5.</span> <span class="toc-text">mmap与munmap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#splice"><span class="toc-number">6.</span> <span class="toc-text">splice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fcntl"><span class="toc-number">7.</span> <span class="toc-text">fcntl</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>高级I/O函数</h1>
+    </section>
+    <section class="article">
+        <p>列举Linux中部分高级I&#x2F;O函数</p>
+<span id="more"></span>
+<h2 id="pipe"><a href="#pipe" class="headerlink" title="pipe"></a><code>pipe</code></h2><ul>
+<li>创建一个管道（即：|）：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span>.</span><br><span class="hljs-comment">// 成功返回0，失败返回-1</span><br><span class="hljs-comment">// fd[0]与fd[1]代表管道两端</span><br><span class="hljs-comment">// fd[0]只能读出数据，fd[1]只能写入数据，要实现双向传输应该使用两个管道</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">pipe</span><span class="hljs-params">(<span class="hljs-type">int</span> fd[<span class="hljs-number">2</span>])</span></span>;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>默认情况下，这对文件描述符是阻塞的（可设置为非阻塞），如：使用<code>read</code>读取空管道，则其<strong>被阻塞直到有数据可读</strong></li>
+<li>管道容量默认为65536字节，可使用<code>fcntl</code>修改</li>
+</ul>
+<h2 id="dup与dup2"><a href="#dup与dup2" class="headerlink" title="dup与dup2"></a><code>dup</code>与<code>dup2</code></h2><ul>
+<li>将<strong>标准输出</strong>重定向到一个文件，或一个网络连接，可以通过下面这两个复制文件描述符的函数实现（shell重定向底层也基于它们）：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-comment">// 不继承原文件描述符部分属性</span><br><span class="hljs-comment">// 实际重定向是由dup2执行，dup通常用于进行备份</span><br><br><span class="hljs-comment">// 创建一个新的文件描述符，指向原描述符相同的文件、管道或网络连接</span><br><span class="hljs-comment">// 总返回一个系统当前可用的最小整数值</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">dup</span><span class="hljs-params">(<span class="hljs-type">int</span> file_descriptor)</span></span>;<br><span class="hljs-comment">// 重定向</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">dup2</span><span class="hljs-params">(<span class="hljs-type">int</span> file_descriptor_one,<span class="hljs-type">int</span> file_descriptor_two)</span></span>;<br><br><span class="hljs-comment">// 将标准输出stdout覆盖为pipe_fd[1]</span><br><span class="hljs-built_in">dup2</span>(pipe_fd[<span class="hljs-number">1</span>],STDOUT_FILENO);<br></code></pre></td></tr></table></figure>
+<h2 id="readv与writev"><a href="#readv与writev" class="headerlink" title="readv与writev"></a><code>readv</code>与<code>writev</code></h2><ul>
+<li><code>readbv</code>将数据从文件描述符读取到分散的内存块内，<code>writev</code>反之（集中写）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/uio.h&gt;</span></span><br><span class="hljs-comment">// vector是iovec结构数组</span><br><span class="hljs-function"><span class="hljs-type">ssize_t</span> <span class="hljs-title">readv</span><span class="hljs-params">(<span class="hljs-type">int</span> fd,<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> iovec* vector,<span class="hljs-type">int</span> count)</span></span>;<br><span class="hljs-function"><span class="hljs-type">ssize_t</span> <span class="hljs-title">writev</span><span class="hljs-params">(<span class="hljs-type">int</span> fd,<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> iovec* vector,<span class="hljs-type">int</span> count)</span></span>;<br></code></pre></td></tr></table></figure>
+<h2 id="sendfile"><a href="#sendfile" class="headerlink" title="sendfile"></a><code>sendfile</code></h2><ul>
+<li><strong>在两个文件描述符之间之间传输数据（避免内核缓冲区与用户缓冲区间的数据拷贝，这被称为零拷贝）</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/sendfile.h&gt;</span></span><br><br><span class="hljs-comment">// 为网络上传输数据设计，但无法对数据进行修改</span><br><span class="hljs-comment">// offset直到从读入文件流的那个位置开始读，若为空，则使用默认其实位置</span><br><span class="hljs-comment">// 成功时返回传输的字节数，in_fd必须支持类似mmap函数的文件描述符，即其必须指向真实文件，而非socket与管道</span><br><span class="hljs-comment">// out_fd必须为一个socket</span><br><span class="hljs-function"><span class="hljs-type">ssize_t</span> <span class="hljs-title">sendfile</span><span class="hljs-params">(<span class="hljs-type">int</span> out_fd,<span class="hljs-type">int</span> in_fd,<span class="hljs-type">off_t</span>* offset,<span class="hljs-type">size_t</span> count)</span></span>;<br></code></pre></td></tr></table></figure>
+<h2 id="mmap与munmap"><a href="#mmap与munmap" class="headerlink" title="mmap与munmap"></a><code>mmap</code>与<code>munmap</code></h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><br><span class="hljs-comment">// 申请一段内存空间，其作为IPC的共享内存，也可以将文件之间映射到其中</span><br><span class="hljs-comment">// 若start为NULL，则系统自动分配一个地址</span><br><span class="hljs-comment">// prot即访问权限：PROT_READ，PROT_WRITE，PROT_EXEC与PROT_NONE</span><br><span class="hljs-function"><span class="hljs-type">void</span>* <span class="hljs-title">mmap</span><span class="hljs-params">(<span class="hljs-type">void</span>* start,<span class="hljs-type">size_t</span> length,<span class="hljs-type">int</span> prot,<span class="hljs-type">int</span> flags,<span class="hljs-type">int</span> fd,<span class="hljs-type">off_t</span> offset)</span></span>;<br><span class="hljs-comment">// 负责释放mmap创建的内存空间</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">munmap</span><span class="hljs-params">(<span class="hljs-type">void</span>* start,<span class="hljs-type">size_t</span> length)</span></span>;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>flags控制内存段内容被修改后程序的行为：<img src="/2026/01/20/%E9%AB%98%E7%BA%A7IO%E5%87%BD%E6%95%B0/Pasted_image_20260903204925.png"></li>
+<li>fd是被映射文件的文件描述符，offset因此就是文件偏移</li>
+</ul>
+<h2 id="splice"><a href="#splice" class="headerlink" title="splice"></a><code>splice</code></h2><ul>
+<li>与<code>sendfile</code>类似，在两个文件描述符间<strong>移动数据</strong>（但相较于<code>sendfile</code>只移动文件到套接字（单向，即只能文件-&gt;套接字），<code>splice</code>更为全能：文件与管道，套接字与管道等）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><br><span class="hljs-comment">// fd_in参数是待输入数据的文件描述符：</span><br><span class="hljs-comment">// 如果其为管道fd，则off_in必须为NULL</span><br><span class="hljs-comment">// 如果其为不是管道fd，则off_in表示从输入流何处开始读取数据，若为NULL，即从当前偏移位置读入</span><br><span class="hljs-comment">// fd_out与off_out同理</span><br><span class="hljs-function"><span class="hljs-type">ssize_t</span> <span class="hljs-title">splice</span><span class="hljs-params">(<span class="hljs-type">int</span> fd_in,<span class="hljs-type">loff_t</span>* off_in,<span class="hljs-type">int</span> fd_out,<span class="hljs-type">loff_t</span>* off_out,<span class="hljs-type">size_t</span> len,<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> flags)</span></span>;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>flags常用参数：<img src="/2026/01/20/%E9%AB%98%E7%BA%A7IO%E5%87%BD%E6%95%B0/Pasted_image_20260903210940.png"></li>
+<li>使用<code>splice</code>时，<strong>至少有一个是管道文件描述符</strong>，返回值为移动字节的数量</li>
+<li><code>tee</code>函数则是专门在两个管道文件描述符之间<strong>复制数据</strong>，与<code>splice</code>用于也是零拷贝</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">tee</span><span class="hljs-params">(<span class="hljs-type">int</span> fd_in,<span class="hljs-type">int</span> fd_out,<span class="hljs-type">size_t</span> len,<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> flags)</span></span>;<br></code></pre></td></tr></table></figure>
+<h2 id="fcntl"><a href="#fcntl" class="headerlink" title="fcntl"></a><code>fcntl</code></h2><ul>
+<li>即<code>file control</code>，提供对文件描述符的各种控制操作（<code>ioctl</code>通常控制底层设备驱动的行为，比如tty，磁盘等）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><br># 部分操作类型可能需要第三个参数<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">fcntl</span><span class="hljs-params">(<span class="hljs-type">int</span> fd,<span class="hljs-type">int</span> cmd,...)</span></span>;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>下图为常见操作以及其参数：<br><img src="/2026/01/20/%E9%AB%98%E7%BA%A7IO%E5%87%BD%E6%95%B0/Pasted_image_20260903211809.png"><br><img src="/2026/01/20/%E9%AB%98%E7%BA%A7IO%E5%87%BD%E6%95%B0/Pasted_image_20260903211819.png"></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// e.g.</span><br><span class="hljs-type">int</span> old_flags=<span class="hljs-built_in">fcntl</span>(fd,F_GETFL);<br><span class="hljs-type">int</span> new_flags=old_flags | O_NONBLOCK;<br><span class="hljs-built_in">fcntl</span>(fd,F_SETFL,new_flags);<br></code></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/pipe/" class="tag-item">
+                    pipe
+                </a>
+            
+                <a href="/tags/dup/" class="tag-item">
+                    dup
+                </a>
+            
+                <a href="/tags/sendfile/" class="tag-item">
+                    sendfile
+                </a>
+            
+                <a href="/tags/fcntl/" class="tag-item">
+                    fcntl
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Linux/" class="cate-item">
+                    Linux
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/20/%E9%AB%98%E7%BA%A7IO%E5%87%BD%E6%95%B0/">https://narciostyx.github.io/2026/01/20/高级IO函数/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/20/AVL%E6%A0%91/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">AVL树</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/poll.h/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">poll函数</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
