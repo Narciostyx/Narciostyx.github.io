@@ -187,6 +187,31 @@
     
     
     <entry>
+      <title>poll函数</title>
+      <link href="/2026/01/18/poll.h/"/>
+      <url>/2026/01/18/poll.h/</url>
+      
+        <content type="html"><![CDATA[<p>IO复用中的poll函数</p><span id="more"></span><ul><li>函数原型<code>int poll(struct pollfd *fds, nfds_t nfds, int timeout)</code></li><li>pollfd结构体定义如下：</li></ul><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pollfd</span> &#123;</span><br>    <span class="hljs-type">int</span>   fd;         <span class="hljs-comment">// 文件描述符</span><br>    <span class="hljs-type">short</span> events;     <span class="hljs-comment">// 监视的事件类型</span><br>    <span class="hljs-type">short</span> revents;    <span class="hljs-comment">// 实际发生的事件类型</span><br>&#125;;<br></code></pre></td></tr></table></figure><ol><li>events使用|指定监听类型，如POLLIN，POLLOUT，POLLPRI等</li><li>revents由poll返回，表示实际发生事件</li></ol><ul><li>基本步骤：<ol><li>初始化pollfd数组</li><li>调用poll</li><li>根据poll返回值与revents字段判断发生事件</li><li>对对应事件进行操作</li><li>重复2-4</li></ol></li><li>e.g.</li></ul><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pollfd</span> <span class="hljs-title">fds</span>[<span class="hljs-title">MAX_CLIENTS</span>+1];</span><br><br><span class="hljs-comment">//初始化pollfd结构体数组</span><br>fds[<span class="hljs-number">0</span>].fd = server_socket;<br>fds[<span class="hljs-number">0</span>].events = POLLIN;<br><br><span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; MAX_CLIENTS + <span class="hljs-number">1</span>; i++) <br>&#123;<br>    fds[i].fd = <span class="hljs-number">-1</span>;<br>    fds[i].events = POLLIN;<br>&#125;<br><br><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)<br>&#123;<br><span class="hljs-comment">//-1代表无限等待</span><br>ret=poll(fds,MAX_CLIENTS+<span class="hljs-number">1</span>,<span class="hljs-number">-1</span>);<br><span class="hljs-keyword">if</span>(ret&lt;<span class="hljs-number">0</span>)<br>perror(<span class="hljs-string">&quot;Poll errror.&quot;</span>);<br><br><span class="hljs-keyword">if</span>(fds[<span class="hljs-number">0</span>].revents&amp;POLLIN)<br>&#123;...&#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> C </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> poll </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>C++ MySQL编程</title>
       <link href="/2026/01/18/mysql.h/"/>
       <url>/2026/01/18/mysql.h/</url>
@@ -214,11 +239,11 @@
     
     
     <entry>
-      <title>poll函数</title>
-      <link href="/2026/01/18/poll.h/"/>
-      <url>/2026/01/18/poll.h/</url>
+      <title>select函数</title>
+      <link href="/2026/01/18/select.h/"/>
+      <url>/2026/01/18/select.h/</url>
       
-        <content type="html"><![CDATA[<p>IO复用中的poll函数</p><span id="more"></span><ul><li>函数原型<code>int poll(struct pollfd *fds, nfds_t nfds, int timeout)</code></li><li>pollfd结构体定义如下：</li></ul><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pollfd</span> &#123;</span><br>    <span class="hljs-type">int</span>   fd;         <span class="hljs-comment">// 文件描述符</span><br>    <span class="hljs-type">short</span> events;     <span class="hljs-comment">// 监视的事件类型</span><br>    <span class="hljs-type">short</span> revents;    <span class="hljs-comment">// 实际发生的事件类型</span><br>&#125;;<br></code></pre></td></tr></table></figure><ol><li>events使用|指定监听类型，如POLLIN，POLLOUT，POLLPRI等</li><li>revents由poll返回，表示实际发生事件</li></ol><ul><li>基本步骤：<ol><li>初始化pollfd数组</li><li>调用poll</li><li>根据poll返回值与revents字段判断发生事件</li><li>对对应事件进行操作</li><li>重复2-4</li></ol></li><li>e.g.</li></ul><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pollfd</span> <span class="hljs-title">fds</span>[<span class="hljs-title">MAX_CLIENTS</span>+1];</span><br><br><span class="hljs-comment">//初始化pollfd结构体数组</span><br>fds[<span class="hljs-number">0</span>].fd = server_socket;<br>fds[<span class="hljs-number">0</span>].events = POLLIN;<br><br><span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; MAX_CLIENTS + <span class="hljs-number">1</span>; i++) <br>&#123;<br>    fds[i].fd = <span class="hljs-number">-1</span>;<br>    fds[i].events = POLLIN;<br>&#125;<br><br><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)<br>&#123;<br><span class="hljs-comment">//-1代表无限等待</span><br>ret=poll(fds,MAX_CLIENTS+<span class="hljs-number">1</span>,<span class="hljs-number">-1</span>);<br><span class="hljs-keyword">if</span>(ret&lt;<span class="hljs-number">0</span>)<br>perror(<span class="hljs-string">&quot;Poll errror.&quot;</span>);<br><br><span class="hljs-keyword">if</span>(fds[<span class="hljs-number">0</span>].revents&amp;POLLIN)<br>&#123;...&#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
+        <content type="html"><![CDATA[<p>IO复用中的select函数</p><span id="more"></span><ul><li>函数原型<code>int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)</code></li><li>若timeout参数为NULL，则一直阻塞，为0则非阻塞（<strong>设置timeval结构体，若为非零值则等待对应时长</strong>）</li><li>readfds、writefds与exceptfds，如果不需要监视某种条件，则可以将对应参数设置为NULL</li><li>在调用select后，文件描述符集合会<strong>剔除没有事件发生的文件描述符</strong></li><li>使用select：<ol><li>初始化文件描述符</li><li>使用FD_SET宏将文件描述符添加到集合中</li><li>调用select函数</li><li>根据返回值以及对应文件描述符集合判断事件</li><li>对对应事件进行处理</li><li>重复2-5</li></ol></li><li>e.g.</li></ul><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c">...<br>fd_set readfds;<br>...<br><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)<br>&#123;<br><span class="hljs-comment">//清空文件描述符</span><br>FD_ZERO(&amp;readfds);<br><span class="hljs-comment">//将server_socket添加进readfds可读文件描述符集合</span><br>FD_SET(server_socket,&amp;readfds);<br>...<br><span class="hljs-type">int</span> activity=select(max_sd+<span class="hljs-number">1</span>，&amp;readfds,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>);<br><span class="hljs-keyword">if</span>(activity&lt;<span class="hljs-number">0</span>)<br>perror(<span class="hljs-string">&quot;select error.&quot;</span>);<br><span class="hljs-keyword">if</span>(FD_ISSET(server_socket,&amp;readfds))<br>&#123;...&#125;<br><br>&#125;<br></code></pre></td></tr></table></figure><p>宏：</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">FD_ZERO<br>FD_SET<br>FD_ISSET<br>FD_CLR<br></code></pre></td></tr></table></figure>]]></content>
       
       
       <categories>
@@ -230,7 +255,7 @@
       
         <tags>
             
-            <tag> poll </tag>
+            <tag> select </tag>
             
         </tags>
       
@@ -283,31 +308,6 @@
             <tag> signal函数 </tag>
             
             <tag> 信号类型 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>select函数</title>
-      <link href="/2026/01/18/select.h/"/>
-      <url>/2026/01/18/select.h/</url>
-      
-        <content type="html"><![CDATA[<p>IO复用中的select函数</p><span id="more"></span><ul><li>函数原型<code>int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)</code></li><li>若timeout参数为NULL，则一直阻塞，为0则非阻塞（<strong>设置timeval结构体，若为非零值则等待对应时长</strong>）</li><li>readfds、writefds与exceptfds，如果不需要监视某种条件，则可以将对应参数设置为NULL</li><li>在调用select后，文件描述符集合会<strong>剔除没有事件发生的文件描述符</strong></li><li>使用select：<ol><li>初始化文件描述符</li><li>使用FD_SET宏将文件描述符添加到集合中</li><li>调用select函数</li><li>根据返回值以及对应文件描述符集合判断事件</li><li>对对应事件进行处理</li><li>重复2-5</li></ol></li><li>e.g.</li></ul><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c">...<br>fd_set readfds;<br>...<br><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)<br>&#123;<br><span class="hljs-comment">//清空文件描述符</span><br>FD_ZERO(&amp;readfds);<br><span class="hljs-comment">//将server_socket添加进readfds可读文件描述符集合</span><br>FD_SET(server_socket,&amp;readfds);<br>...<br><span class="hljs-type">int</span> activity=select(max_sd+<span class="hljs-number">1</span>，&amp;readfds,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>);<br><span class="hljs-keyword">if</span>(activity&lt;<span class="hljs-number">0</span>)<br>perror(<span class="hljs-string">&quot;select error.&quot;</span>);<br><span class="hljs-keyword">if</span>(FD_ISSET(server_socket,&amp;readfds))<br>&#123;...&#125;<br><br>&#125;<br></code></pre></td></tr></table></figure><p>宏：</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">FD_ZERO<br>FD_SET<br>FD_ISSET<br>FD_CLR<br></code></pre></td></tr></table></figure>]]></content>
-      
-      
-      <categories>
-          
-          <category> C </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> select </tag>
             
         </tags>
       
