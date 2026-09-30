@@ -1,0 +1,12 @@
+:root {
+  --bg: get-config('background.color', "#f2f3f5");
+  --container-bg: get-config('background.containerColor', "#ffffff");
+  --color: get-config('background.textColor', "#080808");
+  --markdown-color: get-config('background.markdownColor', "#24292f");
+}
+.dark {
+  --bg: get-config('background.darkColor', "#061a20");
+  --container-bg: get-config('background.darkContainerColor', "#002b36");
+  --color: get-config('background.darkTextColor', "#ffffff");
+  --markdown-color: get-config('background.darkMarkdownColor', "#efefef");
+}

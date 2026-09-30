@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | Redis C++开发</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RESP"><span class="toc-number">1.</span> <span class="toc-text">RESP</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RedisPlusPlus"><span class="toc-number">2.</span> <span class="toc-text">RedisPlusPlus</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>Redis C++开发</h1>
+    </section>
+    <section class="article">
+        <p>C++ Redis开发</p>
+<span id="more"></span>
+<h1 id="RESP"><a href="#RESP" class="headerlink" title="RESP"></a>RESP</h1><ul>
+<li>Redis序列化协议，即redis客户端与redis服务器相互通信时使用的协议</li>
+<li>协议使用CRLF<code>\r\n</code>作为终止分隔符</li>
+<li>采用前缀长度传输数据块，确保二进制数据的安全传输</li>
+<li>请求报文格式</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 客户端发送</span><br><span class="hljs-built_in">set</span> key value<br><span class="hljs-comment"># RESP内容</span><br>*3\r\n<span class="hljs-variable">$3</span>\r\nset\r\n<span class="hljs-variable">$3</span>\r\nkey\r\n<span class="hljs-variable">$5</span>\r\nvalue\r\n<br><span class="hljs-comment"># 转义</span><br>*3 <span class="hljs-comment"># 参数数量</span><br><span class="hljs-variable">$3</span> <span class="hljs-comment"># 第一个参数长度</span><br><span class="hljs-built_in">set</span> <span class="hljs-comment"># 第一个参数</span><br><span class="hljs-variable">$3</span> <span class="hljs-comment"># 第二个参数长度</span><br>key <span class="hljs-comment"># 第二个参数</span><br><span class="hljs-variable">$5</span> <span class="hljs-comment"># 第三个参数长度</span><br>value <span class="hljs-comment"># 第三个参数，以此类推</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>响应报文格式（其第一个字节始终标识其类型）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 简单字符串 +</span><br><span class="hljs-comment"># 简单错误 -</span><br><span class="hljs-comment"># 整型 :</span><br><span class="hljs-comment"># 批量字符串 $</span><br><span class="hljs-comment"># 数组 *</span><br><br><span class="hljs-comment"># 上面命令set key value执行成功返回：</span><br>+OK\r\n<br><span class="hljs-comment"># 若命令执行出错，则会显示</span><br>-ERR message\r\n<br><span class="hljs-comment"># e.g. 执行set1 k v</span><br>-ERR unknown <span class="hljs-built_in">command</span> <span class="hljs-string">&#x27;set1&#x27;</span>, with args beginning with: <span class="hljs-string">&#x27;k&#x27;</span> <span class="hljs-string">&#x27;v&#x27;</span><br><br><span class="hljs-comment"># 许多redis命令，如incr，llen，lastsave等返回整数</span><br>:[+|-]&lt;value&gt;\r\n <span class="hljs-comment"># 可选+或-作为符号</span><br><span class="hljs-comment"># e.g. exists k</span><br>:1<br><br><span class="hljs-comment"># 批量字符串</span><br>$&lt;length&gt;\r\n&lt;data&gt;\r\n<br><span class="hljs-comment"># e.g. get k</span><br><span class="hljs-variable">$1</span><br>v<br><span class="hljs-comment"># 空字符串编码则是</span><br><span class="hljs-variable">$0</span>\r\n\r\n<br><span class="hljs-comment"># RESP2中被标识为（RESP3中有专门标识空值的数据类型：_\r\n）</span><br>$-1\r\n<br><br><span class="hljs-comment"># 多条批量字符串则与客户端请求报文一模一样</span><br><span class="hljs-comment"># e.g. hset key f1 v1 f2 v2; hgetall key</span><br>*4<br><span class="hljs-variable">$2</span><br>f1<br><span class="hljs-variable">$2</span><br>v1<br><span class="hljs-variable">$2</span><br>f2<br><span class="hljs-variable">$2</span><br>v2<br><br><span class="hljs-comment"># 数组</span><br><span class="hljs-comment"># 数组的每个元素都是RESP提供的类型</span><br>*&lt;number-of-elements&gt;\r\n&lt;element-1&gt;\r\n...&lt;element-n&gt;\r\n<br><span class="hljs-comment"># e.g. 整型数组</span><br>*3<br>:1<br>:2<br>:3<br><span class="hljs-comment"># e.g. 多批量字符串</span><br>*3<br><span class="hljs-variable">$3</span><br>aaa<br><span class="hljs-variable">$3</span><br>bbb<br><span class="hljs-variable">$3</span><br>ccc<br><span class="hljs-comment"># e.g. 数组可以包含混合的数据类型</span><br>*3<br>:1<br><span class="hljs-variable">$3</span><br>abc<br>:4<br><span class="hljs-comment"># 空数组为</span><br>*0\r\n<br><span class="hljs-comment"># RESP2同理标识为</span><br>*-1\r\n<br></code></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://redis.com.cn/topics/protocol.html">其他数据类型请参阅</a></p>
+<h1 id="RedisPlusPlus"><a href="#RedisPlusPlus" class="headerlink" title="RedisPlusPlus"></a>RedisPlusPlus</h1><p><a target="_blank" rel="noopener" href="https://github.com/sewenew/redis-plus-plus.git">项目地址</a></p>
+<ul>
+<li>该库是基于C语言客户端<code>hiredis</code>的封装（依赖于<code>hiredis</code>）</li>
+<li>连接池的连接是<strong>延迟创建的</strong></li>
+<li><strong>共享Redis类在多线程环境下调用成员函数是安全的</strong>，因此尽可能重用Redis对象</li>
+<li>即使<code>Redis</code>连接服务器失败或某个时刻断开，当发生命令是会抛出异常<code>Error</code>，但<code>Redis</code>会自动重连，成功则发送命令并执行，反之继续抛出异常（<strong>因此可以重用Redis对象</strong>）</li>
+<li>支持TLS连接</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/sewenew/redis-plus-plus/blob/master/src/sw/redis%2B%2B/redis.h">API文档</a></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 仅汇总部分API</span><br><br><span class="hljs-comment">// 核心类Redis</span><br><span class="hljs-comment">// Redis类是不可拷贝，但可移动的</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">sw</span>::redis::Redis<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-comment">// 使用ConnectionOptions连接，配置详细的连接参数</span><br>    <span class="hljs-comment">// host, port, path, user, password, db, keep_alive</span><br>    <span class="hljs-comment">// connect_timeout, socket_timeout, name</span><br>    <span class="hljs-comment">// resp：resp版本，默认为2</span><br>    <span class="hljs-comment">// ConnectionPoolOptions可选，若为空，则Redis类使用单连接模式</span><br>    <span class="hljs-comment">// size：连接池上限</span><br>    <span class="hljs-comment">// wait_timeout：等待连接时间最大值（为0则一直等待）</span><br>    <span class="hljs-comment">// connection_lifetime：连接存活时间最大值（为0则永不过期）</span><br>    <span class="hljs-comment">// connection_idle_time：连接闲置时间最大值</span><br>	<span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Redis</span><span class="hljs-params">(<span class="hljs-type">const</span> ConnectionOptions &amp;connection_opts,</span></span><br><span class="hljs-params"><span class="hljs-function">				   <span class="hljs-type">const</span> ConnectionPoolOptions &amp;pool_opts = &#123;&#125;)</span> :</span><br><span class="hljs-function">                   _pool(std::make_shared&lt;ConnectionPool&gt;(pool_opts,                                  connection_opts)) &#123;</span>&#125;<br>    <span class="hljs-comment">// 使用URI连接，如Redis redis(&quot;tcp://127.0.0.1:6379&quot;)</span><br>    <span class="hljs-comment">// tcp://[[username:]password@]host[:port][/db]</span><br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Redis</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string &amp;uri)</span> : Redis(Uri(uri)) &#123;</span>&#125;<br>    <span class="hljs-comment">// 使用redis哨兵创建对象</span><br>    <span class="hljs-comment">// 哨兵（sentinel）系统由一组特殊的redis实例组成，负责监控所有的redis服务器，并在主服务器发生故障时，自动执行故障转移，将从服务器提升为新的主服务器</span><br>    <span class="hljs-built_in">Redis</span>(<span class="hljs-type">const</span> std::shared_ptr&lt;Sentinel&gt; &amp;sentinel,<br>          <span class="hljs-type">const</span> std::string &amp;master_name,<br>          Role role,<br>          <span class="hljs-type">const</span> ConnectionOptions &amp;connection_opts,<br>          <span class="hljs-type">const</span> ConnectionPoolOptions &amp;pool_opts = &#123;&#125;) :<br>          _pool(std::<span class="hljs-built_in">make_shared</span>&lt;ConnectionPool&gt;(<span class="hljs-built_in">SimpleSentinel</span>(sentinel,                    master_name, role),<br>                pool_opts,<br>                connection_opts)) &#123;&#125;<br>    <br>    <span class="hljs-comment">// 创建管道</span><br>    <span class="hljs-comment">// using Pipeline=QueuedRedis&lt;PipelineImpl&gt;</span><br>    <span class="hljs-function">Pipeline <span class="hljs-title">pipeline</span><span class="hljs-params">(<span class="hljs-type">bool</span> new_connection=<span class="hljs-literal">true</span>)</span></span>;<br>    <br>    <span class="hljs-comment">// 创建事务</span><br>    <span class="hljs-comment">// using Transaction=QueuedRedis&lt;TransactionImpl&gt;</span><br>    <span class="hljs-function">Transaction <span class="hljs-title">transaction</span><span class="hljs-params">(<span class="hljs-type">bool</span> piped=<span class="hljs-literal">false</span>,<span class="hljs-type">bool</span> new_connection=<span class="hljs-literal">true</span>)</span></span>;<br>    <br>    <span class="hljs-comment">// 创建订阅者</span><br>    <span class="hljs-function">Subscriber <span class="hljs-title">subscriber</span><span class="hljs-params">()</span></span>;<br>    <br>    <span class="hljs-comment">// Redis类提供两种方式执行Redis命令</span><br>    <span class="hljs-comment">// 通用命令接口command</span><br>    <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> Cmd, <span class="hljs-keyword">typename</span> ...Args&gt;<br>    <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">command</span><span class="hljs-params">(Cmd cmd, Args &amp;&amp;...args)</span></span><br><span class="hljs-function">        -&gt; <span class="hljs-keyword">typename</span> std::enable_if&lt;!std::is_convertible&lt;Cmd, StringView&gt;::value, ReplyUPtr&gt;::type</span>;、<br>        <br>    ...<br>    <span class="hljs-comment">// 类型安全的专用方法</span><br>    <span class="hljs-comment">// 即标准的Redis命令</span><br>    <span class="hljs-comment">// 根据输入参数，通过RESP协议发送命令</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">auth</span><span class="hljs-params">(<span class="hljs-type">const</span> StringView&amp; password)</span></span>;<br>    <span class="hljs-function">std::string <span class="hljs-title">ping</span><span class="hljs-params">()</span></span>;<br>    ...<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">flushall</span><span class="hljs-params">(<span class="hljs-type">bool</span> async=<span class="hljs-literal">false</span>)</span></span>;<br>    ...<br>    <span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">del</span><span class="hljs-params">(<span class="hljs-type">const</span> StringView&amp; key)</span></span>;<br>    <span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">exists</span><span class="hljs-params">(<span class="hljs-type">const</span> StringView&amp; key)</span></span>;<br>    ...<br>    <br><span class="hljs-keyword">private</span>:<br>	<span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> Impl&gt;<br>	<span class="hljs-keyword">friend</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">QueuedRedis</span>;<br>	<br>	<span class="hljs-keyword">friend</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedisCluster</span>;<br>	<span class="hljs-comment">// 内部使用</span><br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Redis</span><span class="hljs-params">(<span class="hljs-type">const</span> GuardedConnectionSPtr &amp;connection)</span></span>;<br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Redis</span><span class="hljs-params">(<span class="hljs-type">const</span> Uri &amp;uri)</span></span>;<br>    <span class="hljs-comment">// 辅助函数模板</span><br>    _command<br>    _score_command<br>    <br>    <span class="hljs-comment">// 池模式，在该模式下，_connection为nullptr</span><br>    ConnectionPoolSPtr _pool;<br>    <span class="hljs-comment">// 单连接模式，此时_pool为nullptr</span><br>    GuardedConnectionSPtr _connection;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>示例</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sw/redis++/redis++.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">try</span><br>    &#123;<br>        <span class="hljs-comment">// redis++会抛出异常，包括但不限于：</span><br>		<span class="hljs-comment">// IoError, TimeoutError, ClosedError, ParseError（无法将Redis回复解析成期望的C++类型）, OomError（hiredis遇到oom错误）, WatchError（事务执行失败）</span><br>		<span class="hljs-comment">// 因此尽量使用try-catch块捕捉异常</span><br>        sw::<span class="hljs-function">redis::Redis <span class="hljs-title">redis</span><span class="hljs-params">(<span class="hljs-string">&quot;tcp://127.0.0.1:6379&quot;</span>)</span></span>;<br>        std::cout &lt;&lt; redis.<span class="hljs-built_in">ping</span>() &lt;&lt; std::endl; <span class="hljs-comment">// 显示PONG</span><br>        <br>        <span class="hljs-comment">// 字符串操作</span><br>        redis.<span class="hljs-built_in">set</span>(<span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-string">&quot;val&quot;</span>);<br>        redis.<span class="hljs-built_in">set</span>(<span class="hljs-string">&quot;key2&quot;</span>, <span class="hljs-string">&quot;val2&quot;</span>);<br>        <span class="hljs-comment">// 通常返回的值实际类型为std::optional&lt;T&gt;</span><br>        <span class="hljs-keyword">auto</span> res = redis.<span class="hljs-built_in">get</span>(<span class="hljs-string">&quot;key&quot;</span>);<br>        <span class="hljs-keyword">if</span> (res)<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;The val is &quot;</span> &lt;&lt; *res &lt;&lt; std::endl; <span class="hljs-comment">// 显示The val is val</span><br>        <span class="hljs-keyword">else</span><br>            std::cout &lt;&lt; <span class="hljs-string">&quot;No key.&quot;</span> &lt;&lt; std::endl;<br>        redis.<span class="hljs-built_in">setex</span>(<span class="hljs-string">&quot;exk&quot;</span>, std::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">600</span>), <span class="hljs-string">&quot;exv&quot;</span>);<br>        <span class="hljs-comment">// or</span><br>        redis.<span class="hljs-built_in">expire</span>(<span class="hljs-string">&quot;key2&quot;</span>, std::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">600</span>));<br>        <span class="hljs-keyword">auto</span> ttl = redis.<span class="hljs-built_in">ttl</span>(<span class="hljs-string">&quot;exk&quot;</span>);<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;Remained:&quot;</span> &lt;&lt; ttl &lt;&lt; <span class="hljs-string">&quot;s\n&quot;</span>; <span class="hljs-comment">// Remained:600s</span><br><br>        <span class="hljs-comment">// 哈希操作</span><br>        redis.<span class="hljs-built_in">hset</span>(<span class="hljs-string">&quot;hkey&quot;</span>, <span class="hljs-string">&quot;f1&quot;</span>, <span class="hljs-string">&quot;v1&quot;</span>);<br>        redis.<span class="hljs-built_in">hmset</span>(<span class="hljs-string">&quot;hkey&quot;</span>, std::initializer_list&lt;std::pair&lt;std::string, std::string&gt; &gt;&#123;&#123;<span class="hljs-string">&quot;f2&quot;</span>, <span class="hljs-string">&quot;v2&quot;</span>&#125;, &#123;<span class="hljs-string">&quot;f3&quot;</span>, <span class="hljs-string">&quot;v3&quot;</span>&#125;&#125;);<br>        std::vector&lt;std::string&gt; hfile = &#123;<span class="hljs-string">&quot;f1&quot;</span>, <span class="hljs-string">&quot;f2&quot;</span>, <span class="hljs-string">&quot;f3&quot;</span>&#125;;<br>        std::vector&lt;sw::redis::OptionalString&gt; hres;<br>        redis.<span class="hljs-built_in">hmget</span>(<span class="hljs-string">&quot;hkey&quot;</span>, hfile.<span class="hljs-built_in">begin</span>(), hfile.<span class="hljs-built_in">end</span>(), std::<span class="hljs-built_in">back_inserter</span>(hres));<br>        <span class="hljs-comment">// 打印        </span><br>	    <span class="hljs-comment">// Value:v1</span><br>		<span class="hljs-comment">// Value:v2</span><br>		<span class="hljs-comment">// Value:v3</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> i: hres)<br>            <span class="hljs-keyword">if</span> (i)<br>                std::cout &lt;&lt; <span class="hljs-string">&quot;Value:&quot;</span> &lt;&lt; *i &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        <span class="hljs-comment">// 列表操作</span><br>        redis.<span class="hljs-built_in">lpush</span>(<span class="hljs-string">&quot;list&quot;</span>, <span class="hljs-string">&quot;lmes&quot;</span>);<br>        redis.<span class="hljs-built_in">lpush</span>(<span class="hljs-string">&quot;list&quot;</span>, <span class="hljs-string">&quot;lmes2&quot;</span>);<br>        redis.<span class="hljs-built_in">rpush</span>(<span class="hljs-string">&quot;list&quot;</span>, <span class="hljs-string">&quot;lmes3&quot;</span>);<br>        redis.<span class="hljs-built_in">lpush</span>(<span class="hljs-string">&quot;list&quot;</span>, <span class="hljs-string">&quot;lmes4&quot;</span>);<br>        <span class="hljs-keyword">auto</span> lmes = redis.<span class="hljs-built_in">rpop</span>(<span class="hljs-string">&quot;list&quot;</span>);<br>        <span class="hljs-comment">// 打印List:lmes3</span><br>        <span class="hljs-keyword">if</span> (lmes)<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;List:&quot;</span> &lt;&lt; *lmes &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        <span class="hljs-keyword">else</span><br>            std::cout &lt;&lt; <span class="hljs-string">&quot;None.\n&quot;</span>;<br>        std::vector&lt;sw::redis::OptionalString&gt; lres;<br>        redis.<span class="hljs-built_in">lrange</span>(<span class="hljs-string">&quot;list&quot;</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>, std::<span class="hljs-built_in">back_inserter</span>(lres));<br>        <span class="hljs-comment">// 打印List:lmes4 List:lmes2 List:lmes </span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> i: lres)<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;List:&quot;</span> &lt;&lt; *i &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>        std::cout &lt;&lt; std::endl;<br>        <br>        <span class="hljs-comment">// 其他数据操作类似上述内容</span><br>        <span class="hljs-comment">// 通常获取区间结果需要传入输入迭代器与输出迭代器</span><br>        <span class="hljs-comment">// 使用OptionalString（实际类型为std::optional&lt;std::string&gt;）数组获取区间结果</span><br>    <br>        <span class="hljs-comment">// 移除当前存在的键</span><br>        redis.<span class="hljs-built_in">flushdb</span>(<span class="hljs-number">0</span>);<br>    &#125; <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> sw::redis::Error &amp;e)<br>    &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;Redis operation failed:&quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>实际开发考虑<code>ConnectionPoolOptions</code>连接池选项达到支持高并发，管道批量操作等</li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/RedisPlusPlus/" class="tag-item">
+                    RedisPlusPlus
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="cate-item">
+                    数据库
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/28/C++%20Redis/">https://narciostyx.github.io/2025/11/28/C++ Redis/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/30/C++%2017%E5%BA%93/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++17标准库</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/28/Redis%E6%A6%82%E8%BF%B0/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">Redis概述</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

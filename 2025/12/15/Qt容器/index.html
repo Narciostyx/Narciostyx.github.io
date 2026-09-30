@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | Qt容器</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%E7%B1%BB"><span class="toc-number">1.</span> <span class="toc-text">顺序容器类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#QList"><span class="toc-number">1.1.</span> <span class="toc-text">QList</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#QStack"><span class="toc-number">1.2.</span> <span class="toc-text">QStack</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#QQueue"><span class="toc-number">1.3.</span> <span class="toc-text">QQueue</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E8%81%94%E5%AE%B9%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">关联容器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#QSet"><span class="toc-number">2.1.</span> <span class="toc-text">QSet</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#QMap"><span class="toc-number">2.2.</span> <span class="toc-text">QMap</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#QHash"><span class="toc-number">2.3.</span> <span class="toc-text">QHash</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%81%8D%E5%8E%86%E5%AE%B9%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text">遍历容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%AE%B9%E5%99%A8"><span class="toc-number">4.</span> <span class="toc-text">其他容器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#QVariant"><span class="toc-number">4.1.</span> <span class="toc-text">QVariant</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#QFlags"><span class="toc-number">4.2.</span> <span class="toc-text">QFlags</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#QRandomGenerator"><span class="toc-number">4.3.</span> <span class="toc-text">QRandomGenerator</span></a></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>Qt容器</h1>
+    </section>
+    <section class="article">
+        <p>Qt的容器类</p>
+<span id="more"></span>
+<ul>
+<li>Qt容器与标准库类似，分为顺序容器类与关联容器类，前者有<code>QList QVector QStack QQueue</code>，后者有<code>QSet QMap QMultiMap QHash QMultiHash</code></li>
+</ul>
+<h3 id="顺序容器类"><a href="#顺序容器类" class="headerlink" title="顺序容器类"></a>顺序容器类</h3><blockquote>
+<p>注意<br>在Qt6中，QVector是QList的别名</p>
+</blockquote>
+<h4 id="QList"><a href="#QList" class="headerlink" title="QList"></a><code>QList</code></h4><ul>
+<li>类似<code>std::vector</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QList&lt;<span class="hljs-type">int</span>&gt; list=&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>&#125;;<br><span class="hljs-type">int</span> index_one=list[<span class="hljs-number">1</span>];<br><br>list.<span class="hljs-built_in">append</span>(<span class="hljs-number">8</span>);<br><span class="hljs-comment">// 或者</span><br>list &lt;&lt; <span class="hljs-number">8</span>;<br><br><span class="hljs-comment">// 大多数方法与std::vector类似，如insert，replace，at，clear，size，resize，reserv，remove等</span><br>isEmpty<br>removeAt[/All/First/Last]<br>takeAt[/First/Last]<br></code></pre></td></tr></table></figure>
+<ul>
+<li>某些情况下，<code>QList</code>被定义为一些等效类型</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// e.g.</span><br><span class="hljs-keyword">typedef</span> QList&lt;QObject*&gt; QObjectList;<br></code></pre></td></tr></table></figure>
+<h4 id="QStack"><a href="#QStack" class="headerlink" title="QStack"></a><code>QStack</code></h4><ul>
+<li>类似<code>std::stack</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QStack&lt;<span class="hljs-type">int</span>&gt; st;<br>st.<span class="hljs-built_in">push</span>(<span class="hljs-number">10</span>);<br>st.<span class="hljs-built_in">push</span>(<span class="hljs-number">20</span>);<br><span class="hljs-type">int</span> val=st.<span class="hljs-built_in">pop</span>();<br><br><span class="hljs-keyword">while</span>(!st.<span class="hljs-built_in">isEmpty</span>())<br>	std::cout&lt;&lt;st.<span class="hljs-built_in">pop</span>()&lt;&lt;std::endl;<br></code></pre></td></tr></table></figure>
+<h4 id="QQueue"><a href="#QQueue" class="headerlink" title="QQueue"></a><code>QQueue</code></h4><ul>
+<li>类似<code>std::queue</code>，基于<code>QList</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QQueue&lt;<span class="hljs-type">int</span>&gt; q;<br>q.<span class="hljs-built_in">enqueue</span>(<span class="hljs-number">10</span>);<br>q.<span class="hljs-built_in">dequeue</span>();<br></code></pre></td></tr></table></figure>
+<h3 id="关联容器"><a href="#关联容器" class="headerlink" title="关联容器"></a>关联容器</h3><h4 id="QSet"><a href="#QSet" class="headerlink" title="QSet"></a><code>QSet</code></h4><ul>
+<li>类似<code>std::set</code>，基于<code>QHash</code>实现</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QSet&lt;QString&gt; set;<br>set &lt;&lt; <span class="hljs-string">&quot;dog&quot;</span> &lt;&lt; <span class="hljs-string">&quot;cat&quot;</span> &lt;&lt; <span class="hljs-string">&quot;tiger&quot;</span>;<br><span class="hljs-keyword">if</span>(!set.<span class="hljs-built_in">contains</span>(<span class="hljs-string">&quot;cat&quot;</span>))<br>	...<br></code></pre></td></tr></table></figure>
+<h4 id="QMap"><a href="#QMap" class="headerlink" title="QMap"></a><code>QMap</code></h4><ul>
+<li>类似<code>std::map</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QMap&lt;QString,<span class="hljs-type">int</span>&gt; map;<br>map[<span class="hljs-string">&quot;one&quot;</span>]=<span class="hljs-number">1</span>;<br>map[<span class="hljs-string">&quot;two&quot;</span>]=<span class="hljs-number">2</span>;<br><br>map.<span class="hljs-built_in">insert</span>(<span class="hljs-string">&quot;four&quot;</span>,<span class="hljs-number">4</span>);<br>map.<span class="hljs-built_in">remove</span>(<span class="hljs-string">&quot;two&quot;</span>);<br><br><span class="hljs-type">int</span> n=map[<span class="hljs-string">&quot;one&quot;</span>]; <span class="hljs-comment">// 或map.value(&quot;one&quot;)</span><br><span class="hljs-comment">// value可以设置返回默认值（若不存在）</span><br>timeout = map.<span class="hljs-built_in">value</span>(<span class="hljs-string">&quot;timeout&quot;</span>,<span class="hljs-number">30</span>);<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>QMultiMap</code>也类似<code>std::multimap</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QMultiMap&lt;QString, <span class="hljs-type">int</span>&gt; map1, map2, map3;<br>map<span class="hljs-number">1.</span><span class="hljs-built_in">insert</span>(<span class="hljs-string">&quot;plenty&quot;</span>, <span class="hljs-number">100</span>);<br>map<span class="hljs-number">1.</span><span class="hljs-built_in">insert</span>(<span class="hljs-string">&quot;plenty&quot;</span>, <span class="hljs-number">2000</span>); <span class="hljs-comment">// map1.size() == 2</span><br>map<span class="hljs-number">2.</span><span class="hljs-built_in">insert</span>(<span class="hljs-string">&quot;plenty&quot;</span>, <span class="hljs-number">5000</span>); <span class="hljs-comment">// map2.size() == 1</span><br>map3 = map1 + map2; <span class="hljs-comment">// map3.size() == 3</span><br><br>QList&lt;<span class="hljs-type">int</span>&gt; values = map.<span class="hljs-built_in">values</span>(<span class="hljs-string">&quot;plenty&quot;</span>);<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; values.<span class="hljs-built_in">size</span>(); ++i)<br>cout &lt;&lt; values.<span class="hljs-built_in">at</span>(i) &lt;&lt; Qt::endl;<br></code></pre></td></tr></table></figure>
+<h4 id="QHash"><a href="#QHash" class="headerlink" title="QHash"></a><code>QHash</code></h4><ul>
+<li>与<code>QMap</code>功能与用法类似，区别如下：<ul>
+<li><code>QHash</code>查找更快</li>
+<li>遍历<code>QMap</code>数据必须按键值排序，而<code>QHash</code>则是任意顺序</li>
+<li><code>QMap</code>的键必须提供<code>&lt;</code>运算符，<code>QHash</code>的键必须提供<code>==</code>运算符与一个<code>qHash()</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="遍历容器"><a href="#遍历容器" class="headerlink" title="遍历容器"></a>遍历容器</h3><ul>
+<li>Qt提供两类迭代器：STL类型与Java类型（模仿Java的命名规范），下仅介绍STL类型迭代器</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 每个容器都有两个STL类型迭代器，一个用于只读：</span><br>Qxxx&lt;T&gt;::const_iterator<br><span class="hljs-comment">// 另外一个用于读写访问：</span><br>Qxxx&lt;T&gt;::iterator<br><br><span class="hljs-comment">// 包含reverse的迭代器为反向迭代器</span><br><span class="hljs-comment">// 如：</span><br>Qxxx&lt;T&gt;::const_reverse_iterator<br><br><span class="hljs-comment">// 关联容器与标准库一样，其迭代器返回本身，若使用*则表示数据项的值，若需要返回键则需要使用key函数，同理前者可以使用value函数</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>示例</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QList&lt;QString&gt; l;<br>l &lt;&lt; <span class="hljs-string">&quot;a&quot;</span> &lt;&lt; <span class="hljs-string">&quot;b&quot;</span> &lt;&lt; <span class="hljs-string">&quot;c&quot;</span>;<br>QList&lt;QString&gt;::const_iterator i;<br><span class="hljs-keyword">for</span>(i=l.<span class="hljs-built_in">constBegin</span>();i!=list.<span class="hljs-built_in">constEnd</span>();++i)<br>	std::cout &lt;&lt; *i &lt;&lt; std::endl;<br>	<br>QMap&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt; m;<br>...<br>QMap&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt;::const_iterator i;<br><span class="hljs-keyword">for</span>(i=m.<span class="hljs-built_in">constBegin</span>();i!=m.<span class="hljs-built_in">constEnd</span>();++i)<br>	std::cout&lt;&lt; i.<span class="hljs-built_in">key</span>() &lt;&lt; <span class="hljs-string">&quot;:&quot;</span> &lt;&lt; i.<span class="hljs-built_in">value</span>()<span class="hljs-comment">/* 或*i */</span> &lt;&lt; std::endl;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>隐式共享（implicit sharing）是对象的管理方法。一个对象被隐式共享，意味着只传递该对象的一个指针给使用者，而不实际复制对象数据，只有在使用者修改数据时，才会实际复制共享对象给使用者</li>
+</ul>
+<h3 id="其他容器"><a href="#其他容器" class="headerlink" title="其他容器"></a>其他容器</h3><h4 id="QVariant"><a href="#QVariant" class="headerlink" title="QVariant"></a><code>QVariant</code></h4><ul>
+<li>类似<code>std::any</code>可以存储任何类型的数据，使用<code>toT</code>函数转化成特定类型（如：<code>toBool</code>）</li>
+<li>Qt类库中很多返回值是<code>QVariant</code>类型</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">QVariant <span class="hljs-title">var</span><span class="hljs-params">(<span class="hljs-number">173</span>)</span></span>;<br>QString str=var.<span class="hljs-built_in">toString</span>();<br><span class="hljs-type">int</span> val=var.<span class="hljs-built_in">value</span>&lt;<span class="hljs-type">int</span>&gt;(); <span class="hljs-comment">// 等同于var.toInt()</span><br><br>QStringList strList;<br>strList &lt;&lt; <span class="hljs-string">&quot;one&quot;</span> &lt;&lt; <span class="hljs-string">&quot;two&quot;</span> &lt;&lt; <span class="hljs-string">&quot;three&quot;</span>;<br>var.<span class="hljs-built_in">setValue</span>(strList);<br>QStringList value=var.<span class="hljs-built_in">toStringList</span>();<br></code></pre></td></tr></table></figure>
+<ul>
+<li>对于Qt GUI模块中的一些类型，<code>QVariant</code>没有相应的toT函数，但是仍可以赋值给<code>QVariant</code>变量，再通过<code>QVariant::value()</code>函数访问</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QFont font=<span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">font</span>();<br>QVariant var=font;<br>QFont font2=var.<span class="hljs-built_in">value</span>&lt;QFont&gt;();<br></code></pre></td></tr></table></figure>
+<h4 id="QFlags"><a href="#QFlags" class="headerlink" title="QFlags"></a><code>QFlags</code></h4><ul>
+<li><code>QFlags&lt;Enum&gt;</code>中，Enum是枚举类型，该模板类定义枚举值的或运算组合（支持或，与，异或等位运算）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// QLabel有以属性alignment</span><br><span class="hljs-function">Qt::Alignment <span class="hljs-title">alignment</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setAlignment</span><span class="hljs-params">(Qt::Alignment)</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">/* 其中</span></span><br><span class="hljs-comment"><span class="hljs-function">* Qt::AlignmentFlag是枚举类型</span></span><br><span class="hljs-comment"><span class="hljs-function">* Qt::Alignment是QFlags&lt;Qt::AlignmentFlag&gt;类型</span></span><br><span class="hljs-comment"><span class="hljs-function">*/</span></span><br><span class="hljs-function">QFlags&lt;Qt::AlignmentFlag&gt; flag</span>=ui-&gt;label-&gt;<span class="hljs-built_in">alignment</span>();<br>flags=flags | Qt::AlignVCenter;<br>ui-&gt;label-&gt;<span class="hljs-built_in">setAlignment</span>(flags);<br></code></pre></td></tr></table></figure>
+<h4 id="QRandomGenerator"><a href="#QRandomGenerator" class="headerlink" title="QRandomGenerator"></a><code>QRandomGenerator</code></h4><ul>
+<li>取代Qt5中的<code>qrand</code>与<code>qsrand</code>函数，其可以通过构造函数提供一个树作为种子（种子相同的情况下，产生的序列是完全相同的）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-built_in">QRandomGenerator</span>(quint32 seedValue=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>通常要保证随机数种子不同，如：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QRandomGenerator *rand1= <span class="hljs-keyword">new</span> <span class="hljs-built_in">QRandomGenerator</span>(QDateTime::<span class="hljs-built_in">currentMSecsSinceEpoch</span>());<br>QRandomGenerator *rand2= <span class="hljs-keyword">new</span> <span class="hljs-built_in">QRandomGenerator</span>(QDateTime::<span class="hljs-built_in">currentSecsSinceEpoch</span>());<br><br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">5</span>;i++)<br><span class="hljs-built_in">qDebug</span>(<span class="hljs-string">&quot;R1=%u, R2=%u&quot;</span>,rand1-&gt;<span class="hljs-built_in">generate</span>(), rand2-&gt;<span class="hljs-built_in">generate</span>());<br><br><span class="hljs-comment">// QRandomGenerator有一静态函数创建随机数发生器</span><br><span class="hljs-function">QRandomGenerator <span class="hljs-title">QRandomGenerator::securelySeeded</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">// QRandomGenerator 有两个静态函数会返回随机数发生器，可以直接使用这两个函数返回的随机数发生器，无须给它们设置种子进行初始化</span></span><br><span class="hljs-function">QRandomGenerator *<span class="hljs-title">QRandomGenerator::system</span><span class="hljs-params">()</span> <span class="hljs-comment">// 线程安全</span></span><br><span class="hljs-function"><span class="hljs-comment">// 使用securelySeeded()设置种子初始化的</span></span><br><span class="hljs-function">QRandomGenerator *<span class="hljs-title">QRandomGenerator::global</span><span class="hljs-params">()</span></span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>接口</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">quint32 <span class="hljs-title">QRandomGenerator::generate</span><span class="hljs-params">()</span> <span class="hljs-comment">//生成 32 位随机数</span></span><br><span class="hljs-function">quint64 <span class="hljs-title">QRandomGenerator::generate64</span><span class="hljs-params">()</span> <span class="hljs-comment">//生成 64 位随机数</span></span><br><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">QRandomGenerator::generateDouble</span><span class="hljs-params">()</span> <span class="hljs-comment">//生成[0,1)区间内的浮点数</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">// 针对QRandomGenerator，其还支持函数运算符：</span></span><br><span class="hljs-function">QRandomGenerator <span class="hljs-title">rand</span><span class="hljs-params">(QDateTime::currentSecsSinceEpoch())</span></span>;<br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">5</span>;i++)<br>	<span class="hljs-built_in">qDebug</span>(<span class="hljs-string">&quot;number =%u&quot;</span>,<span class="hljs-built_in">rand</span>()); <span class="hljs-comment">// 等价于rand.generate()</span><br>	<br><span class="hljs-comment">// fillRange生成一组随机数，可填充至数组或列表里：</span><br>QList&lt;quint32&gt; list;<br>list.<span class="hljs-built_in">resize</span>(<span class="hljs-number">10</span>);<br>QRandomGenerator::<span class="hljs-built_in">global</span>()-&gt;<span class="hljs-built_in">fillRange</span>(list.<span class="hljs-built_in">data</span>(),list.<span class="hljs-built_in">size</span>());<br><br><span class="hljs-comment">// QRandomGenerator 的 bounded()函数可以生成指定范围内的随机数，它有很多种参数类型：</span><br><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">bounded</span><span class="hljs-params">(<span class="hljs-type">double</span> highest)</span> <span class="hljs-comment">//生成区间[0,highest)内的随机双精度浮点数</span></span><br><span class="hljs-function">quint32 <span class="hljs-title">bounded</span><span class="hljs-params">(quint32 highest)</span> <span class="hljs-comment">//生成区间[0,highest)内的 quint32 随机数</span></span><br><span class="hljs-function">quint32 <span class="hljs-title">bounded</span><span class="hljs-params">(quint32 lowest, quint32 highest)</span> <span class="hljs-comment">//随机数区间为[lowest,highest)</span></span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">bounded</span><span class="hljs-params">(<span class="hljs-type">int</span> highest)</span> <span class="hljs-comment">//生成区间[0,highest)内的 int 随机数</span></span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">bounded</span><span class="hljs-params">(<span class="hljs-type">int</span> lowest, <span class="hljs-type">int</span> highest)</span> <span class="hljs-comment">//生成区间[lowest,highest)内的 int 随机数</span></span><br><span class="hljs-function">quint64 <span class="hljs-title">bounded</span><span class="hljs-params">(quint64 highest)</span> <span class="hljs-comment">//生成区间[0,highest)内的 quint64 随机数</span></span><br><span class="hljs-function">qint64 <span class="hljs-title">bounded</span><span class="hljs-params">(qint64 lowest, qint64 highest)</span> <span class="hljs-comment">//随机数区间为[lowest,highest)</span></span><br></code></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E5%85%83%E5%AF%B9%E8%B1%A1/" class="tag-item">
+                    元对象
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Qt/" class="cate-item">
+                    Qt
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/12/15/Qt%E5%AE%B9%E5%99%A8/">https://narciostyx.github.io/2025/12/15/Qt容器/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/02/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">TCP/IP协议族</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/12/15/Qt%E5%85%83%E5%AF%B9%E8%B1%A1%E7%B3%BB%E7%BB%9F/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">Qt元对象系统</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

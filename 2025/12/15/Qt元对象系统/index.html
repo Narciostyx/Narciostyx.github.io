@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | Qt元对象系统</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%83%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.</span> <span class="toc-text">元对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7"><span class="toc-number">2.</span> <span class="toc-text">属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E4%B8%8E%E6%A7%BD"><span class="toc-number">3.</span> <span class="toc-text">信号与槽</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E6%A0%91"><span class="toc-number">4.</span> <span class="toc-text">对象树</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>Qt元对象系统</h1>
+    </section>
+    <section class="article">
+        <p>Qt的元对象系统</p>
+<span id="more"></span>
+<h4 id="元对象"><a href="#元对象" class="headerlink" title="元对象"></a>元对象</h4><ul>
+<li><code>QObject</code>类是所有使用元对象的基类，必须在类开头部分插入宏<code>Q_OBJECT</code>才能使用元对象系统的特性（<strong>信号与槽、运行时信息、对象树以及属性等特性</strong>）<ul>
+<li>MOC（元对象编译器）会为其实现元对象系统特性的代码</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 省略实际参数以及const关键字</span><br><span class="hljs-comment">// 仅列举部分成员函数</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">QObject</span><br>&#123;<br><span class="hljs-comment">// 元对象</span><br><span class="hljs-function">QMetaObject* <span class="hljs-title">metaObject</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function"><span class="hljs-type">static</span> QMetaObject <span class="hljs-title">staticMetaObject</span><span class="hljs-params">()</span></span>;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">inherits</span><span class="hljs-params">()</span></span>;<br><br><span class="hljs-comment">// 对象树</span><br><span class="hljs-comment">// 在Qt中，对象树中某个对象销毁，它的子对象都会被自动删除</span><br><span class="hljs-function">QObjectList&amp; <span class="hljs-title">children</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function">QObject* <span class="hljs-title">parent</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setParent</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function">T <span class="hljs-title">findChild</span><span class="hljs-params">()</span></span>;<br><br><span class="hljs-comment">// 信号与槽</span><br><span class="hljs-function">QMetaObject::Connection <span class="hljs-title">connect</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function">QMetaObject::Connection <span class="hljs-title">QMetaObject::connectSlotsByName</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">disconnect</span><span class="hljs-params">()</span></span>;<br><br><span class="hljs-comment">// 属性系统</span><br><span class="hljs-function">QList&lt;QByteArray&gt; <span class="hljs-title">dynamicPropertyNames</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">setProperty</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function">QVariant <span class="hljs-title">property</span><span class="hljs-params">()</span></span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>每个QObject及其子类实例均有一个（自动创建的）元对象（<code>QMetaObject</code>类）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 省略参数与const关键字</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">QMetaObject</span><br>&#123;<br><span class="hljs-function"><span class="hljs-type">char</span>* <span class="hljs-title">className</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function">QMetaType <span class="hljs-title">metaType</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function">QMetaObject* <span class="hljs-title">superClass</span><span class="hljs-params">()</span></span>;<br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">inherits</span><span class="hljs-params">()</span></span>;<br><br><span class="hljs-comment">// 方法统计：成员方法，信号与槽以及继承的方法</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">methodCount</span><span class="hljs-params">()</span></span>;<br><span class="hljs-comment">// 根据索引返回指定方法元数据</span><br><span class="hljs-function">QMetaMethod <span class="hljs-title">method</span><span class="hljs-params">()</span></span>;<br><span class="hljs-comment">// 根据签名查找索引</span><br><span class="hljs-type">int</span> indexOfMethod[/Signal/Slot/Constructor]();<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">constructorCount</span><span class="hljs-params">()</span></span>;<br><span class="hljs-comment">// 返回该方法在元对象中起始的偏移量</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">methodOffset</span><span class="hljs-params">()</span></span>;<br><br><span class="hljs-comment">// 静态函数</span><br>checkConnectArgs<br><span class="hljs-comment">// 运行某个方法，包括信号与槽或成员函数</span><br>invokeMethod<br>connectSlotsByName<br>normalizedSignature<br>&#125;<br><br><span class="hljs-comment">// 连接函数QMetaObject::connectSlotsByName为Qt提供的自动连接信号与槽函数</span><br><span class="hljs-comment">// 根据对象名称与槽函数名称的命名约定自动连接对应信号到当前对象槽函数</span><br><span class="hljs-comment">// 命名约定：on_&lt;对象名&gt;_&lt;信号名&gt;(&lt;参数&gt;)</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Dialog</span> : <span class="hljs-keyword">public</span> QDialog<br>&#123;<br>    Q_OBJECT<br><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Dialog</span><span class="hljs-params">(QWidget *parent = <span class="hljs-literal">nullptr</span>)</span></span>;<br>    ~<span class="hljs-built_in">Dialog</span>() <span class="hljs-keyword">override</span>;<br><br><span class="hljs-keyword">private</span> slots:<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">on_checkBoxUnder_clicked</span><span class="hljs-params">(<span class="hljs-type">bool</span> checked)</span></span>;<br>    ...<br><br><span class="hljs-keyword">private</span>:<br>    Ui::Dialog *ui;<br>&#125;;<br><br>Dialog::<span class="hljs-built_in">Dialog</span>(QWidget *parent)<br>    : <span class="hljs-built_in">QDialog</span>(parent)<br>    , <span class="hljs-built_in">ui</span>(<span class="hljs-keyword">new</span> Ui::Dialog)<br>&#123;<br>    ui-&gt;<span class="hljs-built_in">setupUi</span>(<span class="hljs-keyword">this</span>);<br>&#125;<br><br><span class="hljs-keyword">namespace</span> Ui &#123;<br>    <span class="hljs-keyword">class</span> <span class="hljs-title class_">Dialog</span>: <span class="hljs-keyword">public</span> Ui_Dialog &#123;&#125;;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Ui_Dialog::setupUi</span><span class="hljs-params">(QDialog* Dialog)</span></span><br><span class="hljs-function"></span>&#123;<br>	...<br>	<span class="hljs-comment">// 槽函数on_checkBoxUnder_clicked会自动关联到</span><br>	<span class="hljs-comment">// checkBoxUnder的clicked(bool)信号上</span><br>	QMetaObject::<span class="hljs-built_in">connectSlotsByName</span>(Dialog);<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>使用QObject与QMetaObject提供的一些接口函数，可以实现运行时获取对象类名等，且不需要RTTI支持</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QPushButton* btn=<span class="hljs-keyword">new</span> <span class="hljs-built_in">QPushButton</span>();<br><span class="hljs-type">const</span> QMetaObject* meta=btn-&gt;<span class="hljs-built_in">metaObject</span>();<br><span class="hljs-comment">// str=&quot;QPushButton&quot;</span><br>QString str=<span class="hljs-built_in">QString</span>(meta-&gt;<span class="hljs-built_in">className</span>());<br><br><span class="hljs-type">bool</span> res=btn-&gt;<span class="hljs-built_in">inherits</span>(<span class="hljs-string">&quot;QPushButton&quot;</span>); <span class="hljs-comment">// true</span><br>res=btn-&gt;<span class="hljs-built_in">inherits</span>(<span class="hljs-string">&quot;QCheckBox&quot;</span>); <span class="hljs-comment">// false</span><br><br><span class="hljs-type">const</span> QMetaObject* meta2=btn-&gt;<span class="hljs-built_in">metaObject</span>()-&gt;<span class="hljs-built_in">superClass</span>();<br><span class="hljs-comment">// str2=&quot;QAbstractButton&quot;</span><br>QString str2=<span class="hljs-built_in">QString</span>(meta2-&gt;<span class="hljs-built_in">className</span>());<br><br><span class="hljs-comment">// 通过qobject_cast()函数实现动态类型转换，如：</span><br>QObject* btn=<span class="hljs-keyword">new</span> <span class="hljs-built_in">QPushButton</span>();<br><span class="hljs-comment">// 成功</span><br>QPushButton* btnPush=<span class="hljs-built_in">qobject_cast</span>&lt;QPushButton*&gt;(btn);<br><span class="hljs-comment">// 失败，返回nullptr</span><br>QCheckBox* chkBox=<span class="hljs-built_in">qobject_cast</span>&lt;QCheckBox*&gt;(btn);<br><span class="hljs-comment">// 标准同样支持使用dynamic_cast，但使用qobject_cast不需要开启RTTI</span><br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>注意<br><code>supperClass</code>指记录一条继承链<br><strong>应避免在一个Qt类中使用多重继承多个继承自<code>QOBJECT</code>的派生基类，如：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">class SelfDefined:public QObject<br>&#123;<br>	Q_OBJECT<br>	...<br>&#125;<br>class MyButton:public QAbstractButton,public SelfDefined<br>&#123;<br>	Q_OBJECT<br>	...<br>&#125;<br></code></pre></td></tr></table></figure></blockquote>
+<ul>
+<li>元对象系统还支持使用<code>Q_CLASSINFO()</code>在类中定义一些类信息（名称与值，且值只能用字符串表示）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-built_in">Q_CLASSINFO</span>(<span class="hljs-string">&quot;version&quot;</span>,<span class="hljs-string">&quot;1.0.0&quot;</span>);<br><br><span class="hljs-comment">// 使用下列函数获取类信息元数据：</span><br><span class="hljs-function"><span class="hljs-type">char</span>* <span class="hljs-title">QMetaClassInfo::name</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-type">char</span>* <span class="hljs-title">QMetaClassInfo::value</span><span class="hljs-params">()</span></span><br></code></pre></td></tr></table></figure>
+<h4 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h4><ul>
+<li>Qt中的属性并非标准声明的属性（[[attribute]]），而是元对象的属性</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// [...]是可选项，常见的有NOTIFY，RESET，DESIGNABLE，FINAL等</span><br><span class="hljs-comment">// NOTIFY常与emit搭配</span><br><span class="hljs-built_in">Q_PROPERTY</span>(type name READ func WRITE func [...])<br><br><span class="hljs-comment">// type即值类型，READ，WRITE关键字定义属性读取</span><br><span class="hljs-comment">// 本质上是为了让MOC可以通过对应函数访问</span><br><span class="hljs-comment">// 如：</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyObject</span> : <span class="hljs-keyword">public</span> QObject<br>&#123;<br>    <span class="hljs-function">Q_OBJECT</span><br><span class="hljs-function">    <span class="hljs-title">Q_PROPERTY</span><span class="hljs-params">(<span class="hljs-type">int</span> value READ value WRITE setValue NOTIFY valueChanged)</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-keyword">public</span>:</span><br><span class="hljs-function">    int value() const &#123;</span> <span class="hljs-keyword">return</span> m_value; &#125;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setValue</span><span class="hljs-params">(<span class="hljs-type">int</span> v)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (m_value == v) <span class="hljs-keyword">return</span>;<br>        m_value = v;<br>        <span class="hljs-function">emit <span class="hljs-title">valueChanged</span><span class="hljs-params">(v)</span></span>;<br>    &#125;<br><br>signals:<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">valueChanged</span><span class="hljs-params">(<span class="hljs-type">int</span> v)</span></span>;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">int</span> m_value = <span class="hljs-number">0</span>;<br>&#125;;<br><span class="hljs-comment">// 当调用obj-&gt;property(&quot;value&quot;)，即调用value()</span><br><span class="hljs-comment">// 同理，当调用obj-&gt;setProperty(&quot;value&quot;,10)，调用setValue(10)</span><br><span class="hljs-comment">// QObject::property返回值为QVariant类型，需要转化为特定类型，如：toBool</span><br><br><span class="hljs-comment">// 属性可以指定一个成员变量与之绑定（不需要在设置READ与WRITE），如</span><br><span class="hljs-built_in">Q_PROPERTY</span>(<span class="hljs-type">int</span> value MEMBER value_)<br><br><span class="hljs-comment">// 属性元数据使用QMetaProperty描述，通常使用：</span><br>isWritable<br><span class="hljs-comment">// 属性是否在Designer中可见，取决于DESIGNABLE，默认为true</span><br>isDesignable<br><span class="hljs-comment">// NOTIFY相关</span><br>hasNotifySignal<br></code></pre></td></tr></table></figure>
+<ul>
+<li>当函数<code>QObject::setProperty()</code>设置属性时，<strong>若名称不存在，则会为对象定义一个新属性并设置值</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp">obj-&gt;<span class="hljs-built_in">setProperty</span>(<span class="hljs-string">&quot;new&quot;</span>,<span class="hljs-string">&quot;true&quot;</span>);<br></code></pre></td></tr></table></figure>
+<h4 id="信号与槽"><a href="#信号与槽" class="headerlink" title="信号与槽"></a>信号与槽</h4><ul>
+<li><code>QObject::connect</code>函数</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 1)</span><br><span class="hljs-function">QMetaObject::Connection <span class="hljs-title">QObject::connect</span><span class="hljs-params">(<span class="hljs-type">const</span> QObject *sender, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *signal,</span></span><br><span class="hljs-params"><span class="hljs-function"><span class="hljs-type">const</span> QObject *receiver, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *method,</span></span><br><span class="hljs-params"><span class="hljs-function">Qt::ConnectionType type = Qt::AutoConnection)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 2)</span></span><br><span class="hljs-function">QMetaObject::Connection <span class="hljs-title">QObject::connect</span><span class="hljs-params">(<span class="hljs-type">const</span> QObject *sender, <span class="hljs-type">const</span> QMetaMethod &amp;signal,</span></span><br><span class="hljs-params"><span class="hljs-function"><span class="hljs-type">const</span> QObject *receiver, <span class="hljs-type">const</span> QMetaMethod &amp;method,</span></span><br><span class="hljs-params"><span class="hljs-function">Qt::ConnectionType type = Qt::AutoConnection)</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">// 使用第一种参数形式的connect：</span></span><br><span class="hljs-function"><span class="hljs-comment">// 若信号或槽携带参数，则也需标明参数类型，如：signal(bool)等</span></span><br><span class="hljs-function"><span class="hljs-title">connect</span><span class="hljs-params">(sender,SIGNAL(signal()),receiver,SLOT(slot()))</span></span>;<br><span class="hljs-comment">// 使用第二种参数形式的connect：</span><br><span class="hljs-built_in">connect</span>(sender,&amp;xxx::xxx,<span class="hljs-keyword">this</span>,&amp;xxx::xxx)<br><br><span class="hljs-comment">// 对于具有默认参数，如：</span><br><span class="hljs-comment">// QlineEdit的信号textChanged(QString)不存在参数不同的其他重载信号</span><br><span class="hljs-built_in">connect</span>(lineEdit, &amp;QLineEdit::textChanged, <span class="hljs-keyword">this</span>, &amp;Widget::do_textChanged);<br><br><span class="hljs-comment">// 若某个窗口类定义了以下槽函数：</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_checked</span><span class="hljs-params">(<span class="hljs-type">bool</span> checked)</span></span>;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_checked_NoParam</span><span class="hljs-params">()</span></span>;<br><span class="hljs-comment">// 那么下列代码没有问题：</span><br><span class="hljs-comment">// 自动关联clicked(bool)与do_checked</span><br><span class="hljs-comment">// C++层面上QCheckBox::clicked(bool checked=false)默认为一个函数</span><br><span class="hljs-comment">// 但在moc层面会有clicked与clicked(bool)两个签名</span><br><span class="hljs-built_in">connect</span>(ui-&gt;checkBox, &amp;QCheckBox::clicked, <span class="hljs-keyword">this</span>, &amp;Widget::do_checked);<br><span class="hljs-comment">// 同理</span><br><span class="hljs-built_in">connect</span>(ui-&gt;checkBox, &amp;QCheckBox::clicked, <span class="hljs-keyword">this</span>, &amp;Widget::do_checked_NoParam);<br><br><span class="hljs-comment">// 如果在窗口类 Widget 里设计了如下的两个自定义槽函数：</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_click</span><span class="hljs-params">(<span class="hljs-type">bool</span> checked)</span></span>;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_click</span><span class="hljs-params">( )</span></span>;<br><span class="hljs-comment">// 下列代码编译会报错：</span><br><span class="hljs-built_in">connect</span>(ui-&gt;checkBox, &amp;QCheckBox::clicked, <span class="hljs-keyword">this</span>, &amp;Widget::do_click);<br><br><span class="hljs-comment">/* 这是因为 QCheckBox 的 clicked()信号是 overload 型信号</span><br><span class="hljs-comment">* do_click()是 overload 型槽函数，信号与槽函数无法匹配</span><br><span class="hljs-comment">* 这时需要使用模板函数 qOverload()来明确参数类型，如果写成下面的语句</span><br><span class="hljs-comment">* 在编译时就没有问题</span><br><span class="hljs-comment">*/</span><br><span class="hljs-built_in">connect</span>(ui-&gt;checkBox, &amp;QCheckBox::clicked, <span class="hljs-keyword">this</span>, <span class="hljs-built_in">qOverload</span>&lt;<span class="hljs-type">bool</span>&gt;(&amp;Widget::do_click));<br><span class="hljs-built_in">connect</span>(ui-&gt;checkBox, &amp;QCheckBox::clicked, <span class="hljs-keyword">this</span>, qOverload&lt;&gt;(&amp;Widget::do_click));<br><span class="hljs-comment">// 即qOverload是明确overload型函数的参数类型</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>不论哪种<code>connect</code>函数，最后一个参数都为type（枚举类型<code>Qt::ConnectionType</code>），有以下四种取值：<ol>
+<li><code>Qt::AutoConnection</code>，若sender与receiver在同样一个线程，则使用取值2，否则使用取值3</li>
+<li><code>Qt::DirectConnection</code>，信号发出槽函数立即执行，<strong>两者在同一个线程</strong></li>
+<li><code>Qt::QueuedConnection</code>，在事件循环回到receiver线程后运行，<strong>两者在不同线程中</strong></li>
+<li><code>Qt::BlockingQueuedConnection</code>，与取值3的区别在于<strong>sender会被阻塞直到receiver线程执行完毕（若两者在同一个线程将造成死锁）</strong></li>
+</ol>
+</li>
+<li><code>connect</code>还有一个作为QObject的成员函数：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">QMetaObject::Connection <span class="hljs-title">QObject::connect</span><span class="hljs-params">(<span class="hljs-type">const</span> QObject *sender, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *signal,</span></span><br><span class="hljs-params"><span class="hljs-function"><span class="hljs-type">const</span> <span class="hljs-type">char</span> *method, Qt::ConnectionType type = Qt::AutoConnection)</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">// 因此类似如：</span></span><br><span class="hljs-function"><span class="hljs-title">connect</span><span class="hljs-params">(spinNum,SIGNAL(valueChanged(<span class="hljs-type">int</span>)),<span class="hljs-keyword">this</span>,SLOT(updateStatus(<span class="hljs-type">int</span>)))</span></span>;<br><span class="hljs-comment">// 可以写成：</span><br><span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">connect</span>(spinNum,<span class="hljs-built_in">SIGNAL</span>(<span class="hljs-built_in">valueChanged</span>(<span class="hljs-type">int</span>)),<span class="hljs-built_in">SLOT</span>(<span class="hljs-built_in">updateStatus</span>(<span class="hljs-type">int</span>)));<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>disconnect</code>函数用于解除信号与槽：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 解除checkBox的所有信号以及与之关联的槽</span><br><span class="hljs-built_in">disconnect</span>(checkBox,<span class="hljs-literal">nullptr</span>,<span class="hljs-literal">nullptr</span>,<span class="hljs-literal">nullptr</span>);<br><span class="hljs-comment">// 或</span><br><span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">disconnect</span>();<br><br><span class="hljs-comment">// 解除checkBox特定信号以及与之关联的槽</span><br><span class="hljs-built_in">disconnect</span>(checkBox,<span class="hljs-built_in">SIGNAL</span>(<span class="hljs-built_in">clicked</span>()),<span class="hljs-literal">nullptr</span>,<span class="hljs-literal">nullptr</span>);<br><br><span class="hljs-comment">// 解除checkBox特定信号以及特定接收者的所有关联槽</span><br><span class="hljs-built_in">disconnect</span>(checkBox,<span class="hljs-built_in">SIGNAL</span>(<span class="hljs-built_in">clicked</span>()),dialog,<span class="hljs-literal">nullptr</span>);<br><br><span class="hljs-comment">// 解除特定信号与特定槽</span><br><span class="hljs-built_in">disconnect</span>(checkBox,<span class="hljs-built_in">SIGNAL</span>(<span class="hljs-built_in">clicked</span>()),dialog,<span class="hljs-built_in">SLOT</span>(<span class="hljs-built_in">close</span>()));<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>QObject::sender</code>函数，在槽函数调用<code>sender</code>可以获取获取信号发送者的QObject对象指针，通过qobject_cast进行转化为特定类型对象的指针</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp">QPushButton* btn=<span class="hljs-built_in">qobject_cast</span>&lt;QPushButton*&gt;(<span class="hljs-built_in">sender</span>());<br></code></pre></td></tr></table></figure>
+<ul>
+<li>自定义信号，信号函数必须是无返回值的函数，但可以有输入参数，且<strong>无需实现</strong>，仅需要在某些条件下被<code>emit</code>关键字发射</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">TPerson</span>:<span class="hljs-keyword">public</span> QObject<br>&#123;<br>	Q_OBJECT<br><span class="hljs-keyword">private</span>:<br>	<span class="hljs-type">int</span> age_=<span class="hljs-number">10</span>;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">incAge</span><span class="hljs-params">()</span></span><br><span class="hljs-function">	</span>&#123;<br>		age_++;<br>		<span class="hljs-function">emit <span class="hljs-title">ageChanged</span><span class="hljs-params">(age_)</span></span>;<br>	&#125;<br>signals:<br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">ageChanged</span><span class="hljs-params">(<span class="hljs-type">int</span> value)</span></span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="对象树"><a href="#对象树" class="headerlink" title="对象树"></a>对象树</h4><ul>
+<li>使用QObject及其子类创建的对象是以对象树的方式组织的，详细函数参照<code>QObject</code>声明</li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E5%85%83%E5%AF%B9%E8%B1%A1/" class="tag-item">
+                    元对象
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Qt/" class="cate-item">
+                    Qt
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/12/15/Qt%E5%85%83%E5%AF%B9%E8%B1%A1%E7%B3%BB%E7%BB%9F/">https://narciostyx.github.io/2025/12/15/Qt元对象系统/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/12/15/Qt%E5%AE%B9%E5%99%A8/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">Qt容器</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/12/08/C++20%20coroutine/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++协程</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

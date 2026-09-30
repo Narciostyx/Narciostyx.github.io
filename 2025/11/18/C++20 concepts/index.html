@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++20 concepts</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++20 concepts</h1>
+    </section>
+    <section class="article">
+        <p>C++20&lt;concept&gt;以及概念，requires关键字</p>
+<span id="more"></span>
+<ul>
+<li>Concepts即对模板参数的类型约束，可以理解成SFINAE的语法糖，如：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//SFINAE</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br>std::<span class="hljs-type">enable_if_t</span>&lt;std::is_arithmetic_v&lt;T&gt;,T&gt; <span class="hljs-built_in">add</span>(T a,T b)&#123;<span class="hljs-keyword">return</span> a+b;&#125;<br><br><span class="hljs-comment">//C++20 concepts</span><br><span class="hljs-comment">//requires语句</span><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;</span><br><span class="hljs-function"><span class="hljs-keyword">requires</span> std::is_arithmetic_v&lt;T&gt;</span><br><span class="hljs-function">T <span class="hljs-title">add</span><span class="hljs-params">(T a,T b)</span></span>&#123;<span class="hljs-keyword">return</span> a+b;&#125;<br><br><span class="hljs-comment">//更简洁</span><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;std::is_arithmetic T&gt;</span><br><span class="hljs-function">T <span class="hljs-title">add</span><span class="hljs-params">(T a,T b)</span></span>&#123;<span class="hljs-keyword">return</span> a+b;&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>concept定义，语法如下：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">concept</span> ConceptName = expression;<br><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">concept</span> ConceptName = <span class="hljs-built_in">requires</span>(...)&#123;<br>	...<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>e.g.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">concept</span> always_satisfied=<span class="hljs-literal">true</span>;<br><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">concept</span> integral=std::is_integral_v&lt;T&gt;;<br><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;always_satisfied T&gt;</span><br><span class="hljs-function">T <span class="hljs-title">mul</span><span class="hljs-params">(T a,T b)</span></span>&#123;<span class="hljs-keyword">return</span> a*b;&#125;<br>以此类推<br><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;my_concept T&gt;</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(T t)</span></span>;<br><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;</span><br><span class="hljs-function"><span class="hljs-keyword">requires</span> my_concept&lt;T&gt;</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(T t)</span></span>;<br><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<span class="hljs-function">n</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(T t)</span> <span class="hljs-keyword">requires</span> my_concept&lt;T&gt;</span>;<br><br><span class="hljs-comment">//参数列表中使用</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(my_concept <span class="hljs-keyword">auto</span> t)</span></span>;<br><br><span class="hljs-comment">//模板参数列表使用</span><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;my_concept <span class="hljs-keyword">auto</span> t&gt;</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">g</span><span class="hljs-params">()</span></span>;<br></code></pre></td></tr></table></figure>
+<p>lambda函数使用概念：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">auto</span> f=[]&lt;my_concept T&gt;(T v)&#123;...&#125;<br><br><span class="hljs-keyword">auto</span> f=[]&lt;<span class="hljs-keyword">typename</span> T&gt; <span class="hljs-keyword">requires</span> <span class="hljs-built_in">my_concept</span>&lt;T&gt; (T v)&#123;...&#125;<br>与上述保持一致，以此类推<br></code></pre></td></tr></table></figure>
+<ul>
+<li>concepts相较于传统SFINAE，其优势在于：<ul>
+<li>可读性更高，且错误信息更友好</li>
+<li>编译速度更快，重用性高</li>
+</ul>
+</li>
+<li>requires的几种形式</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//简单约束</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">concept</span> addable=<span class="hljs-built_in">requires</span>(T a,T b)&#123;a+b;&#125;<span class="hljs-comment">//即a+b合法</span><br><br><span class="hljs-comment">//类型约束</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">concept</span> classAttr=<span class="hljs-keyword">requires</span><br>&#123;<br>	<span class="hljs-keyword">typename</span> T::value;<span class="hljs-comment">//即T类型应有成员value</span><br>	<span class="hljs-keyword">typename</span> S&lt;T&gt;;<span class="hljs-comment">//即T类型应有对与模板S的特化</span><br>&#125;<br><br><span class="hljs-comment">//复合约束，形似&#123;expr&#125; noexcept(optional)-&gt;type-constraint</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">concept</span> classAttr=<span class="hljs-built_in">requires</span>(T x)<br>&#123;<br>	&#123;*x&#125;-&gt;<span class="hljs-keyword">typename</span> T::inner;<span class="hljs-comment">//即*T应该可以转换成T::innner</span><br>	&#123;x<span class="hljs-number">+1</span>&#125;-&gt;std::same_as&lt;<span class="hljs-type">int</span>&gt;;<span class="hljs-comment">//x+1应满足返回int类型，即x+1可以转换成int</span><br>&#125;<br><br><span class="hljs-comment">//嵌套约束，即requires内部嵌套requires</span><br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">class</span> <span class="hljs-title class_">T</span>&gt;<br><span class="hljs-keyword">concept</span> Semiregular = DefaultConstructible&lt;T&gt;<span class="hljs-comment">/*默认可构造*/</span> &amp;&amp; CopyConstructible&lt;T&gt; <span class="hljs-comment">/*复制拷贝构造*/</span> &amp;&amp; Destructible&lt;T&gt;<span class="hljs-comment">/*可销毁*/</span> &amp;&amp; CopyAssignable&lt;T&gt;<span class="hljs-comment">/*?*/</span> &amp;&amp;<br><span class="hljs-built_in">requires</span>(T a, <span class="hljs-type">size_t</span> n) &#123;  <br>    <span class="hljs-keyword">requires</span> Same&lt;T*, <span class="hljs-keyword">decltype</span>(&amp;a)&gt;;<span class="hljs-comment">//满足Same&lt;T*,decltype(&amp;a)&gt;</span><br>    &#123; a.~<span class="hljs-built_in">T</span>() &#125; <span class="hljs-keyword">noexcept</span>;<span class="hljs-comment">//a.~T()合法且不会抛出异常</span><br>    <span class="hljs-keyword">requires</span> Same&lt;T*, <span class="hljs-keyword">decltype</span>(<span class="hljs-keyword">new</span> T)&gt;;<span class="hljs-comment">//同上</span><br>    <span class="hljs-keyword">requires</span> Same&lt;T*, <span class="hljs-keyword">decltype</span>(<span class="hljs-keyword">new</span> T[n])&gt;;<span class="hljs-comment">//同上</span><br>    &#123; <span class="hljs-keyword">delete</span> <span class="hljs-keyword">new</span> T &#125;;  <span class="hljs-comment">// compound</span><br>    &#123; <span class="hljs-keyword">delete</span> <span class="hljs-keyword">new</span> T[n] &#125;; <span class="hljs-comment">// compound</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>概念支持与&amp;&amp;，或||与原子约束<ul>
+<li>原子约束一定程度上可以理解成<strong>当前表达式的最小约束</strong>，如<code>template&lt;typename T&gt; concept C=sizeof(T)==4&amp;&amp;std::is_const_v&lt;T&gt;</code>，包含两个原子约束<code>sizeof(T)==4</code>与<code>std::is_const_v&lt;T&gt;</code></li>
+<li><code>template&lt;typename T&gt;concept D = C&lt;T&gt; &amp;&amp; (std::is_pointer_v&lt;T&gt; || std::is_reference_v&lt;T&gt;);</code>，规范化 D&lt;T&gt; 时，会先展开 C&lt;T&gt; 得到两个原子约束，再与后面的析取分支组合，最终得到三个原子约束</li>
+<li>原子约束本身是为了<strong>防止循环依赖</strong>与<strong>约束的部分排序</strong></li>
+<li>约束模板重载决议会选择<strong>更受约束的</strong></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;type_traits&gt;</span></span><br><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt; <span class="hljs-keyword">concept</span> Int = std::is_integral_v&lt;T&gt;;<br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt; <span class="hljs-keyword">concept</span> SignedInt = Int&lt;T&gt; &amp;&amp; std::is_signed_v&lt;T&gt;;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">(Int <span class="hljs-keyword">auto</span>)</span> </span>&#123;&#125;      <span class="hljs-comment">// (1)</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">(SignedInt <span class="hljs-keyword">auto</span>)</span> </span>&#123;&#125; <span class="hljs-comment">// (2)</span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-built_in">f</span>(<span class="hljs-number">42</span>);   <span class="hljs-comment">// 调用 (2)，因为 SignedInt 比 Int 更受约束</span><br>&#125;<br></code></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/concept/" class="tag-item">
+                    concept
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/18/C++20%20concepts/">https://narciostyx.github.io/2025/11/18/C++20 concepts/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/20/%E6%A8%A1%E6%9D%BF%E5%B1%95%E5%BC%80/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++模板展开</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/18/boost.beast/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">boost.beast</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

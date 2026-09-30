@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++正则表达式</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++正则表达式</h1>
+    </section>
+    <section class="article">
+        <p>&lt;regex&gt;库</p>
+<span id="more"></span>
+
+<ol>
+<li>正则表达式&lt;regex&gt;包含以下类：<br><img src="/2025/11/18/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/Pasted_image_20260212170616.png"></li>
+<li>包含下列算法：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>算法名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>regex_match</td>
+<td>尝试将正则表达式与整个字符序列匹配</td>
+</tr>
+<tr>
+<td>regex_search</td>
+<td>尝试将正则表达式与字符序列的任何部分匹配</td>
+</tr>
+<tr>
+<td>regex_replace</td>
+<td>用格式化的替换文本替换正则表达式的出现</td>
+</tr>
+<tr>
+<td>3. 函数regex_match与regex_search确定一个给定字符序列与一个给定regex是否匹配，如果整个输入序列都与之匹配，则前者返回true；如果输入序列中的一个子串与表达式匹配，则后者返回true</td>
+<td></td>
+</tr>
+</tbody></table>
+<pre><code>1. 参数为(seq,m,r,mft)或(seq,r,mft)
+2. m是一个match对象，保存匹配结果的相关细节
+3. mft是一个可选的regex_constants::match_flag_type的值，会影响匹配过程
+</code></pre>
+<ol start="4">
+<li><strong>regex</strong>表示一个正则表达式，如</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">string <span class="hljs-title">pattern</span><span class="hljs-params">(<span class="hljs-string">&quot;[^c]ei&quot;</span>)</span></span>;<br>pattern=<span class="hljs-string">&quot;[[:alpha:]]*&quot;</span>+pattern+<span class="hljs-string">&quot;[[:alpha:]]*&quot;</span>;<br><span class="hljs-function">regex <span class="hljs-title">r</span><span class="hljs-params">(pattern)</span></span>;<br></code></pre></td></tr></table></figure>
+<ol start="5">
+<li>方法r.mark_count()返回r中子表达式的数目</li>
+<li>regex指定的标志常用的有：<ol>
+<li>icase，忽略大小写</li>
+<li>nosubs，不保存匹配的子表达式</li>
+<li>optimize，执行速度优先于构造速度</li>
+</ol>
+</li>
+<li><strong>sregex_iterator</strong>即使用<strong>regex_search来寻找所有匹配项</strong>，即不断从一个匹配位置跳到下一个匹配位置，如：</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">for</span>(sregex_iterator <span class="hljs-built_in">it</span>(file.<span class="hljs-built_in">begin</span>(),file.<span class="hljs-built_in">end</span>(),r),end_it;it!=end_it;++it)<br>	cout&lt;&lt;it-&gt;<span class="hljs-built_in">str</span>()&lt;endl;<br></code></pre></td></tr></table></figure>
+<pre><code>1. sregex_iterator拥有prefix与suffix
+2. 其中调用prefix与suffix返回ssub_match对象
+3. ssub_match有成员str与length，返回匹配的string及其大小
+4. 前缀prefix即当前匹配的smatch对象到上一个smatch对象中间的内容，后缀suffix以此类推
+5. 对此迭代器解引用返回smatch对象
+</code></pre>
+<p><img src="/2025/11/18/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/Pasted_image_20260224200907.png"><br>8. 子表达式，即正则表达式中使用括号包含的部分，如<code>&quot;([[:alnum:]]+)\\.(cpp|cxx|cc)$&quot;</code>，前者匹配一个或多个字符的序列，后者匹配文件拓展名，子匹配是按位置来访问的，第一个子匹配位置为0，表示整个模式对应的匹配，后面是每个子表达式的匹配</p>
+<blockquote>
+<p><strong>Note — ECMAScript</strong><br>\{d}{n}表示一个n个数字的序列<br>点.在括号里没有特殊含义，如[-. ]匹配一个短横线或一个点，一个空格</p>
+</blockquote>
+<ol start="9">
+<li>对于一个smatch对象，拥有n个子表达式，则该smatch对象会包含n+1个ssub_match元素，<strong>因此可以将smatch对象理解成保存ssub_match的容器</strong>，运行通过上述第8条的下标访问，ssub_match操作：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>matched</td>
+<td>返回bool</td>
+</tr>
+<tr>
+<td>first，second</td>
+<td>指向匹配序列的首元素与尾后位置的迭代器，如果未匹配，则两者相等</td>
+</tr>
+<tr>
+<td>length</td>
+<td></td>
+</tr>
+<tr>
+<td>str</td>
+<td></td>
+</tr>
+</tbody></table>
+<ol start="10">
+<li>regex_replace<br><img src="/2025/11/18/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/Pasted_image_20260224201404.png"></li>
+<li>e.g.:</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//使用regex_match</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstddef&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;regex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// Simple regular expression matching</span><br>    <span class="hljs-type">const</span> std::string fnames[] = &#123;<span class="hljs-string">&quot;foo.txt&quot;</span>, <span class="hljs-string">&quot;bar.txt&quot;</span>, <span class="hljs-string">&quot;baz.dat&quot;</span>, <span class="hljs-string">&quot;zoidberg&quot;</span>&#125;;<br>    <span class="hljs-function"><span class="hljs-type">const</span> std::regex <span class="hljs-title">txt_regex</span><span class="hljs-params">(<span class="hljs-string">&quot;[a-z]+\\.txt&quot;</span>)</span></span>;<br> <br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; fname : fnames)<br>        std::cout &lt;&lt; fname &lt;&lt; <span class="hljs-string">&quot;: &quot;</span> &lt;&lt; std::<span class="hljs-built_in">regex_match</span>(fname, txt_regex) &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br> <br>    <span class="hljs-comment">// Extraction of a sub-match</span><br>    <span class="hljs-function"><span class="hljs-type">const</span> std::regex <span class="hljs-title">base_regex</span><span class="hljs-params">(<span class="hljs-string">&quot;([a-z]+)\\.txt&quot;</span>)</span></span>;<br>    std::smatch base_match;<br> <br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; fname : fnames)<br>        <span class="hljs-keyword">if</span> (std::<span class="hljs-built_in">regex_match</span>(fname, base_match, base_regex))<br>            <span class="hljs-comment">// The first sub_match is the whole string; the next</span><br>            <span class="hljs-comment">// sub_match is the first parenthesized expression.</span><br>            <span class="hljs-comment">//[0]-&gt;整个匹配，[1]-&gt;文件名</span><br>            <span class="hljs-keyword">if</span> (base_match.<span class="hljs-built_in">size</span>() == <span class="hljs-number">2</span>)<br>            &#123;<br>                std::ssub_match base_sub_match = base_match[<span class="hljs-number">1</span>];<br>                std::string base = base_sub_match.<span class="hljs-built_in">str</span>();<br>                std::cout &lt;&lt; fname &lt;&lt; <span class="hljs-string">&quot; has a base of &quot;</span> &lt;&lt; base &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>            &#125;<br> <br>    <span class="hljs-comment">// Extraction of several sub-matches</span><br>    <span class="hljs-function"><span class="hljs-type">const</span> std::regex <span class="hljs-title">pieces_regex</span><span class="hljs-params">(<span class="hljs-string">&quot;([a-z]+)\\.([a-z]+)&quot;</span>)</span></span>;<br>    std::smatch pieces_match;<br> <br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; fname : fnames)<br>        <span class="hljs-keyword">if</span> (std::<span class="hljs-built_in">regex_match</span>(fname, pieces_match, pieces_regex))<br>        &#123;<br>            std::cout &lt;&lt; fname &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>            <span class="hljs-keyword">for</span> (std::<span class="hljs-type">size_t</span> i = <span class="hljs-number">0</span>; i &lt; pieces_match.<span class="hljs-built_in">size</span>(); ++i)<br>            &#123;<br>                std::ssub_match sub_match = pieces_match[i];<br>                std::string piece = sub_match.<span class="hljs-built_in">str</span>();<br>                std::cout &lt;&lt; <span class="hljs-string">&quot;  submatch &quot;</span> &lt;&lt; i &lt;&lt; <span class="hljs-string">&quot;: &quot;</span> &lt;&lt; piece &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>            &#125;<br>        &#125;<br>&#125;<br><span class="hljs-comment">//运行结果：</span><br>foo.txt: <span class="hljs-number">1</span><br>bar.txt: <span class="hljs-number">1</span><br>baz.dat: <span class="hljs-number">0</span><br>zoidberg: <span class="hljs-number">0</span><br>foo.txt has a base of foo<br>bar.txt has a base of bar<br>foo.txt<br>  submatch <span class="hljs-number">0</span>: foo.txt<br>  submatch <span class="hljs-number">1</span>: foo<br>  submatch <span class="hljs-number">2</span>: txt<br>bar.txt<br>  submatch <span class="hljs-number">0</span>: bar.txt<br>  submatch <span class="hljs-number">1</span>: bar<br>  submatch <span class="hljs-number">2</span>: txt<br>baz.dat<br>  submatch <span class="hljs-number">0</span>: baz.dat<br>  submatch <span class="hljs-number">1</span>: baz<br>  submatch <span class="hljs-number">2</span>: dat<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//使用regex_search</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstddef&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;regex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    std::string lines[] = &#123;<span class="hljs-string">&quot;Roses are #ff0000&quot;</span>,<br>                           <span class="hljs-string">&quot;violets are #0000ff&quot;</span>,<br>                           <span class="hljs-string">&quot;all of my base are belong to you&quot;</span>&#125;;<br> <br>    <span class="hljs-function">std::regex <span class="hljs-title">color_regex</span><span class="hljs-params">(<span class="hljs-string">&quot;#([a-f0-9]&#123;2&#125;)&quot;</span></span></span><br><span class="hljs-params"><span class="hljs-function">                            <span class="hljs-string">&quot;([a-f0-9]&#123;2&#125;)&quot;</span></span></span><br><span class="hljs-params"><span class="hljs-function">                            <span class="hljs-string">&quot;([a-f0-9]&#123;2&#125;)&quot;</span>)</span></span>;<br> <br>    <span class="hljs-comment">// simple match</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; line : lines)<br>        std::cout &lt;&lt; line &lt;&lt; <span class="hljs-string">&quot;: &quot;</span> &lt;&lt; std::boolalpha<br>                  &lt;&lt; std::<span class="hljs-built_in">regex_search</span>(line, color_regex) &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>    std::cout &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br> <br>    <span class="hljs-comment">// show contents of marked subexpressions within each match</span><br>    std::smatch color_match;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; line : lines)<br>        <span class="hljs-keyword">if</span> (std::<span class="hljs-built_in">regex_search</span>(line, color_match, color_regex))<br>        &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;matches for &#x27;&quot;</span> &lt;&lt; line &lt;&lt; <span class="hljs-string">&quot;&#x27;\n&quot;</span>;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Prefix: &#x27;&quot;</span> &lt;&lt; color_match.<span class="hljs-built_in">prefix</span>() &lt;&lt; <span class="hljs-string">&quot;&#x27;\n&quot;</span>;<br>            <span class="hljs-keyword">for</span> (std::<span class="hljs-type">size_t</span> i = <span class="hljs-number">0</span>; i &lt; color_match.<span class="hljs-built_in">size</span>(); ++i) <br>                std::cout &lt;&lt; i &lt;&lt; <span class="hljs-string">&quot;: &quot;</span> &lt;&lt; color_match[i] &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Suffix: &#x27;&quot;</span> &lt;&lt; color_match.<span class="hljs-built_in">suffix</span>() &lt;&lt; <span class="hljs-string">&quot;\&#x27;\n\n&quot;</span>;<br>        &#125;<br> <br>    <span class="hljs-comment">// repeated search (see also std::regex_iterator)</span><br>    <span class="hljs-function">std::string <span class="hljs-title">log</span><span class="hljs-params">(<span class="hljs-string">R&quot;(</span></span></span><br><span class="hljs-string"><span class="hljs-params"><span class="hljs-function">        Speed:	366</span></span></span><br><span class="hljs-string"><span class="hljs-params"><span class="hljs-function">        Mass:	35</span></span></span><br><span class="hljs-string"><span class="hljs-params"><span class="hljs-function">        Speed:	378</span></span></span><br><span class="hljs-string"><span class="hljs-params"><span class="hljs-function">        Mass:	32</span></span></span><br><span class="hljs-string"><span class="hljs-params"><span class="hljs-function">        Speed:	400</span></span></span><br><span class="hljs-string"><span class="hljs-params"><span class="hljs-function">	Mass:	30)&quot;</span>)</span></span>;<br>    <span class="hljs-function">std::regex <span class="hljs-title">r</span><span class="hljs-params">(<span class="hljs-string">R&quot;(Speed:\t\d*)&quot;</span>)</span></span>;<br>    <span class="hljs-keyword">for</span> (std::smatch sm; <span class="hljs-built_in">regex_search</span>(log, sm, r);)<br>    &#123;<br>        std::cout &lt;&lt; sm.<span class="hljs-built_in">str</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>        log = sm.<span class="hljs-built_in">suffix</span>();<br>    &#125;<br> <br>    <span class="hljs-comment">// C-style string demo</span><br>    std::cmatch cm;<br>    <span class="hljs-keyword">if</span> (std::<span class="hljs-built_in">regex_search</span>(<span class="hljs-string">&quot;this is a test&quot;</span>, cm, std::<span class="hljs-built_in">regex</span>(<span class="hljs-string">&quot;test&quot;</span>))) <br>        std::cout &lt;&lt; <span class="hljs-string">&quot;\nFound &quot;</span> &lt;&lt; cm[<span class="hljs-number">0</span>] &lt;&lt; <span class="hljs-string">&quot; at position &quot;</span><br>                  &lt;&lt; cm.<span class="hljs-built_in">prefix</span>().<span class="hljs-built_in">length</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>&#125;<br><span class="hljs-comment">//运行结果：</span><br>Roses are #ff0000: <span class="hljs-literal">true</span><br>violets are #<span class="hljs-number">0000</span>ff: <span class="hljs-literal">true</span><br>all of my base are belong to you: <span class="hljs-literal">false</span><br> <br>matches <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;Roses are #ff0000&#x27;</span><br>Prefix: <span class="hljs-string">&#x27;Roses are &#x27;</span><br><span class="hljs-number">0</span>: #ff0000<br><span class="hljs-number">1</span>: ff<br><span class="hljs-number">2</span>: <span class="hljs-number">00</span><br><span class="hljs-number">3</span>: <span class="hljs-number">00</span><br>Suffix: <span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-string"> </span><br><span class="hljs-string">matches for &#x27;</span>violets are #<span class="hljs-number">0000</span>ff&#x27;<br>Prefix: <span class="hljs-string">&#x27;violets are &#x27;</span><br><span class="hljs-number">0</span>: #<span class="hljs-number">0000</span>ff<br><span class="hljs-number">1</span>: <span class="hljs-number">00</span><br><span class="hljs-number">2</span>: <span class="hljs-number">00</span><br><span class="hljs-number">3</span>: ff<br>Suffix: <span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-string"> </span><br><span class="hljs-string">Speed:	366</span><br><span class="hljs-string">Speed:	378</span><br><span class="hljs-string">Speed:	400</span><br><span class="hljs-string"> </span><br><span class="hljs-string">Found test at position 10</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//使用smatch的format方法</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;regex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    std::string s = <span class="hljs-string">&quot;for a good time, call 867-5309&quot;</span>;<br>    <span class="hljs-function">std::regex <span class="hljs-title">phone_regex</span><span class="hljs-params">(<span class="hljs-string">&quot;\\d&#123;3&#125;-\\d&#123;4&#125;&quot;</span>)</span></span>;<br>    std::smatch phone_match;<br> <br>    <span class="hljs-keyword">if</span> (std::<span class="hljs-built_in">regex_search</span>(s, phone_match, phone_regex))<br>    &#123;<br>        std::string fmt_s = phone_match.format(<br>            <span class="hljs-string">&quot;$`&quot;</span>   <span class="hljs-comment">// $` means characters before the match</span><br>            <span class="hljs-string">&quot;[$&amp;]&quot;</span> <span class="hljs-comment">// $&amp; means the matched characters</span><br>            <span class="hljs-string">&quot;$&#x27;&quot;</span>); <span class="hljs-comment">// $&#x27; means characters following the match</span><br>        std::cout &lt;&lt; fmt_s &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>    &#125;   <br>&#125;<br><span class="hljs-comment">//运行结果：for a good time, call [867-5309]</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//使用regex_replace</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iterator&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;regex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    std::string text = <span class="hljs-string">&quot;Quick brown fox&quot;</span>;<br>    <span class="hljs-function">std::regex <span class="hljs-title">vowel_re</span><span class="hljs-params">(<span class="hljs-string">&quot;a|e|i|o|u&quot;</span>)</span></span>;<br> <br>    <span class="hljs-comment">// write the results to an output iterator</span><br>    std::<span class="hljs-built_in">regex_replace</span>(std::<span class="hljs-built_in">ostreambuf_iterator</span>&lt;<span class="hljs-type">char</span>&gt;(std::cout),<br>                       text.<span class="hljs-built_in">begin</span>(), text.<span class="hljs-built_in">end</span>(), vowel_re, <span class="hljs-string">&quot;*&quot;</span>);<br> <br>    <span class="hljs-comment">// construct a string holding the results</span><br>    std::cout &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span> &lt;&lt; std::<span class="hljs-built_in">regex_replace</span>(text, vowel_re, <span class="hljs-string">&quot;[$&amp;]&quot;</span>) &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>&#125;<br><span class="hljs-comment">//运行结果：</span><br>Q**ck br*wn f*x<br>Q[u][i]ck br[o]wn f[o]x<br></code></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/regex/" class="tag-item">
+                    regex
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/18/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">https://narciostyx.github.io/2025/11/18/正则表达式/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/18/chrono/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++时间库</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/18/%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++中常用的类</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C多线程编程</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%87%8F"><span class="toc-number">1.</span> <span class="toc-text">互斥量</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F"><span class="toc-number">2.</span> <span class="toc-text">条件变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%82%B2%E8%A7%82%E9%94%81"><span class="toc-number">2.1.</span> <span class="toc-text">悲观锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B9%90%E8%A7%82%E9%94%81"><span class="toc-number">2.2.</span> <span class="toc-text">乐观锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="toc-number">2.3.</span> <span class="toc-text">自旋锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E5%B9%B3%E9%94%81%E4%B8%8E%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="toc-number">2.4.</span> <span class="toc-text">公平锁与非公平锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E9%94%81"><span class="toc-number">2.5.</span> <span class="toc-text">读写锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%8F%E9%9A%9C"><span class="toc-number">2.6.</span> <span class="toc-text">屏障</span></a></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C多线程编程</h1>
+    </section>
+    <section class="article">
+        <p>POSIX 线程库 pthread 的多线程编程详解</p>
+<span id="more"></span>
+
+<ol>
+<li>该库几乎所有函数均以pthread_前缀开始</li>
+<li>线程创建</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_create</span> <span class="hljs-params">(<span class="hljs-type">pthread_t</span> *__restrict __newthread,</span><br><span class="hljs-params">   <span class="hljs-type">const</span> <span class="hljs-type">pthread_attr_t</span> *__restrict __attr,</span><br><span class="hljs-params">   <span class="hljs-type">void</span> *(*__start_routine) (<span class="hljs-type">void</span> *),</span><br><span class="hljs-params">   <span class="hljs-type">void</span> *__restrict __arg)</span> __THROWNL __<span class="hljs-title function_">nonnull</span> <span class="hljs-params">((<span class="hljs-number">1</span>, <span class="hljs-number">3</span>))</span>;<br></code></pre></td></tr></table></figure>
+<p>newthread是返回的线程ID，成功返回0，失败返回错误码<br>3. pthread_self返回当前线程的ID<br>4. 线程终止自己</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">pthread_exit</span> <span class="hljs-params">(<span class="hljs-type">void</span> *__retval)</span> __<span class="hljs-title function_">attribute__</span> <span class="hljs-params">((__noreturn__))</span><br></code></pre></td></tr></table></figure>
+<p>retval是线程返回值，不能指向一个局部变量<br>5. 线程终止其他线程</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cancel</span> <span class="hljs-params">(<span class="hljs-type">pthread_t</span> __th)</span><br></code></pre></td></tr></table></figure>
+<ol start="6">
+<li><code>int pthread_join (pthread_t __th, void **__thread_return)</code></li>
+<li><code>int pthread_detach (pthread_t __th) __THROW</code></li>
+<li>e.g.</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><br><span class="hljs-type">void</span> *<span class="hljs-title function_">thread_func</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span><br>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello from thread %ld\n&quot;</span>,pthread_self());<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-type">pthread_t</span> thread1, thread2;<br>    pthread_create(&amp;thread1, <span class="hljs-literal">NULL</span>, thread_func, <span class="hljs-literal">NULL</span>);<br>    pthread_create(&amp;thread2, <span class="hljs-literal">NULL</span>, thread_func, <span class="hljs-literal">NULL</span>);<br>    pthread_join(thread1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(thread2, <span class="hljs-literal">NULL</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="互斥量"><a href="#互斥量" class="headerlink" title="互斥量"></a>互斥量</h1><ol>
+<li>以pthread_mutex_为前缀</li>
+<li><code>int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict attr)</code></li>
+<li><code>int pthread_mutex_destroy(pthread_mutex_t *mutex)</code></li>
+<li></li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_mutex_lock</span><span class="hljs-params">(<span class="hljs-type">pthread_mutex_t</span> *mutex)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_mutex_unlock</span><span class="hljs-params">(<span class="hljs-type">pthread_mutex_t</span> *mutex)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_mutex_trylock</span><span class="hljs-params">(<span class="hljs-type">pthread_mutex_t</span> *mutex)</span>;<br></code></pre></td></tr></table></figure>
+<ol start="5">
+<li>e.g.</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><br><span class="hljs-type">pthread_mutex_t</span> mx;<br><span class="hljs-type">int</span> i=<span class="hljs-number">10</span>;<br><br><span class="hljs-type">void</span> *<span class="hljs-title function_">thread_func</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span><br>&#123;<br>    pthread_mutex_lock(&amp;mx);<br>    i++;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;i = %d\n&quot;</span>,i);<br>    pthread_mutex_unlock(&amp;mx);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello from thread %ld\n&quot;</span>,pthread_self());<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-type">pthread_t</span> thread1, thread2;<br>    pthread_mutex_init(&amp;mx, <span class="hljs-literal">NULL</span>);<br>    pthread_create(&amp;thread1, <span class="hljs-literal">NULL</span>, thread_func, <span class="hljs-literal">NULL</span>);<br>    pthread_create(&amp;thread2, <span class="hljs-literal">NULL</span>, thread_func, <span class="hljs-literal">NULL</span>);<br>    pthread_join(thread1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(thread2, <span class="hljs-literal">NULL</span>);<br>    pthread_mutex_destroy(&amp;mx);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h1><ol>
+<li>以前缀pthread_cond_</li>
+<li></li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cond_init</span><span class="hljs-params">(<span class="hljs-type">pthread_cond_t</span> *<span class="hljs-keyword">restrict</span> cond, <span class="hljs-type">const</span> <span class="hljs-type">pthread_condattr_t</span> *<span class="hljs-keyword">restrict</span> attr)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cond_destroy</span><span class="hljs-params">(<span class="hljs-type">pthread_cond_t</span> *cond)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cond_wait</span><span class="hljs-params">(<span class="hljs-type">pthread_cond_t</span> *<span class="hljs-keyword">restrict</span> cond, <span class="hljs-type">pthread_mutex_t</span> *<span class="hljs-keyword">restrict</span> mutex)</span>;<br><span class="hljs-comment">//唤醒状态多了一个等待时间，即时间一到也被唤醒（超时机制）</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cond_timedwait</span><span class="hljs-params">(<span class="hljs-type">pthread_cond_t</span> *cond, <span class="hljs-type">pthread_mutex_t</span> *mutex, <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> timespec *abstime)</span>;<br><span class="hljs-comment">//允许使用不同时钟</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cond_clockwait</span><span class="hljs-params">(<span class="hljs-type">pthread_cond_t</span> *cond, <span class="hljs-type">pthread_mutex_t</span> *mutex, <span class="hljs-type">clockid_t</span> clock_id, <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> timespec *abstime)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cond_signal</span><span class="hljs-params">(<span class="hljs-type">pthread_cond_t</span> *cond)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_cond_broadcast</span><span class="hljs-params">(<span class="hljs-type">pthread_cond_t</span> *cond)</span>;   <br></code></pre></td></tr></table></figure>
+<ol start="3">
+<li>e.g.</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><br><span class="hljs-type">pthread_cond_t</span> cond;<br><span class="hljs-type">pthread_mutex_t</span> mx;<br><span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> flag=<span class="hljs-number">0</span>;<br><span class="hljs-comment">// int i=10;</span><br><br><span class="hljs-type">void</span> *<span class="hljs-title function_">thread_func</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span><br>&#123;<br>    pthread_mutex_lock(&amp;mx);<br>    flag=<span class="hljs-number">1</span>;<br>    <span class="hljs-comment">// i++;</span><br>    <span class="hljs-comment">// printf(&quot;i = %d\n&quot;,i);</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Changed flag.\n&quot;</span>);<br>    pthread_cond_signal(&amp;cond);<br>    pthread_mutex_unlock(&amp;mx);<br>    <span class="hljs-comment">// printf(&quot;Hello from thread %ld\n&quot;,pthread_self());</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><span class="hljs-type">void</span> *<span class="hljs-title function_">thread_gen</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span><br>&#123;<br>    pthread_mutex_lock(&amp;mx);<br>    <span class="hljs-keyword">while</span>(!flag)<br>        pthread_cond_wait(&amp;cond,&amp;mx);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Flag is true.\n&quot;</span>);<br>    pthread_mutex_unlock(&amp;mx);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-type">pthread_t</span> thread1, thread2;<br>    pthread_create(&amp;thread1, <span class="hljs-literal">NULL</span>, thread_func, <span class="hljs-literal">NULL</span>);<br>    pthread_create(&amp;thread2, <span class="hljs-literal">NULL</span>, thread_gen, <span class="hljs-literal">NULL</span>);<br>    pthread_mutex_init(&amp;mx, <span class="hljs-literal">NULL</span>);<br>    pthread_cond_init(&amp;cond, <span class="hljs-literal">NULL</span>);<br>    pthread_join(thread1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(thread2, <span class="hljs-literal">NULL</span>);<br>    pthread_cond_destroy(&amp;cond);<br>    pthread_mutex_destroy(&amp;mx);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h3><ul>
+<li>每次访问数据时，总是认为数据可能会被其他线程修改，因此在访问数据前回先加锁，适用于线程多，写操作多</li>
+</ul>
+<h3 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h3><ul>
+<li>每次访问数据时，认为数据不会被其他线程修改，因此不加锁，适用于线程少时或多读时</li>
+</ul>
+<h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><ul>
+<li>忙等待锁，即线程在等待时会一直检查锁的状态，适用于线程少且持锁时间短</li>
+<li>以前缀ptread_spin_，与锁操作一致</li>
+</ul>
+<h3 id="公平锁与非公平锁"><a href="#公平锁与非公平锁" class="headerlink" title="公平锁与非公平锁"></a>公平锁与非公平锁</h3><ul>
+<li>前者按照请求锁的顺序来获取锁，后者则不保证</li>
+</ul>
+<h3 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h3><ul>
+<li>读共享，写独占：多个线程允许同时持有读锁，但写锁必须独占，且二者互斥</li>
+<li>读者优先、写者优先或公平性<ol>
+<li><strong>读者优先</strong>：当有读者正在读取数据时，写者必须等待，直到所有读者都完成读取操作。</li>
+<li><strong>写者优先</strong>：当有写者正在写入数据时，其他读者和写者必须等待，直到写者完成写入操作。</li>
+<li><strong>公平性</strong>：确保读者和写者公平地获取锁，避免某些线程长期得不到锁的情况。</li>
+</ol>
+</li>
+<li>以前缀pthread_rwlock_为前缀</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_rwlock_init</span><span class="hljs-params">(<span class="hljs-type">pthread_rwlock_t</span> *<span class="hljs-keyword">restrict</span> rwlock, <span class="hljs-type">const</span> <span class="hljs-type">pthread_rwlockattr_t</span> *<span class="hljs-keyword">restrict</span> attr)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_rwlock_destroy</span><span class="hljs-params">(<span class="hljs-type">pthread_rwlock_t</span> *rwlock)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_rwlock_rdlock</span><span class="hljs-params">(<span class="hljs-type">pthread_rwlock_t</span> *rwlock)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_rwlock_wrlock</span><span class="hljs-params">(<span class="hljs-type">pthread_rwlock_t</span> *rwlock)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pthread_rwlock_unlock</span><span class="hljs-params">(<span class="hljs-type">pthread_rwlock_t</span> *rwlock)</span>;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>读写锁可升级降级</li>
+</ul>
+<h3 id="屏障"><a href="#屏障" class="headerlink" title="屏障"></a>屏障</h3><ul>
+<li>作用为让一组线程都到达某个集合点，然后一起继续，以pthread_barrier_为前缀，如类型t，init，destroy，wait，destroy</li>
+<li>只有当所有线程都调用了pthread_barrier_wait，屏障才会释放线程进入下一操作</li>
+<li>e.g.</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">pthread_barrier_t</span> bar;<br><br><span class="hljs-type">void</span>* <span class="hljs-title function_">func</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span><br>&#123;<br>	<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span>&lt;&lt;<span class="hljs-string">&quot;xxx...&quot;</span>&lt;&lt;<span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;<br>	pthread_barrier_wait(&amp;bar);<br>	<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span>&lt;&lt;<span class="hljs-string">&quot;Pass the barrier!&quot;</span>&lt;&lt;<span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="tag-item">
+                    多线程编程
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/C/" class="cate-item">
+                    C
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/pthread.h/">https://narciostyx.github.io/2026/01/18/pthread.h/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/signal.h/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">signal函数及其信号集</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/18/socket.h/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">socket编程</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

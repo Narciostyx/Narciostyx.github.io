@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | C++随机数</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0%E5%BC%95%E6%93%8E"><span class="toc-number">1.</span> <span class="toc-text">随机数引擎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">分布类型</span></a></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>C++随机数</h1>
+    </section>
+    <section class="article">
+        <p>&lt;random&gt;库</p>
+<span id="more"></span>
+
+<p>在C++中，生成随机数通常需要以下两部分：</p>
+<ol>
+<li>随机数引擎</li>
+<li>随机数分布<br>上述两部分共同组成随机数库&lt;random&gt;的内容</li>
+</ol>
+<h2 id="随机数引擎"><a href="#随机数引擎" class="headerlink" title="随机数引擎"></a>随机数引擎</h2><ol>
+<li>随机数引擎是函数对象类<br><img src="/2026/01/18/%E9%9A%8F%E6%9C%BA%E6%95%B0/Pasted_image_20260212170110.png"></li>
+<li>通常使用mt19937生成器，即std::mersenne_twister_engine&lt;std::uint_fast32_t,32, 624, 397, 31,0x9908b0df, 11,0xffffffff, 7,0x9d2c5680, 15,0xefc60000, 18, 1812433253&gt;</li>
+<li>每次调用随机数引擎会产生一个原始随机数</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">default_random_engine e;<br><span class="hljs-keyword">for</span>(<span class="hljs-type">size_t</span> i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">10</span>;++i)<br>	cout&lt;&lt;<span class="hljs-built_in">e</span>()&lt;&lt;<span class="hljs-string">&quot; &quot;</span>;<br></code></pre></td></tr></table></figure>
+<ol>
+<li>标准库定义了多个随机数引擎，区别在于性能与随即质量不同，在编译器中都会指定其中一个作为default_random_engine类型</li>
+<li>随机数引擎e通常有以下操作<ol>
+<li>e.seed(s)，使用种子s重置随机数引擎的状态</li>
+<li>e.min()与e.max()，引擎可生成的最小值与最大值</li>
+<li>e.discard(u)，将引擎推进u步</li>
+</ol>
+</li>
+<li>通常会使用std::random_device获取种子以保持随机性</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;random&gt;</span></span><br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    std::random_device rd;  <span class="hljs-comment">// a seed source for the random number engine</span><br>    <span class="hljs-function">std::mt19937 <span class="hljs-title">gen</span><span class="hljs-params">(rd())</span></span>; <span class="hljs-comment">// mersenne_twister_engine seeded with rd()</span><br>    std::uniform_int_distribution&lt;&gt; <span class="hljs-built_in">distrib</span>(<span class="hljs-number">1</span>, <span class="hljs-number">6</span>);<br> <br>    <span class="hljs-comment">// Use distrib to transform the random unsigned int</span><br>    <span class="hljs-comment">// generated by gen into an int in [1, 6]</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> n = <span class="hljs-number">0</span>; n != <span class="hljs-number">10</span>; ++n)<br>        std::cout &lt;&lt; <span class="hljs-built_in">distrib</span>(gen) &lt;&lt; <span class="hljs-string">&#x27; &#x27;</span>;<br>    std::cout &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="分布类型"><a href="#分布类型" class="headerlink" title="分布类型"></a>分布类型</h2><ol>
+<li>为了得到指定范围的数，通常会使用特定的分布类型对象，如：</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//生成[0,9]的均匀分布的unsigned类型随机数</span><br><span class="hljs-function">uniform_int_distribution&lt;<span class="hljs-type">unsigned</span>&gt; <span class="hljs-title">u</span><span class="hljs-params">(<span class="hljs-number">0</span>,<span class="hljs-number">9</span>)</span></span>;<br>default_random_engine e;<br><span class="hljs-keyword">for</span>(<span class="hljs-type">size_t</span> i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">10</span>;++i)<br>	cout&lt;&lt;<span class="hljs-built_in">u</span>(e)&lt;&lt;<span class="hljs-string">&quot; &quot;</span>;<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>随机数发生器指分布对象与引擎对象的结合</li>
+<li>分布类型通常有均匀分布，伯努利分布，泊松分布，正态分布，抽样分布</li>
+<li>较为常用的分布如下：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>分布类型</th>
+<th>生成类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>uniform_int_distribution</td>
+<td>产生在给定范围内均匀分布的整数值</td>
+</tr>
+<tr>
+<td>uniform_real_distribution</td>
+<td>产生在给定范围内均匀分布的实数值</td>
+</tr>
+<tr>
+<td>bernoulli_distribution</td>
+<td>生成 bool 值，服从 伯努利分布</td>
+</tr>
+<tr>
+<td>normal_distribution</td>
+<td>根据 标准正态（高斯）分布 生成实数值</td>
+</tr>
+</tbody></table>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/random/" class="tag-item">
+                    random
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2026/01/18/%E9%9A%8F%E6%9C%BA%E6%95%B0/">https://narciostyx.github.io/2026/01/18/随机数/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/18/socket.h/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">socket编程</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2026/01/15/HTTP%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">HTTP代理服务器与CDN</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
