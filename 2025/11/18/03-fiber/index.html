@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | boost.fiber</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Boost-Fiber-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3"><span class="toc-number">1.</span> <span class="toc-text">Boost.Fiber 使用文档</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.</span> <span class="toc-text">1. 概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text">典型使用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-number">1.2.2.</span> <span class="toc-text">与替代方案的对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91"><span class="toc-number">1.3.</span> <span class="toc-text">2. 依赖与编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%BE%9D%E8%B5%96%E6%80%BB%E8%A7%88"><span class="toc-number">1.3.1.</span> <span class="toc-text">2.1 依赖总览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BE%9D%E8%B5%96-boost-context"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.2 为什么依赖 boost::context</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E7%BA%BF%E7%A8%8B%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%EF%BC%88TLS%EF%BC%89%E4%B8%8E-fiber-%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%EF%BC%88FLS%EF%BC%89%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.3.</span> <span class="toc-text">2.3 线程本地存储（TLS）与 fiber 本地存储（FLS）的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E9%85%8D%E7%BD%AE%E5%AE%8F%EF%BC%88BOOST-FIBERS-%EF%BC%89"><span class="toc-number">1.3.4.</span> <span class="toc-text">2.4 配置宏（BOOST_FIBERS_*）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E6%9C%80%E5%B0%8F%E6%9E%84%E5%BB%BA%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.5.</span> <span class="toc-text">2.5 最小构建命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.4.</span> <span class="toc-text">3. 核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%8D%8F%E4%BD%9C%E5%BC%8F%E8%B0%83%E5%BA%A6%EF%BC%88cooperative-scheduling%EF%BC%89"><span class="toc-number">1.4.1.</span> <span class="toc-text">3.1 协作式调度（cooperative scheduling）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%AF%8F%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%B8%80%E4%B8%AA%E8%B0%83%E5%BA%A6%E5%99%A8%EF%BC%88scheduler%EF%BC%89"><span class="toc-number">1.4.2.</span> <span class="toc-text">3.2 每个线程一个调度器（scheduler）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-fiber-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%88"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.3 fiber 的生命周期与栈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-launch-%E7%AD%96%E7%95%A5%EF%BC%9Apost-%E4%B8%8E-dispatch"><span class="toc-number">1.4.4.</span> <span class="toc-text">3.4 launch 策略：post 与 dispatch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-FLS-%E4%B8%8E-TLS"><span class="toc-number">1.4.5.</span> <span class="toc-text">3.5 FLS 与 TLS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-fiber-%E8%BF%81%E7%A7%BB%EF%BC%88migration%EF%BC%89"><span class="toc-number">1.4.6.</span> <span class="toc-text">3.6 fiber 迁移（migration）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98"><span class="toc-number">1.5.</span> <span class="toc-text">4. 常用类与成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%B1%BB%E6%80%BB%E8%A7%88"><span class="toc-number">1.5.1.</span> <span class="toc-text">4.1 类总览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%80%90%E4%B8%AA%E7%B1%BB%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.5.2.</span> <span class="toc-text">4.2 逐个类详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-fiber"><span class="toc-number">1.5.2.1.</span> <span class="toc-text">boost::fibers::fiber</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-fiber-id"><span class="toc-number">1.5.2.2.</span> <span class="toc-text">boost::fibers::fiber::id</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-this-fiber%EF%BC%88%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%EF%BC%89"><span class="toc-number">1.5.2.3.</span> <span class="toc-text">boost::this_fiber（命名空间）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-future-shared-future"><span class="toc-number">1.5.2.4.</span> <span class="toc-text">boost::fibers::future&lt;R&gt; &#x2F; shared_future&lt;R&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-promise"><span class="toc-number">1.5.2.5.</span> <span class="toc-text">boost::fibers::promise&lt;R&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-packaged-task"><span class="toc-number">1.5.2.6.</span> <span class="toc-text">boost::fibers::packaged_task&lt;R(Args...)&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-async"><span class="toc-number">1.5.2.7.</span> <span class="toc-text">boost::fibers::async()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-mutex-timed-mutex-recursive-mutex-recursive-timed-mutex"><span class="toc-number">1.5.2.8.</span> <span class="toc-text">boost::fibers::mutex &#x2F; timed_mutex &#x2F; recursive_mutex &#x2F; recursive_timed_mutex</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-condition-variable-condition-variable-any"><span class="toc-number">1.5.2.9.</span> <span class="toc-text">boost::fibers::condition_variable &#x2F; condition_variable_any</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-barrier"><span class="toc-number">1.5.2.10.</span> <span class="toc-text">boost::fibers::barrier</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-buffered-channel-unbuffered-channel"><span class="toc-number">1.5.2.11.</span> <span class="toc-text">boost::fibers::buffered_channel&lt;T&gt; &#x2F; unbuffered_channel&lt;T&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-fiber-specific-ptr"><span class="toc-number">1.5.2.12.</span> <span class="toc-text">boost::fibers::fiber_specific_ptr&lt;T&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E5%99%A8%EF%BC%9Aboost-fibers-algo"><span class="toc-number">1.5.2.13.</span> <span class="toc-text">调度器：boost::fibers::algo::*</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-fiber-properties-%E4%B8%8E-algo-algorithm-with-properties"><span class="toc-number">1.5.2.14.</span> <span class="toc-text">boost::fibers::fiber_properties 与 algo::algorithm_with_properties&lt;PROPS&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-fibers-context%EF%BC%88%E8%B0%83%E5%BA%A6%E5%99%A8%E5%AE%9E%E7%8E%B0%E4%B8%AD%E4%BC%9A%E7%94%A8%E5%88%B0%EF%BC%89"><span class="toc-number">1.5.2.15.</span> <span class="toc-text">boost::fibers::context（调度器实现中会用到）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.</span> <span class="toc-text">5. 使用流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%90%AF%E5%8A%A8%E7%AC%AC%E4%B8%80%E4%B8%AA-fiber-%E7%9A%84%E6%9C%80%E5%B0%8F%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.1.</span> <span class="toc-text">5.1 启动第一个 fiber 的最小流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-fiber-%E9%97%B4%E5%90%8C%E6%AD%A5%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.2.</span> <span class="toc-text">5.2 fiber 间同步的流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E4%B8%8E-Boost-Asio-%E9%9B%86%E6%88%90%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.3.</span> <span class="toc-text">5.3 与 Boost.Asio 集成的流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B0%83%E5%BA%A6%E5%99%A8%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.4.</span> <span class="toc-text">5.4 自定义调度器的流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.7.</span> <span class="toc-text">6. 代码示例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1%EF%BC%9A%E6%9C%80%E5%B0%8F-fiber%EF%BC%88%E5%88%9B%E5%BB%BA-join%EF%BC%89"><span class="toc-number">1.7.1.</span> <span class="toc-text">示例 1：最小 fiber（创建 + join）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2%EF%BC%9Athis-fiber-yield-%E4%B8%8E%E8%B0%83%E5%BA%A6%E8%A7%82%E5%AF%9F%EF%BC%88%E4%B8%A4%E4%B8%AA-fiber-%E4%BA%A4%E6%9B%BF%E6%89%93%E5%8D%B0%EF%BC%89"><span class="toc-number">1.7.2.</span> <span class="toc-text">示例 2：this_fiber::yield 与调度观察（两个 fiber 交替打印）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-3%EF%BC%9Amutex-%E4%BF%9D%E6%8A%A4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE"><span class="toc-number">1.7.3.</span> <span class="toc-text">示例 3：mutex 保护共享数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-4%EF%BC%9Acondition-variable-%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85"><span class="toc-number">1.7.4.</span> <span class="toc-text">示例 4：condition_variable 生产者&#x2F;消费者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-5%EF%BC%9Abuffered-channel-%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%EF%BC%88%E5%90%AB-close-%E5%90%8E-pop-%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%EF%BC%89"><span class="toc-number">1.7.5.</span> <span class="toc-text">示例 5：buffered_channel 生产者&#x2F;消费者（含 close() 后 pop 返回错误）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-6%EF%BC%9Afuture-promise-%E5%8F%96%E5%80%BC%E4%B8%8E%E5%BC%82%E5%B8%B8%E4%BC%A0%E9%80%92"><span class="toc-number">1.7.6.</span> <span class="toc-text">示例 6：future&#x2F;promise 取值与异常传递</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-7%EF%BC%9Awork-stealing-%E8%B0%83%E5%BA%A6%E5%99%A8-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%BF%90%E8%A1%8C-fiber"><span class="toc-number">1.7.7.</span> <span class="toc-text">示例 7：work_stealing 调度器 + 多线程运行 fiber</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-8%EF%BC%9A%E4%B8%8E-Boost-Asio-%E9%9B%86%E6%88%90%EF%BC%88fiber-%E4%B8%AD%E8%B0%83%E7%94%A8%E5%BC%82%E6%AD%A5%E6%93%8D%E4%BD%9C%EF%BC%89"><span class="toc-number">1.7.8.</span> <span class="toc-text">示例 8：与 Boost.Asio 集成（fiber 中调用异步操作）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-9%EF%BC%9Abarrier-%E8%AE%A9%E5%A4%9A%E4%B8%AA-fiber-%E5%90%8C%E6%97%B6%E8%B5%B7%E8%B7%91"><span class="toc-number">1.7.9.</span> <span class="toc-text">示例 9：barrier 让多个 fiber 同时起跑</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1"><span class="toc-number">1.8.</span> <span class="toc-text">7. 常见问题与陷阱</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-fiber-%E4%B8%8D%E6%98%AF%E7%BA%BF%E7%A8%8B%EF%BC%9A%E4%B8%8D%E8%83%BD%E7%94%A8-thread-local-%E5%AD%98%E3%80%8C%E5%BD%93%E5%89%8D-fiber-%E7%9A%84%E6%95%B0%E6%8D%AE%E3%80%8D"><span class="toc-number">1.8.1.</span> <span class="toc-text">7.1 fiber 不是线程：不能用 thread_local 存「当前 fiber 的数据」</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-fiber-%E5%87%BD%E6%95%B0%E6%8A%9B%E5%87%BA%E7%9A%84%E5%BC%82%E5%B8%B8%E4%BC%9A%E5%AF%BC%E8%87%B4-std-terminate"><span class="toc-number">1.8.2.</span> <span class="toc-text">7.2 fiber 函数抛出的异常会导致 std::terminate()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-fiber-%E6%95%B0%E9%87%8F%E5%8F%AF%E4%BB%A5%E5%BE%88%E5%A4%9A%EF%BC%8C%E4%BD%86%E5%8F%97%E6%A0%88%E5%86%85%E5%AD%98%E9%99%90%E5%88%B6"><span class="toc-number">1.8.3.</span> <span class="toc-text">7.3 fiber 数量可以很多，但受栈内存限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-join-%E4%B9%8B%E5%89%8D%E5%BF%85%E9%A1%BB%E4%BF%9D%E6%8C%81-fiber-%E5%AF%B9%E8%B1%A1%E5%AD%98%E6%B4%BB"><span class="toc-number">1.8.4.</span> <span class="toc-text">7.4 join() 之前必须保持 fiber 对象存活</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-%E8%B0%83%E5%BA%A6%E5%99%A8%E5%BF%85%E9%A1%BB%E5%9C%A8%E4%BD%BF%E7%94%A8%E5%89%8D%E8%AE%BE%E7%BD%AE%EF%BC%8C%E4%B8%94%E6%AF%8F%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%90%84%E8%87%AA%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.8.5.</span> <span class="toc-text">7.5 调度器必须在使用前设置，且每个线程各自设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-6-%E9%98%BB%E5%A1%9E%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%BC%9A%E5%8D%A1%E4%BD%8F%E6%95%B4%E4%B8%AA%E7%BA%BF%E7%A8%8B%E4%B8%8A%E7%9A%84%E6%89%80%E6%9C%89-fiber"><span class="toc-number">1.8.6.</span> <span class="toc-text">7.6 阻塞的系统调用会卡住整个线程上的所有 fiber</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-7-%E7%94%A8-std-mutex-std-condition-variable-%E5%81%9A-fiber-%E5%90%8C%E6%AD%A5"><span class="toc-number">1.8.7.</span> <span class="toc-text">7.7 用 std::mutex &#x2F; std::condition_variable 做 fiber 同步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-8-buffered-channel-%E7%9A%84-capacity-%E4%B8%8D%E6%98%AF%E5%85%83%E7%B4%A0%E4%B8%AA%E6%95%B0"><span class="toc-number">1.8.8.</span> <span class="toc-text">7.8 buffered_channel 的 capacity 不是元素个数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-9-future-%E6%9C%AA%E5%B0%B1%E7%BB%AA%E6%97%B6-promise-%E8%A2%AB%E9%94%80%E6%AF%81-%E2%86%92-broken-promise"><span class="toc-number">1.8.9.</span> <span class="toc-text">7.9 future 未就绪时 promise 被销毁 → broken_promise</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.9.</span> <span class="toc-text">8. 参考资料</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="toc-number">1.9.1.</span> <span class="toc-text">官方文档</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.9.2.</span> <span class="toc-text">官方示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">1.9.3.</span> <span class="toc-text">其他</span></a></li></ol></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>boost.fiber</h1>
+    </section>
+    <section class="article">
+        <p>Boost.Fiber 纤程库的核心概念与基本使用方法</p>
+<span id="more"></span>
+<h1 id="Boost-Fiber-使用文档"><a href="#Boost-Fiber-使用文档" class="headerlink" title="Boost.Fiber 使用文档"></a>Boost.Fiber 使用文档</h1><blockquote>
+<p>本文基于 Boost 官方文档（Boost 1.8x &#x2F; 最新版）与官方 examples 整理。<br>官方文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/index.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/index.html</a><br>适用标准：C++17（示例代码同时兼容 C++11 及以上）<br>编译示例：g++ &#x2F; clang++ &#x2F; MSVC 均可，<strong>必须链接预编译库</strong>，要求见「依赖与编译」。</p>
+</blockquote>
+<hr>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#1-%E6%A6%82%E8%BF%B0">概述</a></li>
+<li><a href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91">依赖与编译</a></li>
+<li><a href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5">核心概念</a></li>
+<li><a href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98">常用类与成员</a></li>
+<li><a href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B">使用流程</a></li>
+<li><a href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B">代码示例</a></li>
+<li><a href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1">常见问题与陷阱</a></li>
+<li><a href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a></li>
+</ol>
+<hr>
+<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p>Boost.Fiber 是一个**用户态协作式线程（user-space cooperative thread）**库。它提供 <code>boost::fibers::fiber</code>——一种可被显式调度、可挂起&#x2F;恢复的执行上下文，语义上接近 <code>std::thread</code>（<code>join()</code>、<code>detach()</code>、同步原语），但切换发生在用户态，不需要陷入内核。</p>
+<ul>
+<li><strong>库的定位</strong>：把「并发」从「并行」中解耦出来。用 fiber 写出看似顺序、实际并发的代码（尤其是大量 I&#x2F;O 等待、状态机、异步回调），而不用承受线程切换与栈内存的开销。</li>
+<li><strong>切换成本</strong>：一次 fiber 上下文切换通常只需几十到上百个 CPU 周期；线程切换需要数千周期（陷入内核、TLB&#x2F;缓存影响）。</li>
+<li><strong>栈开销</strong>：每个 fiber 自带独立栈，默认 <code>fixedsize_stack</code>（Boost.Context 的默认大小，通常 128 KB）；因此 <strong>fiber 数量受内存约束</strong>，而不是受内核线程数约束。</li>
+</ul>
+<h3 id="典型使用场景"><a href="#典型使用场景" class="headerlink" title="典型使用场景"></a>典型使用场景</h3><ol>
+<li><strong>高并发网络服务</strong>：每个连接一个 fiber，代码是阻塞式写法，底层用非阻塞 I&#x2F;O + 事件循环（Boost.Asio）驱动。</li>
+<li><strong>把回调式异步 API 改写成同步写法</strong>：用 <code>promise</code>&#x2F;<code>future</code> 或 Asio 的 <code>yield</code> 完成令牌（completion token），在 fiber 内「同步」等待。</li>
+<li><strong>复杂状态机 &#x2F; 协议解析</strong>：用 fiber 的栈保存中间状态，避免手写状态机或回调地狱。</li>
+<li><strong>CPU 密集任务的分片调度</strong>：大量小任务用 <code>work_stealing</code> 调度器在多核上并行，同时保持任务内部逻辑顺序化。</li>
+<li><strong>已有事件循环的集成</strong>：在 GUI &#x2F; 游戏主循环里每轮调用 <code>this_fiber::yield()</code>，把 fiber 调度器嵌进现有主循环。</li>
+</ol>
+<h3 id="与替代方案的对比"><a href="#与替代方案的对比" class="headerlink" title="与替代方案的对比"></a>与替代方案的对比</h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>切换成本</th>
+<th>栈</th>
+<th>抢占</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>std::thread</code></td>
+<td>高（内核）</td>
+<td>独立，内核分配</td>
+<td>抢占式</td>
+<td>真正并行、阻塞式系统调用</td>
+</tr>
+<tr>
+<td><strong>Boost.Fiber</strong></td>
+<td>低（用户态）</td>
+<td>独立，用户分配</td>
+<td>协作式（需显式让出）</td>
+<td>大量并发、I&#x2F;O 密集、回调改写</td>
+</tr>
+<tr>
+<td>C++20 协程</td>
+<td>最低</td>
+<td>无栈（需挂起时保存状态）</td>
+<td>协作式</td>
+<td>新代码、编译器支持良好</td>
+</tr>
+<tr>
+<td><code>std::async</code> &#x2F; 线程池</td>
+<td>高</td>
+<td>独立</td>
+<td>抢占式</td>
+<td>简单任务并行</td>
+</tr>
+</tbody></table>
+<p>一句话：<strong>Boost.Fiber 是「有独立栈、可移植、C++11 起可用、与 Boost.Asio 深度集成」的用户态线程；代价是必须协作式让出，且不是 header-only。</strong></p>
+<hr>
+<h2 id="2-依赖与编译"><a href="#2-依赖与编译" class="headerlink" title="2. 依赖与编译"></a>2. 依赖与编译</h2><h3 id="2-1-依赖总览"><a href="#2-1-依赖总览" class="headerlink" title="2.1 依赖总览"></a>2.1 依赖总览</h3><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主头文件</td>
+<td><code>&lt;boost/fiber/all.hpp&gt;</code>（也可按需包含 <code>&lt;boost/fiber/fiber.hpp&gt;</code> 等）</td>
+</tr>
+<tr>
+<td>需要链接的库</td>
+<td><strong><code>-lboost_fiber -lboost_context</code></strong>（老版本还需 <code>-lboost_system</code>）</td>
+</tr>
+<tr>
+<td>是否 header-only</td>
+<td><strong>否</strong>。Boost.Fiber 有必须编译链接的二进制部分</td>
+</tr>
+<tr>
+<td>最低 Boost 版本</td>
+<td>1.61（首个正式发布版本）；推荐 1.66+（<code>work_stealing</code> 等 API 稳定）</td>
+</tr>
+<tr>
+<td>依赖的其他 Boost 库</td>
+<td><strong><code>boost::context</code>（必需）</strong>、<code>boost::intrusive</code>（头文件）、<code>boost::assert</code>、<code>boost::config</code>；旧版本还依赖 <code>boost::system</code></td>
+</tr>
+<tr>
+<td>C++ 标准</td>
+<td>C++11 起；本文示例用 C++17</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>关键点：Boost.Fiber 不是 header-only 库。</strong> 它内部通过 <code>boost::context</code> 的 <code>boost::context::fiber</code>（汇编实现的栈切换）完成上下文切换，这部分是<strong>预编译库</strong>。因此必须：</p>
+<ol>
+<li>已构建（或安装）<code>libboost_fiber</code> 与 <code>libboost_context</code>；</li>
+<li>编译时包含 Boost 头文件目录，链接时加上这两个库。</li>
+</ol>
+</blockquote>
+<h3 id="2-2-为什么依赖-boost-context"><a href="#2-2-为什么依赖-boost-context" class="headerlink" title="2.2 为什么依赖 boost::context"></a>2.2 为什么依赖 boost::context</h3><p><code>boost::fibers::fiber</code> 的栈切换、<code>callcc</code>&#x2F;<code>ontop</code> 机制全部由 <code>boost::context</code> 提供：</p>
+<ul>
+<li><code>boost::context::fiber</code>：可恢复的执行上下文（<code>resume()</code> &#x2F; <code>resume_with()</code>）；</li>
+<li><code>boost::context::fixedsize_stack</code> &#x2F; <code>protected_fixedsize_stack</code> &#x2F; <code>segmented_stack</code>：栈分配器；</li>
+<li>Boost.Fiber 的 <code>boost::fibers::context</code> 内部持有 <code>boost::context::fiber</code>，<code>resume()</code> 时即完成一次 fiber 切换。</li>
+</ul>
+<p>因此<strong>不能只链接 <code>boost_fiber</code></strong>；<code>boost_context</code> 是硬依赖（<code>boost_fiber</code> 的符号里引用了 <code>boost::context::detail::*</code>）。</p>
+<h3 id="2-3-线程本地存储（TLS）与-fiber-本地存储（FLS）的区别"><a href="#2-3-线程本地存储（TLS）与-fiber-本地存储（FLS）的区别" class="headerlink" title="2.3 线程本地存储（TLS）与 fiber 本地存储（FLS）的区别"></a>2.3 线程本地存储（TLS）与 fiber 本地存储（FLS）的区别</h3><p>这是使用 Boost.Fiber 最容易踩的坑，务必分清：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>线程本地存储 TLS</th>
+<th>fiber 本地存储 FLS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>声明方式</td>
+<td><code>thread_local T x;</code> &#x2F; <code>boost::thread_specific_ptr&lt;T&gt;</code></td>
+<td><code>boost::fibers::fiber_specific_ptr&lt;T&gt; p(cleanup);</code></td>
+</tr>
+<tr>
+<td>作用域</td>
+<td>每个<strong>线程</strong>一份</td>
+<td>每个<strong>fiber</strong>一份</td>
+</tr>
+<tr>
+<td>头文件</td>
+<td><code>&lt;thread&gt;</code> &#x2F; <code>&lt;boost/thread/tss.hpp&gt;</code></td>
+<td><code>&lt;boost/fiber/fss.hpp&gt;</code></td>
+</tr>
+<tr>
+<td>生命周期</td>
+<td>线程结束时析构</td>
+<td>fiber 结束时调用 cleanup（若构造时提供）</td>
+</tr>
+<tr>
+<td>迁移行为</td>
+<td>不迁移</td>
+<td>fiber 被迁移到别的线程后，<strong>FLS 随之迁移</strong></td>
+</tr>
+<tr>
+<td>典型用途</td>
+<td>每线程的日志缓冲、随机数引擎</td>
+<td>每 fiber 的「当前请求上下文」「连接对象」</td>
+</tr>
+</tbody></table>
+<p><strong>要点</strong>：</p>
+<ul>
+<li>一个线程上可能同时运行成千上万个 fiber。若用 <code>thread_local</code> 存「当前 fiber 的上下文」，<strong>所有 fiber 会共享同一份数据</strong>，逻辑必然错乱。</li>
+<li>在 fiber 内应使用 <code>fiber_specific_ptr&lt;T&gt;</code>；它的初始值恒为 <code>nullptr</code>（不像 <code>thread_local</code> 会做默认构造）。</li>
+<li><code>fiber_specific_ptr</code> 对象本身必须<strong>活得比使用它的所有 fiber 更久</strong>（通常是全局&#x2F;静态或调用方栈上的对象）。</li>
+<li>若某段数据确实属于「线程」（如 CPU 亲和性、每线程的 I&#x2F;O 队列），继续用 <code>thread_local</code> 是对的。</li>
+</ul>
+<h3 id="2-4-配置宏（BOOST-FIBERS-）"><a href="#2-4-配置宏（BOOST-FIBERS-）" class="headerlink" title="2.4 配置宏（BOOST_FIBERS_*）"></a>2.4 配置宏（<code>BOOST_FIBERS_*</code>）</h3><p>这些宏在<strong>编译 Boost.Fiber 库本身</strong>时定义（部分也可在用户代码中定义以影响头文件行为）：</p>
+<table>
+<thead>
+<tr>
+<th>宏</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>BOOST_FIBERS_NO_ATOMICS</code></td>
+<td>关闭跨线程的原子操作与远程就绪队列。<strong>每个线程只能调度自己创建的 fiber</strong>，性能最高但无法跨线程唤醒 fiber。单线程场景推荐</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPINLOCK_STD_MUTEX</code></td>
+<td>用 <code>std::mutex</code> 实现内部自旋锁（最慢，调试用）</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPINLOCK_TTAS</code></td>
+<td>默认。Test-Test-And-Set 自旋锁</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPINLOCK_TTAS_ADAPTIVE</code></td>
+<td>自适应自旋（自旋若干次后 <code>yield</code>）</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPINLOCK_TTAS_FUTEX</code></td>
+<td>Linux 上自旋后进入 futex 等待</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPINLOCK_TTAS_ADAPTIVE_FUTEX</code></td>
+<td>自适应 + futex（Linux 高竞争场景最优）</td>
+</tr>
+<tr>
+<td><code>BOOST_USE_TSX</code></td>
+<td>启用 Intel TSX 硬件事务内存加速（需 CPU 支持）</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPIN_SINGLE_CORE</code></td>
+<td>告知库只有单核：自旋时直接 <code>yield</code>，避免浪费 CPU</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_RETRY_THRESHOLD</code></td>
+<td>自旋重试阈值，默认 64</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_CONTENTION_WINDOW_THRESHOLD</code></td>
+<td>竞争检测窗口，默认 16</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPIN_BEFORE_SLEEP0</code></td>
+<td>进入 sleep 前自旋次数，默认 32</td>
+</tr>
+<tr>
+<td><code>BOOST_FIBERS_SPIN_BEFORE_YIELD</code></td>
+<td><code>yield</code> 前自旋次数，默认 64</td>
+</tr>
+<tr>
+<td><code>BOOST_USE_UCONTEXT</code></td>
+<td>用 <code>ucontext_t</code> 实现上下文切换（而非汇编），用于不支持汇编实现的平台</td>
+</tr>
+<tr>
+<td><code>BOOST_USE_WINFIB</code></td>
+<td>Windows 上使用 <code>CreateFiber</code> 实现</td>
+</tr>
+<tr>
+<td><code>BOOST_USE_SEGMENTED_STACKS</code></td>
+<td>使用分段栈（gcc ≥ 4.7 &#x2F; clang ≥ 3.4，且需 <code>context-impl=ucontext</code>）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意：<code>BOOST_FIBERS_NO_ATOMICS</code> 一旦启用，<code>condition_variable</code> 的 <code>notify_*</code> 就不能跨线程唤醒 fiber；<code>work_stealing</code> 调度器也不再可用。</p>
+</blockquote>
+<h3 id="2-5-最小构建命令"><a href="#2-5-最小构建命令" class="headerlink" title="2.5 最小构建命令"></a>2.5 最小构建命令</h3><p><strong>g++ &#x2F; clang++（Linux &#x2F; macOS，源码方式）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 单文件编译（假设 Boost 已安装在 /usr/local）</span><br>g++ -std=c++17 -O2 -pthread main.cpp \<br>    -I/usr/local/include \<br>    -L/usr/local/lib \<br>    -lboost_fiber -lboost_context \<br>    -o main<br></code></pre></td></tr></table></figure>
+
+<p><strong>静态链接（避免运行时找不到 .so）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ -std=c++17 -O2 -pthread main.cpp \<br>    -I/usr/local/include \<br>    /usr/local/lib/libboost_fiber.a /usr/local/lib/libboost_context.a \<br>    -o main<br></code></pre></td></tr></table></figure>
+
+<p><strong>MSVC（已用 vcpkg 安装 boost）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs powershell">cl /std:c++<span class="hljs-number">17</span> /EHsc /O2 main.cpp /I C:\vcpkg\installed\x64<span class="hljs-literal">-windows</span>\include `<br>   /link /LIBPATH:C:\vcpkg\installed\x64<span class="hljs-literal">-windows</span>\lib `<br>   boost_fiber<span class="hljs-literal">-vc143-mt-x64-1_85</span>.lib boost_context<span class="hljs-literal">-vc143-mt-x64-1_85</span>.lib<br></code></pre></td></tr></table></figure>
+
+<p><strong>CMake（推荐）</strong></p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">cmake_minimum_required</span>(VERSION <span class="hljs-number">3.16</span>)<br><span class="hljs-keyword">project</span>(fiber_demo CXX)<br><br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD <span class="hljs-number">17</span>)<br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="hljs-keyword">ON</span>)<br><br><span class="hljs-keyword">find_package</span>(Boost <span class="hljs-number">1.66</span> REQUIRED COMPONENTS fiber context)<br><br><span class="hljs-keyword">add_executable</span>(demo main.cpp)<br><span class="hljs-keyword">target_link_libraries</span>(demo PRIVATE Boost::fiber Boost::context)<br><span class="hljs-comment"># Linux 上还需要 pthread；Boost::fiber 通常已带，若报错再显式加：</span><br><span class="hljs-comment"># find_package(Threads REQUIRED)</span><br><span class="hljs-comment"># target_link_libraries(demo PRIVATE Threads::Threads)</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>若用源码树中的 Boost（未安装），需要在 <code>add_subdirectory</code> 中构建 <code>boost_fiber</code> 与 <code>boost_context</code>，或用 <code>b2</code> 先构建：<br><code>b2 --with-fiber --with-context --with-system address-model=64 link=static</code></p>
+</blockquote>
+<hr>
+<h2 id="3-核心概念"><a href="#3-核心概念" class="headerlink" title="3. 核心概念"></a>3. 核心概念</h2><h3 id="3-1-协作式调度（cooperative-scheduling）"><a href="#3-1-协作式调度（cooperative-scheduling）" class="headerlink" title="3.1 协作式调度（cooperative scheduling）"></a>3.1 协作式调度（cooperative scheduling）</h3><p>fiber <strong>不会</strong>被抢占。只有发生以下事件时才会切换：</p>
+<ul>
+<li>调用 <code>boost::this_fiber::yield()</code>；</li>
+<li>调用会阻塞的 fiber 感知 API（<code>mutex::lock</code>、<code>condition_variable::wait</code>、<code>channel::pop</code>、<code>future::wait</code>、<code>this_fiber::sleep_for</code> 等）；</li>
+<li>fiber 函数返回（fiber 结束）。</li>
+</ul>
+<p>因此<strong>长计算循环必须主动让出</strong>，否则同一线程上其他 fiber 全部饿死：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">for</span> (<span class="hljs-type">long</span> <span class="hljs-type">long</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100000000LL</span>; ++i) &#123;<br>    <span class="hljs-built_in">work</span>(i);<br>    <span class="hljs-keyword">if</span> (i % <span class="hljs-number">1000</span> == <span class="hljs-number">0</span>) boost::this_fiber::<span class="hljs-built_in">yield</span>();   <span class="hljs-comment">// 关键：主动让出</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-每个线程一个调度器（scheduler）"><a href="#3-2-每个线程一个调度器（scheduler）" class="headerlink" title="3.2 每个线程一个调度器（scheduler）"></a>3.2 每个线程一个调度器（scheduler）</h3><ul>
+<li>每个线程有<strong>独立</strong>的 <code>boost::fibers::scheduler</code>，默认算法是 <code>algo::round_robin</code>。</li>
+<li>调度器<strong>按线程懒创建</strong>：只有在该线程上创建 fiber 或调用 fiber 相关 API 时才实例化。</li>
+<li><code>use_scheduling_algorithm&lt;SchedAlgo&gt;(args...)</code> 只影响<strong>调用它的那个线程</strong>；要让多线程都参与共享调度，<strong>每个线程都必须各自调用一次</strong>。</li>
+<li>每个线程上还有一个隐式的 <strong>main fiber</strong>（<code>main()</code> 或线程函数所在的那个 fiber）和一个 <strong>dispatcher fiber</strong>（调度器内部使用，不会被迁移）。</li>
+</ul>
+<h3 id="3-3-fiber-的生命周期与栈"><a href="#3-3-fiber-的生命周期与栈" class="headerlink" title="3.3 fiber 的生命周期与栈"></a>3.3 fiber 的生命周期与栈</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">f</span><span class="hljs-params">([]&#123; <span class="hljs-comment">/* 函数体 */</span> &#125;)</span></span>;   <span class="hljs-comment">// 创建：分配栈，把 fiber 放入就绪队列</span><br>f.<span class="hljs-built_in">join</span>();                                      <span class="hljs-comment">// 等待结束；结束后 f 变为 not-a-fiber</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>fiber</code> 是 <strong>move-only</strong>：拷贝构造&#x2F;赋值被删除。</li>
+<li><strong>析构时若 <code>joinable()</code> 为真 → 调用 <code>std::terminate()</code></strong>（与 <code>std::thread</code> 一致）。必须 <code>join()</code> 或 <code>detach()</code>。</li>
+<li>栈大小由栈分配器决定，可在构造时指定：<ul>
+<li><code>fixedsize_stack</code>（默认，<code>malloc</code>&#x2F;<code>free</code>，最轻量）</li>
+<li><code>protected_fixedsize_stack</code>（末尾有保护页，越界立即段错误；分配开销大）</li>
+<li><code>pooled_fixedsize_stack</code>（<code>boost::pool</code> 池化；<strong>非线程安全</strong>，每线程一个实例）</li>
+<li><code>segmented_stack</code>（按需增长；需 <code>BOOST_USE_SEGMENTED_STACKS</code>）</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-4-launch-策略：post-与-dispatch"><a href="#3-4-launch-策略：post-与-dispatch" class="headerlink" title="3.4 launch 策略：post 与 dispatch"></a>3.4 <code>launch</code> 策略：<code>post</code> 与 <code>dispatch</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">launch</span> &#123;<br>    dispatch,   <span class="hljs-comment">// 立即在当前线程上进入 fiber 函数体，调用者被挂起</span><br>    post        <span class="hljs-comment">// 默认：放入就绪队列，等调度器选择（可能被其他线程窃取）</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">f1</span><span class="hljs-params">(boost::fibers::launch::post,     []&#123; <span class="hljs-comment">/* 稍后执行 */</span> &#125;)</span></span>;<br>boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">f2</span><span class="hljs-params">(boost::fibers::launch::dispatch, []&#123; <span class="hljs-comment">/* 立即执行 */</span> &#125;)</span></span>;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>post</code>：正常并发语义，适合绝大多数场景。</li>
+<li><code>dispatch</code>：用于「立刻切换过去做点事再回来」的模式，也常用于让新 fiber 在<strong>当前线程</strong>上启动（便于设置 FLS 或与调度器交互）。</li>
+</ul>
+<h3 id="3-5-FLS-与-TLS"><a href="#3-5-FLS-与-TLS" class="headerlink" title="3.5 FLS 与 TLS"></a>3.5 FLS 与 TLS</h3><p>见 §2.3。一句话：<strong>fiber 内的「当前上下文」必须用 <code>fiber_specific_ptr</code>，不能用 <code>thread_local</code></strong>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">static</span> boost::fibers::fiber_specific_ptr&lt;std::string&gt; current_user;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">handle_request</span><span class="hljs-params">(std::string user)</span> </span>&#123;<br>    current_user.<span class="hljs-built_in">reset</span>(<span class="hljs-keyword">new</span> std::<span class="hljs-built_in">string</span>(std::<span class="hljs-built_in">move</span>(user)));<br>    <span class="hljs-comment">// ... 此处 current_user.get() 只属于本 fiber，即使本线程有上千个 fiber</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-6-fiber-迁移（migration）"><a href="#3-6-fiber-迁移（migration）" class="headerlink" title="3.6 fiber 迁移（migration）"></a>3.6 fiber 迁移（migration）</h3><ul>
+<li>使用 <code>work_stealing</code> &#x2F; <code>shared_work</code> 调度器时，一个就绪但未运行的 fiber 可能被<strong>另一个线程窃取</strong>并在那里运行。</li>
+<li>迁移是安全的：<code>fiber_specific_ptr</code> 会跟着走；<code>this_fiber::get_id()</code> 不变。</li>
+<li><strong>正在运行的 fiber 不会被迁移</strong>；<code>main fiber</code> 与 <code>dispatcher fiber</code> 被「钉住」（pinned），永不迁移。</li>
+<li>迁移需要跨线程的原子操作，因此 <code>BOOST_FIBERS_NO_ATOMICS</code> 下不可用。</li>
+</ul>
+<hr>
+<h2 id="4-常用类与成员"><a href="#4-常用类与成员" class="headerlink" title="4. 常用类与成员"></a>4. 常用类与成员</h2><h3 id="4-1-类总览"><a href="#4-1-类总览" class="headerlink" title="4.1 类总览"></a>4.1 类总览</h3><table>
+<thead>
+<tr>
+<th>类 &#x2F; 模板</th>
+<th>头文件</th>
+<th>作用</th>
+<th>关键成员</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>boost::fibers::fiber</code></td>
+<td><code>&lt;boost/fiber/fiber.hpp&gt;</code></td>
+<td>用户态协作式线程</td>
+<td><code>join()</code>, <code>detach()</code>, <code>get_id()</code>, <code>joinable()</code>, <code>swap()</code>, <code>properties&lt;PROPS&gt;()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::fiber::id</code></td>
+<td><code>&lt;boost/fiber/fiber.hpp&gt;</code></td>
+<td>fiber 标识</td>
+<td><code>operator==</code>, <code>operator&lt;</code>, <code>operator&lt;&lt;</code></td>
+</tr>
+<tr>
+<td><code>boost::this_fiber</code>（命名空间）</td>
+<td><code>&lt;boost/fiber/operations.hpp&gt;</code></td>
+<td>操作当前 fiber</td>
+<td><code>get_id()</code>, <code>yield()</code>, <code>sleep_for()</code>, <code>sleep_until()</code>, <code>properties&lt;PROPS&gt;()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::future&lt;R&gt;</code></td>
+<td><code>&lt;boost/fiber/future/future.hpp&gt;</code></td>
+<td>异步结果读取端</td>
+<td><code>get()</code>, <code>wait()</code>, <code>wait_for()</code>, <code>wait_until()</code>, <code>valid()</code>, <code>share()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::shared_future&lt;R&gt;</code></td>
+<td><code>&lt;boost/fiber/future/future.hpp&gt;</code></td>
+<td>可拷贝的结果读取端</td>
+<td>同 <code>future</code>（可多 fiber 共享）</td>
+</tr>
+<tr>
+<td><code>boost::fibers::promise&lt;R&gt;</code></td>
+<td><code>&lt;boost/fiber/future/promise.hpp&gt;</code></td>
+<td>异步结果写入端</td>
+<td><code>get_future()</code>, <code>set_value()</code>, <code>set_exception()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::packaged_task&lt;R(Args...)&gt;</code></td>
+<td><code>&lt;boost/fiber/future/packaged_task.hpp&gt;</code></td>
+<td>把可调用对象包装成异步任务</td>
+<td><code>get_future()</code>, <code>operator()</code>, <code>valid()</code>, <code>reset()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::async()</code></td>
+<td><code>&lt;boost/fiber/future/async.hpp&gt;</code></td>
+<td>启动一个 fiber 并返回 <code>future</code></td>
+<td><code>fibers::async(fn, args...)</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::mutex</code></td>
+<td><code>&lt;boost/fiber/mutex.hpp&gt;</code></td>
+<td>fiber 互斥量</td>
+<td><code>lock()</code>, <code>try_lock()</code>, <code>unlock()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::timed_mutex</code></td>
+<td><code>&lt;boost/fiber/timed_mutex.hpp&gt;</code></td>
+<td>带超时的互斥量</td>
+<td>上述 + <code>try_lock_for()</code>, <code>try_lock_until()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::recursive_mutex</code></td>
+<td><code>&lt;boost/fiber/recursive_mutex.hpp&gt;</code></td>
+<td>可重入互斥量</td>
+<td><code>lock()</code>, <code>try_lock()</code>, <code>unlock()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::recursive_timed_mutex</code></td>
+<td><code>&lt;boost/fiber/recursive_timed_mutex.hpp&gt;</code></td>
+<td>可重入 + 超时</td>
+<td>上述 + <code>try_lock_for()</code>, <code>try_lock_until()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::condition_variable</code></td>
+<td><code>&lt;boost/fiber/condition_variable.hpp&gt;</code></td>
+<td>条件变量（配 <code>fibers::mutex</code>）</td>
+<td><code>wait()</code>, <code>wait_for()</code>, <code>wait_until()</code>, <code>notify_one()</code>, <code>notify_all()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::condition_variable_any</code></td>
+<td><code>&lt;boost/fiber/condition_variable.hpp&gt;</code></td>
+<td>条件变量（任意 Lockable）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>boost::fibers::barrier</code></td>
+<td><code>&lt;boost/fiber/barrier.hpp&gt;</code></td>
+<td>会合点（rendezvous）</td>
+<td><code>wait()</code>, <code>get_id()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::buffered_channel&lt;T&gt;</code></td>
+<td><code>&lt;boost/fiber/buffered_channel.hpp&gt;</code></td>
+<td>有界队列通道</td>
+<td><code>push()</code>, <code>pop()</code>, <code>try_push()</code>, <code>try_pop()</code>, <code>close()</code>, 迭代器</td>
+</tr>
+<tr>
+<td><code>boost::fibers::unbuffered_channel&lt;T&gt;</code></td>
+<td><code>&lt;boost/fiber/unbuffered_channel.hpp&gt;</code></td>
+<td>无缓冲（直接交接）通道</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>boost::fibers::channel_op_status</code></td>
+<td><code>&lt;boost/fiber/channel_op_status.hpp&gt;</code></td>
+<td>通道操作返回值枚举</td>
+<td><code>success</code>, <code>empty</code>, <code>full</code>, <code>closed</code>, <code>timeout</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::fiber_specific_ptr&lt;T&gt;</code></td>
+<td><code>&lt;boost/fiber/fss.hpp&gt;</code></td>
+<td>fiber 本地存储（FLS）</td>
+<td><code>get()</code>, <code>operator*</code>, <code>operator-&gt;</code>, <code>reset()</code>, <code>release()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::algo::algorithm</code></td>
+<td><code>&lt;boost/fiber/algo/algorithm.hpp&gt;</code></td>
+<td>调度算法抽象接口</td>
+<td><code>awakened()</code>, <code>pick_next()</code>, <code>has_ready_fibers()</code>, <code>suspend_until()</code>, <code>notify()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::algo::round_robin</code></td>
+<td><code>&lt;boost/fiber/algo/round_robin.hpp&gt;</code></td>
+<td>默认调度器</td>
+<td>每线程 FIFO 就绪队列</td>
+</tr>
+<tr>
+<td><code>boost::fibers::algo::work_stealing</code></td>
+<td><code>&lt;boost/fiber/algo/work_stealing.hpp&gt;</code></td>
+<td>工作窃取调度器</td>
+<td><code>work_stealing(thread_count, suspend)</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::algo::shared_work</code></td>
+<td><code>&lt;boost/fiber/algo/shared_work.hpp&gt;</code></td>
+<td>共享队列调度器</td>
+<td><code>shared_work(suspend)</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::algo::algorithm_with_properties&lt;PROPS&gt;</code></td>
+<td><code>&lt;boost/fiber/algo/algorithm.hpp&gt;</code></td>
+<td>带属性的调度算法基类</td>
+<td><code>awakened(ctx, PROPS&amp;)</code>, <code>property_change()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::fiber_properties</code></td>
+<td><code>&lt;boost/fiber/properties.hpp&gt;</code></td>
+<td>fiber 自定义属性的基类</td>
+<td>受保护的 <code>notify()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::context</code></td>
+<td><code>&lt;boost/fiber/context.hpp&gt;</code></td>
+<td>fiber 的内部表示</td>
+<td><code>active()</code>, <code>ready_link()</code>, <code>ready_unlink()</code>, <code>is_context()</code></td>
+</tr>
+<tr>
+<td><code>boost::fibers::use_scheduling_algorithm&lt;SchedAlgo&gt;()</code></td>
+<td><code>&lt;boost/fiber/algo/algorithm.hpp&gt;</code></td>
+<td>为当前线程安装调度算法</td>
+<td>模板自由函数</td>
+</tr>
+<tr>
+<td><code>boost::fibers::has_ready_fibers()</code></td>
+<td><code>&lt;boost/fiber/operations.hpp&gt;</code></td>
+<td>当前线程是否还有就绪 fiber</td>
+<td>返回 <code>bool</code></td>
+</tr>
+</tbody></table>
+<h3 id="4-2-逐个类详解"><a href="#4-2-逐个类详解" class="headerlink" title="4.2 逐个类详解"></a>4.2 逐个类详解</h3><h4 id="boost-fibers-fiber"><a href="#boost-fibers-fiber" class="headerlink" title="boost::fibers::fiber"></a><code>boost::fibers::fiber</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/fiber.hpp&gt;</code></li>
+<li><strong>作用</strong>：用户态协作式线程；持有栈、上下文与状态。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认构造</td>
+<td><code>constexpr fiber() noexcept</code></td>
+<td>构造 not-a-fiber（空句柄）</td>
+</tr>
+<tr>
+<td>构造（函数对象）</td>
+<td><code>template&lt;typename Fn, typename... Args&gt; fiber(Fn&amp;&amp;, Args&amp;&amp;...)</code></td>
+<td>分配栈并创建 fiber，默认 <code>launch::post</code>；参数按值拷贝到 fiber 栈</td>
+</tr>
+<tr>
+<td>构造（指定策略）</td>
+<td><code>template&lt;typename Fn, typename... Args&gt; fiber(launch, Fn&amp;&amp;, Args&amp;&amp;...)</code></td>
+<td><code>launch::post</code> 或 <code>launch::dispatch</code></td>
+</tr>
+<tr>
+<td>构造（指定栈分配器）</td>
+<td><code>template&lt;typename StackAllocator, typename Fn, typename... Args&gt; fiber(std::allocator_arg_t, StackAllocator&amp;&amp;, Fn&amp;&amp;, Args&amp;&amp;...)</code></td>
+<td>例：<code>fiber(std::allocator_arg, fixedsize_stack(1&lt;&lt;20), fn)</code></td>
+</tr>
+<tr>
+<td>构造（策略 + 分配器）</td>
+<td><code>fiber(launch, std::allocator_arg_t, StackAllocator&amp;&amp;, Fn&amp;&amp;, Args&amp;&amp;...)</code></td>
+<td>组合形式</td>
+</tr>
+<tr>
+<td>移动构造&#x2F;赋值</td>
+<td><code>fiber(fiber&amp;&amp;) noexcept</code> &#x2F; <code>fiber&amp; operator=(fiber&amp;&amp;) noexcept</code></td>
+<td>转移所有权；源变为 not-a-fiber</td>
+</tr>
+<tr>
+<td>拷贝</td>
+<td><code>fiber(fiber const&amp;) = delete</code></td>
+<td><strong>不可拷贝</strong></td>
+</tr>
+<tr>
+<td>析构</td>
+<td><code>~fiber()</code></td>
+<td>若 <code>joinable()</code> 则调用 <code>std::terminate()</code></td>
+</tr>
+<tr>
+<td><code>swap</code></td>
+<td><code>void swap(fiber&amp;) noexcept</code></td>
+<td>交换两个句柄</td>
+</tr>
+<tr>
+<td><code>joinable</code></td>
+<td><code>bool joinable() const noexcept</code></td>
+<td>是否关联一个未结束、未 detach 的 fiber</td>
+</tr>
+<tr>
+<td><code>get_id</code></td>
+<td><code>id get_id() const noexcept</code></td>
+<td>返回 <code>fiber::id</code>；not-a-fiber 返回默认构造的 id</td>
+</tr>
+<tr>
+<td><code>detach</code></td>
+<td><code>void detach()</code></td>
+<td>与 fiber 解绑，允许其独立结束</td>
+</tr>
+<tr>
+<td><code>join</code></td>
+<td><code>void join()</code></td>
+<td>挂起当前 fiber 直到目标 fiber 结束；结束后目标变 not-a-fiber</td>
+</tr>
+<tr>
+<td><code>properties</code></td>
+<td><code>template&lt;typename PROPS&gt; PROPS&amp; properties()</code></td>
+<td>取得该 fiber 的属性对象（需自定义调度器，见 §4.2「自定义调度器」）</td>
+</tr>
+<tr>
+<td>比较</td>
+<td><code>bool operator&lt;(fiber const&amp;, fiber const&amp;) noexcept</code></td>
+<td>用于容器排序</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>join()</code> 必须由<strong>另一个</strong> fiber 调用（自己 join 自己会死锁）；<code>main</code> fiber 可以 join。</li>
+<li><code>join()</code> 只保证「已结束」，不返回结果——要结果请用 <code>future</code>。</li>
+<li>fiber 函数体<strong>逃逸的异常会导致 <code>std::terminate()</code></strong>，异常不会通过 <code>join()</code> 传播（见 §7）。</li>
+<li>官方 API <strong>没有</strong> <code>operator bool</code> 与 <code>native_handle()</code>；判断有效性请用 <code>joinable()</code>。</li>
+<li>传入的实参会被<strong>拷贝</strong>到 fiber 的栈上；需要引用语义时用 <code>std::ref()</code> &#x2F; <code>std::cref()</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-fibers-fiber-id"><a href="#boost-fibers-fiber-id" class="headerlink" title="boost::fibers::fiber::id"></a><code>boost::fibers::fiber::id</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/fiber.hpp&gt;</code></li>
+<li><strong>作用</strong>：fiber 的唯一标识，可用于关联容器 key 与日志输出。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认构造</td>
+<td><code>constexpr id() noexcept</code></td>
+<td>not-a-fiber 的 id</td>
+</tr>
+<tr>
+<td>比较</td>
+<td><code>operator==</code>, <code>operator!=</code>, <code>operator&lt;</code>, <code>operator&gt;</code>, <code>operator&lt;=</code>, <code>operator&gt;=</code></td>
+<td>全序关系</td>
+</tr>
+<tr>
+<td>输出</td>
+<td><code>operator&lt;&lt;(std::basic_ostream&lt;...&gt;&amp;, id const&amp;)</code></td>
+<td>可直接 <code>std::cout &lt;&lt; f.get_id()</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<code>id</code> 在 fiber 结束后可能被复用；不要用它做「永久唯一」的标识。</li>
+</ul>
+<h4 id="boost-this-fiber（命名空间）"><a href="#boost-this-fiber（命名空间）" class="headerlink" title="boost::this_fiber（命名空间）"></a><code>boost::this_fiber</code>（命名空间）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/operations.hpp&gt;</code></li>
+<li><strong>作用</strong>：操作<strong>当前</strong> fiber；main fiber 与线程函数所在 fiber 也可以调用。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>get_id</code></td>
+<td><code>fibers::fiber::id get_id() noexcept</code></td>
+<td>当前 fiber 的 id</td>
+</tr>
+<tr>
+<td><code>yield</code></td>
+<td><code>void yield() noexcept</code></td>
+<td>主动让出 CPU，把控制权交回调度器</td>
+</tr>
+<tr>
+<td><code>sleep_until</code></td>
+<td><code>template&lt;typename Clock, typename Duration&gt; void sleep_until(std::chrono::time_point&lt;Clock,Duration&gt; const&amp;)</code></td>
+<td>挂起直到时间点</td>
+</tr>
+<tr>
+<td><code>sleep_for</code></td>
+<td><code>template&lt;typename Rep, typename Period&gt; void sleep_for(std::chrono::duration&lt;Rep,Period&gt; const&amp;)</code></td>
+<td>挂起指定时长</td>
+</tr>
+<tr>
+<td><code>properties</code></td>
+<td><code>template&lt;typename PROPS&gt; PROPS&amp; properties()</code></td>
+<td>当前 fiber 的属性对象</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>sleep_for</code>&#x2F;<code>sleep_until</code> 挂起的是<strong>当前 fiber</strong>，同线程其他 fiber 继续运行——这正是它比 <code>std::this_thread::sleep_for</code> 优越的地方。</li>
+<li><code>yield()</code> 是 <code>noexcept</code> 的，可以在 <code>catch</code> 块中安全调用。</li>
+<li>官方 API <strong>没有</strong> <code>this_fiber::interruption_point()</code>（那是 Boost.Thread 的概念）；Boost.Fiber 的 fiber 不会被中断，需要中断语义请自行用 <code>future</code>&#x2F;<code>channel</code>&#x2F;原子标志实现。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-fibers-future-shared-future"><a href="#boost-fibers-future-shared-future" class="headerlink" title="boost::fibers::future&lt;R&gt; &#x2F; shared_future&lt;R&gt;"></a><code>boost::fibers::future&lt;R&gt;</code> &#x2F; <code>shared_future&lt;R&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/future/future.hpp&gt;</code></li>
+<li><strong>作用</strong>：读取异步结果；<code>get()</code> 会挂起当前 fiber 直到结果就绪。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认构造</td>
+<td><code>future() noexcept</code></td>
+<td>not-a-future</td>
+</tr>
+<tr>
+<td>移动构造&#x2F;赋值</td>
+<td><code>future(future&amp;&amp;) noexcept</code> &#x2F; <code>operator=</code></td>
+<td>转移</td>
+</tr>
+<tr>
+<td>拷贝</td>
+<td>删除（<code>future</code> 不可拷贝）</td>
+<td>需要共享请用 <code>share()</code></td>
+</tr>
+<tr>
+<td><code>valid</code></td>
+<td><code>bool valid() const noexcept</code></td>
+<td>是否关联共享状态</td>
+</tr>
+<tr>
+<td><code>share</code></td>
+<td><code>shared_future&lt;R&gt; share() noexcept</code></td>
+<td>转为可拷贝的 <code>shared_future</code></td>
+</tr>
+<tr>
+<td><code>get</code></td>
+<td><code>R get()</code></td>
+<td><strong>挂起</strong>直到就绪；返回&#x2F;移动值；异常会被重新抛出；调用后 <code>valid()==false</code></td>
+</tr>
+<tr>
+<td><code>get_exception_ptr</code></td>
+<td><code>std::exception_ptr get_exception_ptr()</code></td>
+<td>取异常而不抛出</td>
+</tr>
+<tr>
+<td><code>wait</code></td>
+<td><code>void wait() const</code></td>
+<td>挂起直到就绪（不取值）</td>
+</tr>
+<tr>
+<td><code>wait_for</code></td>
+<td><code>template&lt;typename Rep, typename Period&gt; future_status wait_for(std::chrono::duration&lt;Rep,Period&gt; const&amp;) const</code></td>
+<td>限时等待</td>
+</tr>
+<tr>
+<td><code>wait_until</code></td>
+<td><code>template&lt;typename Clock, typename Duration&gt; future_status wait_until(std::chrono::time_point&lt;Clock,Duration&gt; const&amp;) const</code></td>
+<td>等到时间点</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>shared_future&lt;R&gt;</code>：可拷贝、可被多个 fiber 同时 <code>get()</code>；<code>get()</code> 返回 <code>R const&amp;</code>。</li>
+<li><code>future_status</code>：<code>ready</code>、<code>timeout</code>、<code>deferred</code>（Boost.Fiber <strong>不支持</strong> <code>deferred</code>，不会返回该值）。</li>
+<li><strong>要点</strong>：<code>future</code> 的析构<strong>不阻塞</strong>（与 <code>std::future</code> 不同），但共享状态未就绪时其 <code>promise</code> 侧的析构会导致 <code>broken_promise</code> 异常。官方 API 中<strong>没有</strong> <code>future::set_wait_callback()</code>（那是 Boost.Asio 侧的集成钩子，见 §5.3）。</li>
+</ul>
+<h4 id="boost-fibers-promise"><a href="#boost-fibers-promise" class="headerlink" title="boost::fibers::promise&lt;R&gt;"></a><code>boost::fibers::promise&lt;R&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/future/promise.hpp&gt;</code></li>
+<li><strong>作用</strong>：异步结果写入端。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>promise()</code></td>
+<td>创建共享状态</td>
+</tr>
+<tr>
+<td>移动构造&#x2F;赋值</td>
+<td>支持；拷贝被删除</td>
+<td>转移</td>
+</tr>
+<tr>
+<td><code>get_future</code></td>
+<td><code>future&lt;R&gt; get_future()</code></td>
+<td>取得读取端（<strong>只能调用一次</strong>，否则抛 <code>future_error</code>）</td>
+</tr>
+<tr>
+<td><code>set_value</code></td>
+<td><code>void set_value(R const&amp;)</code> &#x2F; <code>void set_value(R&amp;&amp;)</code></td>
+<td>设置结果并唤醒等待者（只能设置一次）</td>
+</tr>
+<tr>
+<td><code>set_exception</code></td>
+<td><code>void set_exception(std::exception_ptr)</code></td>
+<td>设置异常并唤醒等待者</td>
+</tr>
+<tr>
+<td><code>swap</code></td>
+<td><code>void swap(promise&amp;) noexcept</code></td>
+<td>交换</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<code>promise</code> 析构时若既未 <code>set_value</code> 也未 <code>set_exception</code>，等待中的 <code>future::get()</code> 会抛 <code>broken_promise</code>。</li>
+</ul>
+<h4 id="boost-fibers-packaged-task"><a href="#boost-fibers-packaged-task" class="headerlink" title="boost::fibers::packaged_task&lt;R(Args...)&gt;"></a><code>boost::fibers::packaged_task&lt;R(Args...)&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/future/packaged_task.hpp&gt;</code></li>
+<li><strong>作用</strong>：把可调用对象包装成任务，调用 <code>operator()</code> 的结果通过 <code>future</code> 取出。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>template&lt;typename Fn&gt; explicit packaged_task(Fn&amp;&amp;)</code></td>
+<td>包装可调用对象</td>
+</tr>
+<tr>
+<td>移动构造&#x2F;赋值</td>
+<td>支持；拷贝被删除</td>
+<td>转移</td>
+</tr>
+<tr>
+<td><code>valid</code></td>
+<td><code>bool valid() const noexcept</code></td>
+<td>是否持有可调用对象</td>
+</tr>
+<tr>
+<td><code>get_future</code></td>
+<td><code>future&lt;R&gt; get_future()</code></td>
+<td>取读取端（一次）</td>
+</tr>
+<tr>
+<td><code>operator()</code></td>
+<td><code>void operator()(Args...)</code></td>
+<td>执行任务；结果或异常送入共享状态</td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td><code>void reset()</code></td>
+<td>清空共享状态，可再次 <code>get_future()</code> 并执行</td>
+</tr>
+</tbody></table>
+<h4 id="boost-fibers-async"><a href="#boost-fibers-async" class="headerlink" title="boost::fibers::async()"></a><code>boost::fibers::async()</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/future/async.hpp&gt;</code></li>
+<li><strong>签名</strong>：<code>template&lt;typename Fn, typename... Args&gt; future&lt;result_of_t&lt;Fn(Args...)&gt;&gt; async(Fn&amp;&amp; fn, Args&amp;&amp;... args)</code></li>
+<li><strong>作用</strong>：在<strong>新 fiber</strong> 中执行 <code>fn(args...)</code> 并返回 <code>future</code>（相当于「fiber 版的 <code>std::async</code>」）。</li>
+<li><strong>要点</strong>：始终「启动新 fiber」，没有 <code>std::launch::deferred</code> 语义。</li>
+</ul>
+<h4 id="boost-fibers-mutex-timed-mutex-recursive-mutex-recursive-timed-mutex"><a href="#boost-fibers-mutex-timed-mutex-recursive-mutex-recursive-timed-mutex" class="headerlink" title="boost::fibers::mutex &#x2F; timed_mutex &#x2F; recursive_mutex &#x2F; recursive_timed_mutex"></a><code>boost::fibers::mutex</code> &#x2F; <code>timed_mutex</code> &#x2F; <code>recursive_mutex</code> &#x2F; <code>recursive_timed_mutex</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/mutex.hpp&gt;</code>、<code>&lt;boost/fiber/timed_mutex.hpp&gt;</code>、<code>&lt;boost/fiber/recursive_mutex.hpp&gt;</code>、<code>&lt;boost/fiber/recursive_timed_mutex.hpp&gt;</code></li>
+<li><strong>作用</strong>：fiber 间的互斥；满足 Lockable&#x2F;TimedLockable 概念，可与 <code>std::lock_guard</code> &#x2F; <code>std::unique_lock</code> 配合。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lock</code></td>
+<td><code>void lock()</code></td>
+<td>获取锁；已被占用时<strong>挂起当前 fiber</strong>（不阻塞线程）</td>
+</tr>
+<tr>
+<td><code>try_lock</code></td>
+<td><code>bool try_lock()</code></td>
+<td>立即尝试，不挂起</td>
+</tr>
+<tr>
+<td><code>unlock</code></td>
+<td><code>void unlock()</code></td>
+<td>释放锁</td>
+</tr>
+<tr>
+<td><code>try_lock_for</code></td>
+<td><code>template&lt;typename Rep, typename Period&gt; bool try_lock_for(std::chrono::duration&lt;Rep,Period&gt; const&amp;)</code></td>
+<td>仅 <code>timed_mutex</code> &#x2F; <code>recursive_timed_mutex</code></td>
+</tr>
+<tr>
+<td><code>try_lock_until</code></td>
+<td><code>template&lt;typename Clock, typename Duration&gt; bool try_lock_until(std::chrono::time_point&lt;Clock,Duration&gt; const&amp;)</code></td>
+<td>同上</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>fibers::mutex</code> 保护的是<strong>同一线程内的 fiber 之间</strong>的临界区；跨线程共享数据仍需 <code>std::mutex</code>（或 <code>fibers::mutex</code> 也能跨线程用，但会有额外开销）。</li>
+<li>不要用 <code>std::mutex</code> 在 fiber 内做长时间等待——它会阻塞整个线程，把该线程上所有 fiber 一起卡死。</li>
+<li><code>fibers::mutex</code> 的析构若检测到仍被锁住，行为未定义（标准做法：确保所有 fiber 已退出）。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-fibers-condition-variable-condition-variable-any"><a href="#boost-fibers-condition-variable-condition-variable-any" class="headerlink" title="boost::fibers::condition_variable &#x2F; condition_variable_any"></a><code>boost::fibers::condition_variable</code> &#x2F; <code>condition_variable_any</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/condition_variable.hpp&gt;</code></li>
+<li><strong>作用</strong>：fiber 间的条件等待&#x2F;通知。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>wait</code></td>
+<td><code>void wait(std::unique_lock&lt;mutex&gt;&amp;)</code></td>
+<td>原子地解锁并挂起；被唤醒后重新加锁</td>
+</tr>
+<tr>
+<td><code>wait</code>（谓词）</td>
+<td><code>template&lt;typename Pred&gt; void wait(std::unique_lock&lt;mutex&gt;&amp;, Pred)</code></td>
+<td>循环直到谓词为真（<strong>推荐</strong>）</td>
+</tr>
+<tr>
+<td><code>wait_for</code></td>
+<td><code>template&lt;typename Rep, typename Period&gt; cv_status wait_for(std::unique_lock&lt;mutex&gt;&amp;, std::chrono::duration&lt;Rep,Period&gt; const&amp;)</code></td>
+<td>限时等待</td>
+</tr>
+<tr>
+<td><code>wait_for</code>（谓词）</td>
+<td><code>template&lt;typename Rep, typename Period, typename Pred&gt; bool wait_for(...)</code></td>
+<td>超时或谓词为真返回</td>
+</tr>
+<tr>
+<td><code>wait_until</code></td>
+<td><code>template&lt;typename Clock, typename Duration&gt; cv_status wait_until(std::unique_lock&lt;mutex&gt;&amp;, std::chrono::time_point&lt;Clock,Duration&gt; const&amp;)</code></td>
+<td>等到时间点</td>
+</tr>
+<tr>
+<td><code>wait_until</code>（谓词）</td>
+<td>同上 + <code>Pred</code></td>
+<td>返回 <code>bool</code></td>
+</tr>
+<tr>
+<td><code>notify_one</code></td>
+<td><code>void notify_one()</code></td>
+<td>唤醒一个等待者</td>
+</tr>
+<tr>
+<td><code>notify_all</code></td>
+<td><code>void notify_all()</code></td>
+<td>唤醒全部等待者</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>condition_variable_any</code>：<code>wait()</code> 接受<strong>任意</strong> Lockable（如 <code>std::unique_lock&lt;std::mutex&gt;</code>、<code>fibers::mutex</code> 的自定义锁），代价是内部多一层间接。</li>
+<li><code>cv_status</code>：<code>no_timeout</code>、<code>timeout</code>。</li>
+<li><strong>要点</strong>：<ol>
+<li><strong>Boost.Fiber 的条件变量不会虚假唤醒（no spurious wakeup）</strong>；但为兼容风格与表达清晰，仍建议用谓词重载。</li>
+<li><code>condition_variable</code> 必须配 <code>fibers::mutex</code>；要配 <code>std::mutex</code> 请用 <code>condition_variable_any</code>。</li>
+<li><code>notify_*</code> 不需要持有锁（可在解锁后调用以减少唤醒后的竞争）。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-fibers-barrier"><a href="#boost-fibers-barrier" class="headerlink" title="boost::fibers::barrier"></a><code>boost::fibers::barrier</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/barrier.hpp&gt;</code></li>
+<li><strong>作用</strong>：n 个 fiber 的会合点；第 n 个到达者放行全部等待者，<strong>并自动复位</strong>。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>explicit barrier(std::size_t initial)</code></td>
+<td><code>initial</code> 为参与 fiber 数，必须 &gt; 0</td>
+</tr>
+<tr>
+<td><code>wait</code></td>
+<td><code>bool wait()</code></td>
+<td>挂起直到所有 <code>initial</code> 个 fiber 到达；<strong>返回 <code>true</code> 表示本 fiber 是最后一个到达者</strong></td>
+</tr>
+<tr>
+<td><code>get_id</code></td>
+<td><code>barrier::id get_id() const noexcept</code></td>
+<td>该 barrier 的标识</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：barrier 会<strong>自动复位</strong>，可重复使用；但<strong>不要</strong>用它实现「只等第一个完成者」——其余到达者会被困住（见官方文档的说明）。</li>
+</ul>
+<h4 id="boost-fibers-buffered-channel-unbuffered-channel"><a href="#boost-fibers-buffered-channel-unbuffered-channel" class="headerlink" title="boost::fibers::buffered_channel&lt;T&gt; &#x2F; unbuffered_channel&lt;T&gt;"></a><code>boost::fibers::buffered_channel&lt;T&gt;</code> &#x2F; <code>unbuffered_channel&lt;T&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/buffered_channel.hpp&gt;</code>、<code>&lt;boost/fiber/unbuffered_channel.hpp&gt;</code>、<code>&lt;boost/fiber/channel_op_status.hpp&gt;</code></li>
+<li><strong>作用</strong>：fiber 间的消息传递（类似 Go 的 channel）。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造（有缓冲）</td>
+<td><code>explicit buffered_channel(std::size_t capacity)</code></td>
+<td><code>capacity</code> 必须是 <strong>2 的幂且 ≥ 2</strong>；否则抛 <code>std::invalid_argument</code></td>
+</tr>
+<tr>
+<td>构造（无缓冲）</td>
+<td><code>unbuffered_channel()</code></td>
+<td>无内部缓冲，push&#x2F;pop 直接配对交接</td>
+</tr>
+<tr>
+<td><code>push</code></td>
+<td><code>channel_op_status push(value_type const&amp;)</code> &#x2F; <code>push(value_type&amp;&amp;)</code></td>
+<td>缓冲满则挂起直到有空间；通道已关闭返回 <code>closed</code></td>
+</tr>
+<tr>
+<td><code>push_wait_for</code></td>
+<td><code>channel_op_status push_wait_for(value_type const&amp;, duration)</code></td>
+<td>限时 push；超时返回 <code>timeout</code></td>
+</tr>
+<tr>
+<td><code>push_wait_until</code></td>
+<td><code>channel_op_status push_wait_until(value_type const&amp;, time_point)</code></td>
+<td>等到时间点</td>
+</tr>
+<tr>
+<td><code>pop</code></td>
+<td><code>channel_op_status pop(value_type&amp; va)</code></td>
+<td>缓冲空则挂起；关闭且已空返回 <code>closed</code></td>
+</tr>
+<tr>
+<td><code>pop_wait_for</code></td>
+<td><code>channel_op_status pop_wait_for(value_type&amp;, duration)</code></td>
+<td>限时 pop</td>
+</tr>
+<tr>
+<td><code>pop_wait_until</code></td>
+<td><code>channel_op_status pop_wait_until(value_type&amp;, time_point)</code></td>
+<td>等到时间点</td>
+</tr>
+<tr>
+<td><code>try_push</code></td>
+<td><code>channel_op_status try_push(value_type const&amp;)</code> &#x2F; <code>(value_type&amp;&amp;)</code></td>
+<td>不挂起；满则 <code>full</code></td>
+</tr>
+<tr>
+<td><code>try_pop</code></td>
+<td><code>channel_op_status try_pop(value_type&amp; va)</code></td>
+<td>不挂起；空则 <code>empty</code></td>
+</tr>
+<tr>
+<td><code>value_pop</code></td>
+<td><code>value_type value_pop()</code></td>
+<td>等价于 <code>pop</code>，但失败时<strong>抛异常</strong>（<code>closed</code> → 异常）</td>
+</tr>
+<tr>
+<td><code>close</code></td>
+<td><code>void close()</code></td>
+<td>关闭通道；之后 push 返回 <code>closed</code>；队列中剩余元素仍可被 pop 完</td>
+</tr>
+<tr>
+<td>迭代器</td>
+<td><code>iterator begin()</code> &#x2F; <code>iterator end()</code></td>
+<td>支持 range-for；迭代到通道关闭且取空为止</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>channel_op_status</code>：<code>success</code>、<code>empty</code>、<code>full</code>、<code>closed</code>、<code>timeout</code>。</li>
+<li><strong>要点</strong>：<ol>
+<li><code>buffered_channel</code> 内部<strong>实际只能存 <code>capacity - 1</code> 个元素</strong>，达到该数量即视为「满」。</li>
+<li>官方 API <strong>没有</strong> <code>is_closed()</code>；判断通道是否关闭的方法是检查 <code>pop()</code>&#x2F;<code>try_pop()</code> 是否返回 <code>channel_op_status::closed</code>。</li>
+<li><code>close()</code> 是幂等的；关闭后仍可把缓冲中剩余数据取完（这是优雅退出的标准模式）。</li>
+<li><code>unbuffered_channel</code> 的 <code>push</code> 会一直挂起直到有 fiber <code>pop</code>，适合严格同步的流水线。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-fibers-fiber-specific-ptr"><a href="#boost-fibers-fiber-specific-ptr" class="headerlink" title="boost::fibers::fiber_specific_ptr&lt;T&gt;"></a><code>boost::fibers::fiber_specific_ptr&lt;T&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/fss.hpp&gt;</code></li>
+<li><strong>作用</strong>：fiber 本地存储（FLS），每个 fiber 一份独立值。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>explicit fiber_specific_ptr(void (*cleanup)(T*) = nullptr)</code></td>
+<td>可选清理函数</td>
+</tr>
+<tr>
+<td><code>get</code></td>
+<td><code>T* get() const noexcept</code></td>
+<td>取当前 fiber 的指针；未设置时为 <code>nullptr</code></td>
+</tr>
+<tr>
+<td><code>operator*</code></td>
+<td><code>T&amp; operator*() const</code></td>
+<td>解引用</td>
+</tr>
+<tr>
+<td><code>operator-&gt;</code></td>
+<td><code>T* operator-&gt;() const</code></td>
+<td>成员访问</td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td><code>void reset(T* new_value = nullptr)</code></td>
+<td>替换当前 fiber 的值（旧值交给 cleanup）</td>
+</tr>
+<tr>
+<td><code>release</code></td>
+<td><code>T* release() noexcept</code></td>
+<td>放弃所有权并返回指针（不调用 cleanup）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<code>fiber_specific_ptr</code> 对象必须<strong>活得比所有使用它的 fiber 更久</strong>（通常声明为全局&#x2F;静态）。初始值恒为 <code>nullptr</code>。</li>
+</ul>
+<h4 id="调度器：boost-fibers-algo"><a href="#调度器：boost-fibers-algo" class="headerlink" title="调度器：boost::fibers::algo::*"></a>调度器：<code>boost::fibers::algo::*</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/algo/algorithm.hpp&gt;</code>、<code>&lt;boost/fiber/algo/round_robin.hpp&gt;</code>、<code>&lt;boost/fiber/algo/work_stealing.hpp&gt;</code>、<code>&lt;boost/fiber/algo/shared_work.hpp&gt;</code>、<code>&lt;boost/fiber/numa/algo/work_stealing.hpp&gt;</code></li>
+</ul>
+<p><strong><code>algo::algorithm</code>（抽象接口，自定义调度器需实现）</strong></p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>awakened</code></td>
+<td><code>virtual void awakened(context*) noexcept = 0</code></td>
+<td>一个 fiber 变为就绪，需要入队</td>
+</tr>
+<tr>
+<td><code>pick_next</code></td>
+<td><code>virtual context* pick_next() noexcept = 0</code></td>
+<td>返回下一个要运行的 fiber（无则 <code>nullptr</code>）</td>
+</tr>
+<tr>
+<td><code>has_ready_fibers</code></td>
+<td><code>virtual bool has_ready_fibers() const noexcept = 0</code></td>
+<td>就绪队列是否非空</td>
+</tr>
+<tr>
+<td><code>suspend_until</code></td>
+<td><code>virtual void suspend_until(std::chrono::steady_clock::time_point const&amp;) noexcept = 0</code></td>
+<td>没有就绪 fiber 时挂起<strong>整个线程</strong></td>
+</tr>
+<tr>
+<td><code>notify</code></td>
+<td><code>virtual void notify() noexcept = 0</code></td>
+<td>有新事件，应提前唤醒线程</td>
+</tr>
+</tbody></table>
+<p><strong><code>algo::round_robin</code></strong>：默认算法。每个线程一个 FIFO 就绪队列，无参数。</p>
+<p><strong><code>algo::work_stealing</code></strong>：跨线程工作窃取。</p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>work_stealing(std::uint32_t thread_count, bool suspend = false)</code></td>
+<td><code>thread_count</code> 是<strong>参与共享的线程总数</strong>（所有线程必须传相同值）；<code>suspend = true</code> 时无活可干会真正挂起线程</td>
+</tr>
+</tbody></table>
+<p><strong><code>algo::shared_work</code></strong>：所有线程共享一个全局就绪队列（<code>shared_work(bool suspend = false)</code>），实现简单但全局队列是竞争热点。</p>
+<p><strong><code>numa::work_stealing</code></strong>：NUMA 感知的工作窃取（<code>numa::work_stealing(thread_count, cpu_id)</code>），优先在同 NUMA 节点内窃取。</p>
+<p><strong><code>boost::fibers::use_scheduling_algorithm&lt;SchedAlgo&gt;(args...)</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>use_scheduling_algorithm</code></td>
+<td><code>template&lt;typename SchedAlgo, typename... Args&gt; void use_scheduling_algorithm(Args&amp;&amp;...) noexcept</code></td>
+<td>为<strong>当前线程</strong>安装调度算法；<code>args...</code> 传给 <code>SchedAlgo</code> 的构造函数</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：必须在使用该线程的任何其他 Boost.Fiber 功能<strong>之前</strong>调用（官方要求）；多线程场景<strong>每个线程各调一次</strong>。</li>
+</ul>
+<h4 id="boost-fibers-fiber-properties-与-algo-algorithm-with-properties"><a href="#boost-fibers-fiber-properties-与-algo-algorithm-with-properties" class="headerlink" title="boost::fibers::fiber_properties 与 algo::algorithm_with_properties&lt;PROPS&gt;"></a><code>boost::fibers::fiber_properties</code> 与 <code>algo::algorithm_with_properties&lt;PROPS&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/properties.hpp&gt;</code>、<code>&lt;boost/fiber/algo/algorithm.hpp&gt;</code></li>
+<li><strong>作用</strong>：为每个 fiber 挂载自定义属性（如优先级、名字），并让调度器据此决策。</li>
+</ul>
+<p><code>fiber_properties</code>：</p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>fiber_properties(context* ctx)</code></td>
+<td>子类构造必须接受 <code>context*</code> 并转发给基类</td>
+</tr>
+<tr>
+<td><code>notify</code></td>
+<td><code>void notify()</code>（受保护）</td>
+<td>属性变化影响调度时<strong>必须</strong>调用它</td>
+</tr>
+</tbody></table>
+<p><code>algorithm_with_properties&lt;PROPS&gt;</code>：</p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>awakened</code></td>
+<td><code>virtual void awakened(context*, PROPS&amp;) noexcept</code></td>
+<td>必须重写（带属性版本）</td>
+</tr>
+<tr>
+<td><code>pick_next</code></td>
+<td><code>virtual context* pick_next() noexcept</code></td>
+<td>必须重写</td>
+</tr>
+<tr>
+<td><code>has_ready_fibers</code></td>
+<td><code>virtual bool has_ready_fibers() const noexcept</code></td>
+<td>必须重写</td>
+</tr>
+<tr>
+<td><code>suspend_until</code></td>
+<td><code>virtual void suspend_until(time_point const&amp;) noexcept</code></td>
+<td>必须重写</td>
+</tr>
+<tr>
+<td><code>notify</code></td>
+<td><code>virtual void notify() noexcept</code></td>
+<td>必须重写</td>
+</tr>
+<tr>
+<td><code>properties</code></td>
+<td><code>PROPS&amp; properties(context*) noexcept</code></td>
+<td>由基类提供，取某 fiber 的属性</td>
+</tr>
+<tr>
+<td><code>property_change</code></td>
+<td><code>virtual void property_change(context*, PROPS&amp;) noexcept</code></td>
+<td><strong>可选</strong>重写：属性变化时重排队列</td>
+</tr>
+<tr>
+<td><code>new_properties</code></td>
+<td><code>virtual PROPS* new_properties(context*)</code></td>
+<td><strong>可选</strong>重写：自定义属性对象创建</td>
+</tr>
+</tbody></table>
+<p><strong>用法</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 取得当前 fiber 的属性</span><br>priority_props&amp; p = boost::this_fiber::<span class="hljs-built_in">properties</span>&lt;priority_props&gt;();<br><br><span class="hljs-comment">// 取得某个 fiber 的属性</span><br>boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">f</span><span class="hljs-params">(fn)</span></span>;<br>priority_props&amp; p2 = f.<span class="hljs-built_in">properties</span>&lt;priority_props&gt;();<br>p<span class="hljs-number">2.</span><span class="hljs-built_in">set_priority</span>(<span class="hljs-number">7</span>);<br></code></pre></td></tr></table></figure>
+
+<h4 id="boost-fibers-context（调度器实现中会用到）"><a href="#boost-fibers-context（调度器实现中会用到）" class="headerlink" title="boost::fibers::context（调度器实现中会用到）"></a><code>boost::fibers::context</code>（调度器实现中会用到）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/fiber/context.hpp&gt;</code></li>
+<li><strong>作用</strong>：fiber 的内部表示（调度器与库内部使用）。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>active</code></td>
+<td><code>static context* active() noexcept</code></td>
+<td>当前 fiber 的 <code>context*</code></td>
+</tr>
+<tr>
+<td><code>ready_link</code></td>
+<td><code>void ready_link(scheduler::ready_queue_type&amp;) noexcept</code></td>
+<td>把该 context 挂到就绪队列</td>
+</tr>
+<tr>
+<td><code>ready_unlink</code></td>
+<td><code>void ready_unlink() noexcept</code></td>
+<td>从就绪队列摘除</td>
+</tr>
+<tr>
+<td><code>ready_is_linked</code></td>
+<td><code>bool ready_is_linked() const noexcept</code></td>
+<td>是否已在某个就绪队列中</td>
+</tr>
+<tr>
+<td><code>is_context</code></td>
+<td><code>bool is_context(type) const noexcept</code></td>
+<td>判断类型：<code>type::main_context</code> &#x2F; <code>dispatcher_context</code> &#x2F; <code>worker_context</code></td>
+</tr>
+<tr>
+<td><code>detach</code></td>
+<td><code>void detach() noexcept</code></td>
+<td>迁移：从源线程的调度器摘除</td>
+</tr>
+<tr>
+<td><code>attach</code></td>
+<td><code>void attach() noexcept</code></td>
+<td>迁移：挂到目标线程的调度器</td>
+</tr>
+</tbody></table>
+<p><code>scheduler::ready_queue_type</code> 是 Boost.Intrusive 的 list，可直接 <code>push_back</code> &#x2F; <code>pop_front</code> &#x2F; <code>insert</code> &#x2F; <code>begin()</code> &#x2F; <code>end()</code>。</p>
+<hr>
+<h2 id="5-使用流程"><a href="#5-使用流程" class="headerlink" title="5. 使用流程"></a>5. 使用流程</h2><h3 id="5-1-启动第一个-fiber-的最小流程"><a href="#5-1-启动第一个-fiber-的最小流程" class="headerlink" title="5.1 启动第一个 fiber 的最小流程"></a>5.1 启动第一个 fiber 的最小流程</h3><ol>
+<li><code>#include &lt;boost/fiber/all.hpp&gt;</code>。</li>
+<li>编译时链接 <code>-lboost_fiber -lboost_context</code>（见 §2.5）。</li>
+<li>在 <code>main()</code> 中构造 <code>boost::fibers::fiber</code>，传入可调用对象与参数。</li>
+<li>用 <code>join()</code> 等待其结束；或 <code>detach()</code> 让它独立运行。</li>
+<li>确保 <code>fiber</code> 对象在 <code>join()</code>&#x2F;<code>detach()</code> 前<strong>一直存活</strong>（否则析构触发 <code>std::terminate</code>）。</li>
+<li>整个 <code>main</code> 包在 <code>try/catch</code> 中（fiber 内异常会终止进程，且部分错误以异常形式从 <code>join()</code> 抛出）。</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">f</span><span class="hljs-params">([]&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;hello fiber\n&quot;</span>; &#125;)</span></span>;<br>f.<span class="hljs-built_in">join</span>();<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-2-fiber-间同步的流程"><a href="#5-2-fiber-间同步的流程" class="headerlink" title="5.2 fiber 间同步的流程"></a>5.2 fiber 间同步的流程</h3><p>选择顺序建议：<strong>先问「要不要传数据」→ 再问「要不要互斥」</strong>。</p>
+<ol>
+<li><strong>只传数据，不需要共享状态</strong> → 用 <code>buffered_channel&lt;T&gt;</code>（有界队列）或 <code>unbuffered_channel&lt;T&gt;</code>（严格交接）。<ul>
+<li>生产者循环 <code>push()</code>，结束时 <code>close()</code>；</li>
+<li>消费者循环 <code>pop()</code>，遇到 <code>channel_op_status::closed</code> 退出（或用 range-for）。</li>
+</ul>
+</li>
+<li><strong>需要共享数据结构</strong> → 用 <code>fibers::mutex</code> 保护，用 <code>std::lock_guard</code>&#x2F;<code>std::unique_lock</code> 管理。</li>
+<li><strong>需要等待某个条件成立</strong> → 用 <code>condition_variable</code>（配 <code>fibers::mutex</code>）或 <code>condition_variable_any</code>（配任意锁），并使用<strong>谓词重载</strong>。</li>
+<li><strong>需要等待「结果」而不是「信号」</strong> → 用 <code>promise</code>&#x2F;<code>future</code>（或 <code>async()</code>）；异常通过 <code>promise::set_exception()</code> 传回。</li>
+<li><strong>需要 n 个 fiber 同时起跑</strong> → 用 <code>barrier(n)</code>。</li>
+<li><strong>不要</strong>用 <code>std::mutex</code> + <code>std::condition_variable</code> 在 fiber 内长等待：那会阻塞整个线程。</li>
+</ol>
+<h3 id="5-3-与-Boost-Asio-集成的流程"><a href="#5-3-与-Boost-Asio-集成的流程" class="headerlink" title="5.3 与 Boost.Asio 集成的流程"></a>5.3 与 Boost.Asio 集成的流程</h3><p>Boost.Fiber 与 Asio 的集成<strong>不属于 Boost.Fiber 官方 API</strong>，官方文档给出的是「方法 + 示例代码」，实现放在 <code>examples/asio/</code> 里。</p>
+<p><strong>方式 A：用 Asio 的 <code>yield</code> 完成令牌（推荐，官方 <code>examples/asio/</code>）</strong></p>
+<ol>
+<li>从 <code>examples/asio/</code> 拷贝 <code>yield.hpp</code>、<code>detail/yield.hpp</code>、<code>round_robin.hpp</code> 到项目中。</li>
+<li>每个线程创建一个 <code>boost::asio::io_context</code>，并用它安装调度器：<br><code>boost::fibers::use_scheduling_algorithm&lt;boost::fibers::asio::round_robin&gt;(io_ptr);</code></li>
+<li>在 fiber 内直接对 Asio 异步操作传 <code>yield</code>（或 <code>yield[ec]</code> 绑定错误码），调用会「阻塞」该 fiber 直到完成：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp">std::<span class="hljs-type">size_t</span> n = socket.<span class="hljs-built_in">async_read_some</span>(buffer, boost::fibers::asio::yield);<br></code></pre></td></tr></table></figure></li>
+<li>该线程调用 <code>io_ptr-&gt;run()</code>，由 <code>round_robin</code> 调度器在「跑 fiber」与「跑 Asio handler」之间切换。</li>
+</ol>
+<p><strong>方式 B：自己用 <code>promise</code>&#x2F;<code>future</code> 包一层回调（最简单，适合少量接口）</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::<span class="hljs-function">fibers::future&lt;std::<span class="hljs-type">size_t</span>&gt; <span class="hljs-title">async_read</span><span class="hljs-params">(socket&amp; s, <span class="hljs-type">void</span>* buf, std::<span class="hljs-type">size_t</span> len)</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> p = std::make_shared&lt;boost::fibers::promise&lt;std::<span class="hljs-type">size_t</span>&gt;&gt;();<br>    <span class="hljs-keyword">auto</span> f = p-&gt;<span class="hljs-built_in">get_future</span>();<br>    s.<span class="hljs-built_in">async_read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(buf, len),<br>        [p](<span class="hljs-type">const</span> boost::system::error_code&amp; ec, std::<span class="hljs-type">size_t</span> n) &#123;<br>            <span class="hljs-keyword">if</span> (ec) p-&gt;<span class="hljs-built_in">set_exception</span>(std::<span class="hljs-built_in">make_exception_ptr</span>(boost::system::<span class="hljs-built_in">system_error</span>(ec)));<br>            <span class="hljs-keyword">else</span>    p-&gt;<span class="hljs-built_in">set_value</span>(n);<br>        &#125;);<br>    <span class="hljs-keyword">return</span> f;<br>&#125;<br><span class="hljs-comment">// 在 fiber 内：std::size_t n = async_read(s, buf, len).get();   // 挂起本 fiber</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>方式 C：非阻塞轮询 + <code>this_fiber::yield()</code></strong></p>
+<p>适用于「已有主循环、不想改回调」的场景（官方 <code>adapt_nonblocking.cpp</code> 的思路）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">read_chunk</span><span class="hljs-params">(NonblockingAPI&amp; api, std::string&amp; data, std::<span class="hljs-type">size_t</span> desired)</span> </span>&#123;<br>    <span class="hljs-type">int</span> error;<br>    <span class="hljs-keyword">while</span> (EWOULDBLOCK == (error = api.<span class="hljs-built_in">read</span>(data, desired))) &#123;<br>        boost::this_fiber::<span class="hljs-built_in">yield</span>();      <span class="hljs-comment">// 让其他 fiber / 主循环继续跑</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> error;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>方式 D：把 fiber 调度器嵌入已有事件循环</strong></p>
+<p>在事件循环每次迭代调用 <code>boost::this_fiber::yield()</code>，即可让 fiber 调度器搭车运行（官方 “Event-Driven Program” 一节的建议）。</p>
+<h3 id="5-4-自定义调度器的流程"><a href="#5-4-自定义调度器的流程" class="headerlink" title="5.4 自定义调度器的流程"></a>5.4 自定义调度器的流程</h3><ol>
+<li>选择基类：<ul>
+<li>不需要 per-fiber 属性 → 继承 <code>boost::fibers::algo::algorithm</code>；</li>
+<li>需要（如优先级）→ 继承 <code>boost::fibers::algo::algorithm_with_properties&lt;MyProps&gt;</code>。</li>
+</ul>
+</li>
+<li>（属性版本）定义 <code>MyProps : public boost::fibers::fiber_properties</code>，构造函数接受 <code>context*</code> 并转发；任何影响调度的属性修改都要调用受保护的 <code>notify()</code>。</li>
+<li>实现&#x2F;重写五个方法：<code>awakened</code>、<code>pick_next</code>、<code>has_ready_fibers</code>、<code>suspend_until</code>、<code>notify</code>（属性版本用 <code>awakened(context*, PROPS&amp;)</code>）。<ul>
+<li>就绪队列建议直接用 <code>boost::fibers::scheduler::ready_queue_type</code>。</li>
+<li><code>suspend_until(time_point::max())</code> 表示「无限期挂起」；否则用 <code>std::condition_variable::wait_until</code> 等到该时间点。</li>
+</ul>
+</li>
+<li>（属性版本，可选）重写 <code>property_change()</code> 以在属性变化时重排队列；注意 <code>ctx</code> 可能不在队列里（正在运行或阻塞），需用 <code>ctx-&gt;ready_is_linked()</code> 判断。</li>
+<li>在<strong>每个</strong>要使用它的线程上调用 <code>use_scheduling_algorithm&lt;MyScheduler&gt;()</code>，且要在其他 fiber 调用之前。</li>
+<li>创建 fiber 时用 <code>f.properties&lt;MyProps&gt;()</code> 读写属性。</li>
+</ol>
+<hr>
+<h2 id="6-代码示例"><a href="#6-代码示例" class="headerlink" title="6. 代码示例"></a>6. 代码示例</h2><blockquote>
+<p>所有示例均为完整文件，含 <code>#include</code> 与 <code>main</code>，可直接编译。<br>编译命令（下文各示例通用，Boost 安装路径请按需修改）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ -std=c++17 -O2 -pthread ex.cpp -I/usr/local/include -L/usr/local/lib \<br>    -lboost_fiber -lboost_context -o ex &amp;&amp; ./ex<br></code></pre></td></tr></table></figure></blockquote>
+<h3 id="示例-1：最小-fiber（创建-join）"><a href="#示例-1：最小-fiber（创建-join）" class="headerlink" title="示例 1：最小 fiber（创建 + join）"></a>示例 1：最小 fiber（创建 + join）</h3><p>源自官方 <code>examples/simple.cpp</code>（最小化改写）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;exception&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">fn</span><span class="hljs-params">(std::string <span class="hljs-type">const</span>&amp; str, <span class="hljs-type">int</span> n)</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; ++i) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;fiber: &quot;</span> &lt;&lt; str &lt;&lt; <span class="hljs-string">&#x27; &#x27;</span> &lt;&lt; i &lt;&lt; std::endl;<br>        boost::this_fiber::<span class="hljs-built_in">yield</span>();<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">f1</span><span class="hljs-params">(fn, <span class="hljs-string">&quot;abc&quot;</span>, <span class="hljs-number">5</span>)</span></span>;<br><br>        std::cout &lt;&lt; <span class="hljs-string">&quot;f1: &quot;</span> &lt;&lt; f<span class="hljs-number">1.</span><span class="hljs-built_in">get_id</span>() &lt;&lt; std::endl;<br><br>        f<span class="hljs-number">1.</span><span class="hljs-built_in">join</span>();                       <span class="hljs-comment">// 等待 fiber 结束</span><br>        std::cout &lt;&lt; <span class="hljs-string">&quot;f1: &quot;</span> &lt;&lt; f<span class="hljs-number">1.</span><span class="hljs-built_in">get_id</span>() &lt;&lt; std::endl;   <span class="hljs-comment">// 结束后 id 无效</span><br>        std::cout &lt;&lt; <span class="hljs-string">&quot;f1.joinable(): &quot;</span> &lt;&lt; std::boolalpha &lt;&lt; f<span class="hljs-number">1.</span><span class="hljs-built_in">joinable</span>() &lt;&lt; std::endl;<br><br>        std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>        <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>    &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>    &#125; <span class="hljs-built_in">catch</span> (...) &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;unhandled exception&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">return</span> EXIT_FAILURE;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-2：this-fiber-yield-与调度观察（两个-fiber-交替打印）"><a href="#示例-2：this-fiber-yield-与调度观察（两个-fiber-交替打印）" class="headerlink" title="示例 2：this_fiber::yield 与调度观察（两个 fiber 交替打印）"></a>示例 2：<code>this_fiber::yield</code> 与调度观察（两个 fiber 交替打印）</h3><p>演示协作式调度：两个 fiber 只有在 <code>yield()</code> 或阻塞时才会切换。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">worker</span><span class="hljs-params">(std::string name, <span class="hljs-type">int</span> rounds)</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; rounds; ++i) &#123;<br>        std::cout &lt;&lt; name &lt;&lt; <span class="hljs-string">&quot;: step &quot;</span> &lt;&lt; i<br>                  &lt;&lt; <span class="hljs-string">&quot; (fiber id &quot;</span> &lt;&lt; boost::this_fiber::<span class="hljs-built_in">get_id</span>() &lt;&lt; <span class="hljs-string">&quot;)&quot;</span> &lt;&lt; std::endl;<br>        boost::this_fiber::<span class="hljs-built_in">yield</span>();      <span class="hljs-comment">// 主动让出：另一个 fiber 才能跑</span><br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">a</span><span class="hljs-params">(worker, <span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-number">5</span>)</span></span>;<br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">b</span><span class="hljs-params">(worker, <span class="hljs-string">&quot;B&quot;</span>, <span class="hljs-number">5</span>)</span></span>;<br><br>    <span class="hljs-comment">// 注意：此时 a/b 都还没跑（默认 launch::post），join() 会驱动调度</span><br>    a.<span class="hljs-built_in">join</span>();<br>    b.<span class="hljs-built_in">join</span>();<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>预期输出为 A&#x2F;B 交替（<code>A: step 0</code> &#x2F; <code>B: step 0</code> &#x2F; <code>A: step 1</code> &#x2F; …）。</p>
+<h3 id="示例-3：mutex-保护共享数据"><a href="#示例-3：mutex-保护共享数据" class="headerlink" title="示例 3：mutex 保护共享数据"></a>示例 3：<code>mutex</code> 保护共享数据</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mutex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br>boost::fibers::mutex mtx;<br><span class="hljs-type">long</span> <span class="hljs-type">long</span> shared_counter = <span class="hljs-number">0</span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">adder</span><span class="hljs-params">(<span class="hljs-type">int</span> times)</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; times; ++i) &#123;<br>        <span class="hljs-comment">// fibers::mutex 会挂起 fiber（而非阻塞线程）</span><br>        <span class="hljs-function">std::lock_guard&lt;boost::fibers::mutex&gt; <span class="hljs-title">lk</span><span class="hljs-params">(mtx)</span></span>;<br>        ++shared_counter;<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">const</span> <span class="hljs-type">int</span> per_fiber = <span class="hljs-number">100000</span>;<br>    std::vector&lt;boost::fibers::fiber&gt; fibers;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">4</span>; ++i) &#123;<br>        fibers.<span class="hljs-built_in">emplace_back</span>(adder, per_fiber);<br>    &#125;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; f : fibers) &#123;<br>        f.<span class="hljs-built_in">join</span>();<br>    &#125;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;counter = &quot;</span> &lt;&lt; shared_counter<br>              &lt;&lt; <span class="hljs-string">&quot; (expected &quot;</span> &lt;&lt; <span class="hljs-number">4</span> * per_fiber &lt;&lt; <span class="hljs-string">&quot;)&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> shared_counter == <span class="hljs-number">4LL</span> * per_fiber ? EXIT_SUCCESS : EXIT_FAILURE;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-4：condition-variable-生产者-消费者"><a href="#示例-4：condition-variable-生产者-消费者" class="headerlink" title="示例 4：condition_variable 生产者&#x2F;消费者"></a>示例 4：<code>condition_variable</code> 生产者&#x2F;消费者</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;chrono&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mutex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;queue&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br>boost::fibers::mutex mtx;<br>boost::fibers::condition_variable cnd;<br>std::queue&lt;<span class="hljs-type">int</span>&gt; items;<br><span class="hljs-type">bool</span> producer_done = <span class="hljs-literal">false</span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">producer</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; ++i) &#123;<br>        &#123;<br>            <span class="hljs-function">std::unique_lock&lt;boost::fibers::mutex&gt; <span class="hljs-title">lk</span><span class="hljs-params">(mtx)</span></span>;<br>            items.<span class="hljs-built_in">push</span>(i);<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;produced &quot;</span> &lt;&lt; i &lt;&lt; std::endl;<br>        &#125;                                     <span class="hljs-comment">// 先解锁再通知，减少唤醒后竞争</span><br>        cnd.<span class="hljs-built_in">notify_one</span>();<br>        boost::this_fiber::<span class="hljs-built_in">sleep_for</span>(std::chrono::<span class="hljs-built_in">milliseconds</span>(<span class="hljs-number">10</span>));<br>    &#125;<br>    &#123;<br>        <span class="hljs-function">std::lock_guard&lt;boost::fibers::mutex&gt; <span class="hljs-title">lk</span><span class="hljs-params">(mtx)</span></span>;<br>        producer_done = <span class="hljs-literal">true</span>;<br>    &#125;<br>    cnd.<span class="hljs-built_in">notify_all</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">consumer</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (;;) &#123;<br>        <span class="hljs-function">std::unique_lock&lt;boost::fibers::mutex&gt; <span class="hljs-title">lk</span><span class="hljs-params">(mtx)</span></span>;<br>        <span class="hljs-comment">// 谓词重载：处理「被唤醒但条件不成立」的情况</span><br>        cnd.<span class="hljs-built_in">wait</span>(lk, [] &#123; <span class="hljs-keyword">return</span> !items.<span class="hljs-built_in">empty</span>() || producer_done; &#125;);<br>        <span class="hljs-keyword">if</span> (items.<span class="hljs-built_in">empty</span>()) &#123;                  <span class="hljs-comment">// 队列空且生产者已结束</span><br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>        <span class="hljs-type">int</span> v = items.<span class="hljs-built_in">front</span>();<br>        items.<span class="hljs-built_in">pop</span>();<br>        lk.<span class="hljs-built_in">unlock</span>();<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;consumed &quot;</span> &lt;&lt; v &lt;&lt; std::endl;<br>    &#125;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;consumer done&quot;</span> &lt;&lt; std::endl;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">p</span><span class="hljs-params">(producer)</span></span>;<br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">c</span><span class="hljs-params">(consumer)</span></span>;<br>    p.<span class="hljs-built_in">join</span>();<br>    c.<span class="hljs-built_in">join</span>();<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-5：buffered-channel-生产者-消费者（含-close-后-pop-返回错误）"><a href="#示例-5：buffered-channel-生产者-消费者（含-close-后-pop-返回错误）" class="headerlink" title="示例 5：buffered_channel 生产者&#x2F;消费者（含 close() 后 pop 返回错误）"></a>示例 5：<code>buffered_channel</code> 生产者&#x2F;消费者（含 <code>close()</code> 后 <code>pop</code> 返回错误）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;functional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br><span class="hljs-comment">// capacity 必须是 2 的幂且 &gt;= 2；内部实际最多存 capacity - 1 个元素</span><br><span class="hljs-keyword">typedef</span> boost::fibers::buffered_channel&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-type">channel_t</span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">producer</span><span class="hljs-params">(<span class="hljs-type">channel_t</span>&amp; chan)</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; ++i) &#123;<br>        boost::fibers::channel_op_status st = chan.<span class="hljs-built_in">push</span>(i);<br>        <span class="hljs-keyword">if</span> (boost::fibers::channel_op_status::success != st) &#123;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;push failed&quot;</span> &lt;&lt; std::endl;<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;pushed &quot;</span> &lt;&lt; i &lt;&lt; std::endl;<br>    &#125;<br>    chan.<span class="hljs-built_in">close</span>();                       <span class="hljs-comment">// 关闭：消费端 pop 会得到 closed</span><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;producer closed channel&quot;</span> &lt;&lt; std::endl;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">consumer</span><span class="hljs-params">(<span class="hljs-type">channel_t</span>&amp; chan)</span> </span>&#123;<br>    <span class="hljs-type">int</span> value = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (;;) &#123;<br>        boost::fibers::channel_op_status st = chan.<span class="hljs-built_in">pop</span>(value);<br>        <span class="hljs-keyword">if</span> (boost::fibers::channel_op_status::success == st) &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;popped &quot;</span> &lt;&lt; value &lt;&lt; std::endl;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (boost::fibers::channel_op_status::closed == st) &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;channel closed, consumer exiting&quot;</span> &lt;&lt; std::endl;<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;unexpected status&quot;</span> &lt;&lt; std::endl;<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-type">channel_t</span> <span class="hljs-title">chan</span><span class="hljs-params">(<span class="hljs-number">8</span>)</span></span>;<br><br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">p</span><span class="hljs-params">(producer, std::ref(chan))</span></span>;<br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">c</span><span class="hljs-params">(consumer, std::ref(chan))</span></span>;<br><br>    p.<span class="hljs-built_in">join</span>();<br>    c.<span class="hljs-built_in">join</span>();<br><br>    <span class="hljs-comment">// 关闭后再 push 也会返回 closed（不会抛异常）</span><br>    boost::fibers::channel_op_status st = chan.<span class="hljs-built_in">push</span>(<span class="hljs-number">42</span>);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;push after close returns closed: &quot;</span><br>              &lt;&lt; (boost::fibers::channel_op_status::closed == st) &lt;&lt; std::endl;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>若更喜欢 range-for 写法，官方 <code>examples/range_for.cpp</code> 用 <code>unbuffered_channel&lt;unsigned int&gt;</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">bar</span><span class="hljs-params">(<span class="hljs-type">channel_t</span>&amp; chan)</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> value : chan) &#123; std::cout &lt;&lt; value &lt;&lt; <span class="hljs-string">&quot; &quot;</span>; &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>迭代在通道关闭且取空后自动结束。</p>
+</blockquote>
+<h3 id="示例-6：future-promise-取值与异常传递"><a href="#示例-6：future-promise-取值与异常传递" class="headerlink" title="示例 6：future&#x2F;promise 取值与异常传递"></a>示例 6：<code>future</code>&#x2F;<code>promise</code> 取值与异常传递</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;chrono&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;exception&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdexcept&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br><span class="hljs-comment">// 成功路径：promise 设置值</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">compute</span><span class="hljs-params">(boost::fibers::promise&lt;<span class="hljs-type">int</span>&gt; p, <span class="hljs-type">int</span> n)</span> </span>&#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">int</span> sum = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; ++i) &#123;<br>            sum += i;<br>            boost::this_fiber::<span class="hljs-built_in">yield</span>();<br>        &#125;<br>        p.<span class="hljs-built_in">set_value</span>(sum);<br>    &#125; <span class="hljs-built_in">catch</span> (...) &#123;<br>        p.<span class="hljs-built_in">set_exception</span>(std::<span class="hljs-built_in">current_exception</span>());<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 失败路径：promise 设置异常</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">failing</span><span class="hljs-params">(boost::fibers::promise&lt;<span class="hljs-type">int</span>&gt; p)</span> </span>&#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-keyword">throw</span> std::<span class="hljs-built_in">runtime_error</span>(<span class="hljs-string">&quot;something went wrong&quot;</span>);<br>    &#125; <span class="hljs-built_in">catch</span> (...) &#123;<br>        p.<span class="hljs-built_in">set_exception</span>(std::<span class="hljs-built_in">current_exception</span>());<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-comment">// 1) async()：直接在新 fiber 中执行并拿到 future</span><br>    boost::fibers::future&lt;<span class="hljs-type">int</span>&gt; f1 = boost::fibers::<span class="hljs-built_in">async</span>([] &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">42</span>;<br>    &#125;);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;async result: &quot;</span> &lt;&lt; f<span class="hljs-number">1.</span><span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">// 2) 手动 promise/future</span><br>    boost::fibers::promise&lt;<span class="hljs-type">int</span>&gt; p;<br>    boost::fibers::future&lt;<span class="hljs-type">int</span>&gt; f2 = p.<span class="hljs-built_in">get_future</span>();<br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">fib</span><span class="hljs-params">(compute, std::move(p), <span class="hljs-number">100</span>)</span></span>;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;sum(1..100) = &quot;</span> &lt;&lt; f<span class="hljs-number">2.</span><span class="hljs-built_in">get</span>() &lt;&lt; std::endl;   <span class="hljs-comment">// 挂起直到就绪</span><br>    fib.<span class="hljs-built_in">join</span>();<br><br>    <span class="hljs-comment">// 3) 异常传递</span><br>    boost::fibers::promise&lt;<span class="hljs-type">int</span>&gt; p3;<br>    boost::fibers::future&lt;<span class="hljs-type">int</span>&gt; f3 = p<span class="hljs-number">3.</span><span class="hljs-built_in">get_future</span>();<br>    boost::<span class="hljs-function">fibers::fiber <span class="hljs-title">fib3</span><span class="hljs-params">(failing, std::move(p3))</span></span>;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">int</span> v = f<span class="hljs-number">3.</span><span class="hljs-built_in">get</span>();<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;unexpected value &quot;</span> &lt;&lt; v &lt;&lt; std::endl;<br>    &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;caught from future: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>    &#125;<br>    fib<span class="hljs-number">3.</span><span class="hljs-built_in">join</span>();<br><br>    <span class="hljs-comment">// 4) 限时等待</span><br>    boost::fibers::promise&lt;<span class="hljs-type">int</span>&gt; p4;<br>    boost::fibers::future&lt;<span class="hljs-type">int</span>&gt; f4 = p<span class="hljs-number">4.</span><span class="hljs-built_in">get_future</span>();<br>    boost::fibers::future_status st = f<span class="hljs-number">4.</span><span class="hljs-built_in">wait_for</span>(std::chrono::<span class="hljs-built_in">milliseconds</span>(<span class="hljs-number">10</span>));<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;wait_for -&gt; timeout: &quot;</span><br>              &lt;&lt; (boost::fibers::future_status::timeout == st) &lt;&lt; std::endl;<br>    p<span class="hljs-number">4.</span><span class="hljs-built_in">set_value</span>(<span class="hljs-number">7</span>);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;then get: &quot;</span> &lt;&lt; f<span class="hljs-number">4.</span><span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-7：work-stealing-调度器-多线程运行-fiber"><a href="#示例-7：work-stealing-调度器-多线程运行-fiber" class="headerlink" title="示例 7：work_stealing 调度器 + 多线程运行 fiber"></a>示例 7：<code>work_stealing</code> 调度器 + 多线程运行 fiber</h3><p>源自官方 <code>examples/work_stealing.cpp</code>（去掉未使用的 detail 头文件）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstddef&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mutex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sstream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br><span class="hljs-type">static</span> std::<span class="hljs-type">size_t</span> fiber_count = <span class="hljs-number">0</span>;<br><span class="hljs-type">static</span> std::mutex mtx_count&#123;&#125;;<br><span class="hljs-type">static</span> boost::fibers::condition_variable_any cnd_count&#123;&#125;;<br><span class="hljs-keyword">typedef</span> std::unique_lock&lt;std::mutex&gt; lock_type;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">whatevah</span><span class="hljs-params">(<span class="hljs-type">char</span> me)</span> </span>&#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        std::thread::id my_thread = std::this_thread::<span class="hljs-built_in">get_id</span>();<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;fiber &quot;</span> &lt;&lt; me &lt;&lt; <span class="hljs-string">&quot; started on thread &quot;</span> &lt;&lt; my_thread &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; ++i) &#123;<br>            boost::this_fiber::<span class="hljs-built_in">yield</span>();<br>            std::thread::id new_thread = std::this_thread::<span class="hljs-built_in">get_id</span>();<br>            <span class="hljs-keyword">if</span> (new_thread != my_thread) &#123;          <span class="hljs-comment">// fiber 被迁移到了别的线程</span><br>                my_thread = new_thread;<br>                std::cout &lt;&lt; <span class="hljs-string">&quot;fiber &quot;</span> &lt;&lt; me &lt;&lt; <span class="hljs-string">&quot; switched to thread &quot;</span> &lt;&lt; my_thread &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span>;<br>            &#125;<br>        &#125;<br>    &#125; <span class="hljs-built_in">catch</span> (...) &#123;<br>    &#125;<br>    <span class="hljs-function">lock_type <span class="hljs-title">lk</span><span class="hljs-params">(mtx_count)</span></span>;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-number">0</span> == --fiber_count) &#123;<br>        lk.<span class="hljs-built_in">unlock</span>();<br>        cnd_count.<span class="hljs-built_in">notify_all</span>();<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">thread_fn</span><span class="hljs-params">(std::<span class="hljs-type">uint32_t</span> thread_count)</span> </span>&#123;<br>    <span class="hljs-comment">// 每个线程都必须各自安装调度算法；thread_count 必须一致</span><br>    boost::fibers::<span class="hljs-built_in">use_scheduling_algorithm</span>&lt;boost::fibers::algo::work_stealing&gt;(thread_count);<br>    <span class="hljs-function">lock_type <span class="hljs-title">lk</span><span class="hljs-params">(mtx_count)</span></span>;<br>    cnd_count.<span class="hljs-built_in">wait</span>(lk, [] &#123; <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> == fiber_count; &#125;);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">const</span> std::<span class="hljs-type">uint32_t</span> thread_count = <span class="hljs-number">4</span>;<br><br>    <span class="hljs-comment">// 先启动若干 fiber（此时 main 线程仍是默认 round_robin）</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : std::<span class="hljs-built_in">string</span>(<span class="hljs-string">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span>)) &#123;<br>        boost::fibers::<span class="hljs-built_in">fiber</span>([c] &#123; <span class="hljs-built_in">whatevah</span>(c); &#125;).<span class="hljs-built_in">detach</span>();<br>        ++fiber_count;<br>    &#125;<br><br>    <span class="hljs-comment">// 启动工作线程，各自注册到工作窃取池</span><br>    std::thread threads[] = &#123;<br>        std::<span class="hljs-built_in">thread</span>(thread_fn, thread_count),<br>        std::<span class="hljs-built_in">thread</span>(thread_fn, thread_count),<br>        std::<span class="hljs-built_in">thread</span>(thread_fn, thread_count)<br>    &#125;;<br><br>    <span class="hljs-comment">// main 线程也加入共享池</span><br>    boost::fibers::<span class="hljs-built_in">use_scheduling_algorithm</span>&lt;boost::fibers::algo::work_stealing&gt;(thread_count);<br><br>    &#123;<br>        <span class="hljs-function">lock_type <span class="hljs-title">lk</span><span class="hljs-params">(mtx_count)</span></span>;<br>        cnd_count.<span class="hljs-built_in">wait</span>(lk, [] &#123; <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> == fiber_count; &#125;);<br>    &#125;   <span class="hljs-comment">// 必须先释放锁再 join，否则其他线程会卡在 wait 里造成死锁</span><br><br>    <span class="hljs-keyword">for</span> (std::thread&amp; t : threads) &#123;<br>        t.<span class="hljs-built_in">join</span>();<br>    &#125;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>编译时注意：<code>work_stealing</code> 需要跨线程原子操作，<strong>不能</strong>定义 <code>BOOST_FIBERS_NO_ATOMICS</code>。</p>
+<h3 id="示例-8：与-Boost-Asio-集成（fiber-中调用异步操作）"><a href="#示例-8：与-Boost-Asio-集成（fiber-中调用异步操作）" class="headerlink" title="示例 8：与 Boost.Asio 集成（fiber 中调用异步操作）"></a>示例 8：与 Boost.Asio 集成（fiber 中调用异步操作）</h3><p>思路（§5.3 方式 B）：用 <code>fibers::promise</code> &#x2F; <code>fibers::future</code> 把 Asio 的<strong>回调式</strong>异步操作包装成<br>可在 fiber 内「同步」等待的调用；<code>io_context</code> 跑在<strong>另一个线程</strong>上，因此 fiber 挂起时该线程仍能推进 Asio 的 handler。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 编译：g++ -std=c++17 -O2 -pthread asio_demo.cpp -lboost_fiber -lboost_context -o asio_demo</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;chrono&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio   = boost::asio;<br><span class="hljs-keyword">namespace</span> fibers = boost::fibers;<br><br><span class="hljs-comment">// 把「异步等待定时器」包装成 fibers::future</span><br><span class="hljs-function">fibers::future&lt;boost::system::error_code&gt;</span><br><span class="hljs-function"><span class="hljs-title">async_wait</span><span class="hljs-params">(asio::steady_timer&amp; timer, std::chrono::milliseconds d)</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> p = std::make_shared&lt;fibers::promise&lt;boost::system::error_code&gt;&gt;();<br>    <span class="hljs-keyword">auto</span> f = p-&gt;<span class="hljs-built_in">get_future</span>();<br>    timer.<span class="hljs-built_in">expires_after</span>(d);<br>    timer.<span class="hljs-built_in">async_wait</span>([p](<span class="hljs-type">const</span> boost::system::error_code&amp; ec) &#123; p-&gt;<span class="hljs-built_in">set_value</span>(ec); &#125;);<br>    <span class="hljs-keyword">return</span> f;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    asio::io_context io;<br><br>    <span class="hljs-comment">// io_context 在独立线程上运行，保证 fiber 挂起时 Asio 仍在推进</span><br>    <span class="hljs-keyword">auto</span> work = asio::<span class="hljs-built_in">make_work_guard</span>(io);<br>    <span class="hljs-function">std::thread <span class="hljs-title">io_thread</span><span class="hljs-params">([&amp;] &#123; io.run(); &#125;)</span></span>;<br><br>    <span class="hljs-function">asio::steady_timer <span class="hljs-title">timer</span><span class="hljs-params">(io)</span></span>;<br><br>    <span class="hljs-function">fibers::fiber <span class="hljs-title">f</span><span class="hljs-params">([&amp;] &#123;</span></span><br><span class="hljs-params"><span class="hljs-function">        <span class="hljs-comment">// .get() 只挂起当前 fiber，不阻塞线程</span></span></span><br><span class="hljs-params"><span class="hljs-function">        <span class="hljs-keyword">auto</span> ec = async_wait(timer, std::chrono::milliseconds(<span class="hljs-number">100</span>)).get();</span></span><br><span class="hljs-params"><span class="hljs-function">        std::cout &lt;&lt; <span class="hljs-string">&quot;timer fired, ec = &quot;</span> &lt;&lt; ec.message() &lt;&lt; std::endl;</span></span><br><span class="hljs-params"><span class="hljs-function"></span></span><br><span class="hljs-params"><span class="hljs-function">        <span class="hljs-comment">// 普通的 fiber 同步原语在这里同样可用</span></span></span><br><span class="hljs-params"><span class="hljs-function">        boost::this_fiber::sleep_for(std::chrono::milliseconds(<span class="hljs-number">50</span>));</span></span><br><span class="hljs-params"><span class="hljs-function">        std::cout &lt;&lt; <span class="hljs-string">&quot;slept 50ms inside fiber&quot;</span> &lt;&lt; std::endl;</span></span><br><span class="hljs-params"><span class="hljs-function">    &#125;)</span></span>;<br>    f.<span class="hljs-built_in">join</span>();<br><br>    work.<span class="hljs-built_in">reset</span>();<br>    io_thread.<span class="hljs-built_in">join</span>();<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>官方 <code>examples/asio/</code> 的做法</strong>（§5.3 方式 A）：引入 <code>round_robin.hpp</code> 调度器 + <code>yield</code> 完成令牌，<br>让 fiber 与 Asio handler 在<strong>同一个</strong>线程上协作调度，fiber 内可直接写<br><code>socket.async_read_some(buffer, boost::fibers::asio::yield[ec]);</code>。<br>它需要从 Boost 源码包的 <code>libs/fiber/examples/asio/</code> 拷贝 <code>yield.hpp</code>、<code>detail/yield.hpp</code>、<br><code>round_robin.hpp</code> 三个文件——这些是<strong>示例代码</strong>，不在 Boost 安装的 include 路径中，因此本示例改用上面的自包含写法。</p>
+</blockquote>
+<h3 id="示例-9：barrier-让多个-fiber-同时起跑"><a href="#示例-9：barrier-让多个-fiber-同时起跑" class="headerlink" title="示例 9：barrier 让多个 fiber 同时起跑"></a>示例 9：<code>barrier</code> 让多个 fiber 同时起跑</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;functional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/fiber/all.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">runner</span><span class="hljs-params">(<span class="hljs-type">int</span> id, boost::fibers::barrier&amp; b)</span> </span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;fiber &quot;</span> &lt;&lt; id &lt;&lt; <span class="hljs-string">&quot; ready, waiting at barrier&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-type">bool</span> last = b.<span class="hljs-built_in">wait</span>();          <span class="hljs-comment">// 第 n 个到达者返回 true</span><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;fiber &quot;</span> &lt;&lt; id &lt;&lt; <span class="hljs-string">&quot; passed barrier&quot;</span><br>              &lt;&lt; (last ? <span class="hljs-string">&quot; (last one)&quot;</span> : <span class="hljs-string">&quot;&quot;</span>) &lt;&lt; std::endl;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">const</span> <span class="hljs-type">int</span> n = <span class="hljs-number">4</span>;<br>    boost::<span class="hljs-function">fibers::barrier <span class="hljs-title">b</span><span class="hljs-params">(n)</span></span>;   <span class="hljs-comment">// 需要 n 个 fiber 会合</span><br><br>    std::vector&lt;boost::fibers::fiber&gt; fibers;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; ++i) &#123;<br>        fibers.<span class="hljs-built_in">emplace_back</span>(runner, i, std::<span class="hljs-built_in">ref</span>(b));<br>    &#125;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; f : fibers) &#123;<br>        f.<span class="hljs-built_in">join</span>();<br>    &#125;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;done.&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> EXIT_SUCCESS;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-常见问题与陷阱"><a href="#7-常见问题与陷阱" class="headerlink" title="7. 常见问题与陷阱"></a>7. 常见问题与陷阱</h2><h3 id="7-1-fiber-不是线程：不能用-thread-local-存「当前-fiber-的数据」"><a href="#7-1-fiber-不是线程：不能用-thread-local-存「当前-fiber-的数据」" class="headerlink" title="7.1 fiber 不是线程：不能用 thread_local 存「当前 fiber 的数据」"></a>7.1 fiber 不是线程：不能用 <code>thread_local</code> 存「当前 fiber 的数据」</h3><ul>
+<li><strong>问题</strong>：在 fiber 内用 <code>thread_local</code> 变量保存每个逻辑任务的上下文，结果多个 fiber 互相覆盖数据。</li>
+<li><strong>原因</strong>：<code>thread_local</code> 的作用域是<strong>线程</strong>。一个线程上会并发运行成千上万个 fiber，它们共享同一份 <code>thread_local</code>。</li>
+<li><strong>解决</strong>：改用 <code>boost::fibers::fiber_specific_ptr&lt;T&gt;</code>（<code>&lt;boost/fiber/fss.hpp&gt;</code>），并为它提供清理函数；该对象必须活得比所有使用它的 fiber 更久（通常为全局&#x2F;静态）。另外注意 <code>fiber_specific_ptr</code> 初始值是 <code>nullptr</code>，不像 <code>thread_local</code> 会默认构造。</li>
+</ul>
+<h3 id="7-2-fiber-函数抛出的异常会导致-std-terminate"><a href="#7-2-fiber-函数抛出的异常会导致-std-terminate" class="headerlink" title="7.2 fiber 函数抛出的异常会导致 std::terminate()"></a>7.2 fiber 函数抛出的异常会导致 <code>std::terminate()</code></h3><ul>
+<li><strong>问题</strong>：fiber 函数体里抛出未捕获异常，程序直接崩溃，且 <code>join()</code> 处什么都收不到。</li>
+<li><strong>原因</strong>：fiber 有自己的栈与执行上下文，异常无法跨上下文传播；库在 fiber 顶层调用 <code>std::terminate()</code>。<code>join()</code> 只报告「结束了」，不报告「怎么结束的」。</li>
+<li><strong>解决</strong>：<ol>
+<li>在 fiber 函数内<strong>总是</strong>包 <code>try/catch(...)</code>；</li>
+<li>需要把异常传回调用方时，用 <code>promise::set_exception(std::current_exception())</code> + <code>future::get()</code>（<code>future::get()</code> 会重新抛出）；</li>
+<li>在 <code>main</code> 与线程函数最外层也加 <code>try/catch</code>，避免其他 Boost.Fiber API 抛出的异常直接终止进程。</li>
+</ol>
+</li>
+</ul>
+<h3 id="7-3-fiber-数量可以很多，但受栈内存限制"><a href="#7-3-fiber-数量可以很多，但受栈内存限制" class="headerlink" title="7.3 fiber 数量可以很多，但受栈内存限制"></a>7.3 fiber 数量可以很多，但受栈内存限制</h3><ul>
+<li><strong>问题</strong>：想创建几十万 fiber，结果内存耗尽 &#x2F; 分配极慢 &#x2F; 栈溢出。</li>
+<li><strong>原因</strong>：每个 fiber 有独立栈，默认 <code>fixedsize_stack</code> 使用 Boost.Context 的默认大小（通常 128 KB）。10 万个 fiber ≈ 12 GB 虚拟内存。</li>
+<li><strong>解决</strong>：<ul>
+<li>显式指定更小的栈：<code>boost::fibers::fiber(std::allocator_arg, boost::context::fixedsize_stack(64 * 1024), fn)</code>；</li>
+<li>开发&#x2F;测试期用 <code>boost::fibers::protected_fixedsize_stack</code>（带保护页，栈越界立刻段错误，便于定位；但分配开销大）；</li>
+<li>频繁创建&#x2F;销毁同类 fiber 时用 <code>boost::fibers::pooled_fixedsize_stack</code>（基于 <code>boost::pool</code>，<strong>非线程安全</strong>，每个线程一份实例）；</li>
+<li>需要栈按需增长时用 <code>boost::fibers::segmented_stack</code>（需定义 <code>BOOST_USE_SEGMENTED_STACKS</code> 且以 <code>context-impl=ucontext</code> 构建 Boost.Context，仅 gcc ≥ 4.7 &#x2F; clang ≥ 3.4）。</li>
+<li>另外：减少 fiber 数量本身（用线程池 + 任务队列）往往比压栈更有效。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-4-join-之前必须保持-fiber-对象存活"><a href="#7-4-join-之前必须保持-fiber-对象存活" class="headerlink" title="7.4 join() 之前必须保持 fiber 对象存活"></a>7.4 <code>join()</code> 之前必须保持 <code>fiber</code> 对象存活</h3><ul>
+<li><strong>问题</strong>：在循环或作用域里临时构造 <code>fiber</code> 后立刻被析构，程序在析构点 <code>std::terminate()</code>。</li>
+<li><strong>原因</strong>：<code>fiber::~fiber()</code> 在 <code>joinable()</code> 为真时调用 <code>std::terminate()</code>（与 <code>std::thread</code> 一致）。</li>
+<li><strong>解决</strong>：<ol>
+<li>把 <code>fiber</code> 对象保存到容器&#x2F;成员变量中，或延长其生命周期到 <code>join()</code> 之后；</li>
+<li>不关心结果时显式 <code>detach()</code>；</li>
+<li>记住 <code>join()</code> 之后对象变为 not-a-fiber，可以安全析构；</li>
+<li><code>fiber</code> 是 move-only，存入 <code>std::vector</code> 请用 <code>emplace_back</code> &#x2F; <code>push_back(std::move(f))</code>。</li>
+</ol>
+</li>
+</ul>
+<h3 id="7-5-调度器必须在使用前设置，且每个线程各自设置"><a href="#7-5-调度器必须在使用前设置，且每个线程各自设置" class="headerlink" title="7.5 调度器必须在使用前设置，且每个线程各自设置"></a>7.5 调度器必须在使用前设置，且每个线程各自设置</h3><ul>
+<li><strong>问题</strong>：调用 <code>use_scheduling_algorithm&lt;algo::work_stealing&gt;(n)</code> 后，其他线程上的 fiber 仍然只在本线程跑；或某些线程根本没参与共享调度。</li>
+<li><strong>原因</strong>：调度器是<strong>每线程一个</strong>，<code>use_scheduling_algorithm</code> 只影响当前线程；而 <code>work_stealing</code> 的 <code>thread_count</code> 参数必须所有参与线程传<strong>相同</strong>值。</li>
+<li><strong>解决</strong>：<ol>
+<li>在<strong>每个</strong>要参与的线程开头调用一次 <code>use_scheduling_algorithm&lt;...&gt;()</code>，并且要在该线程上创建&#x2F;操作 fiber <strong>之前</strong>调用；</li>
+<li>所有线程传一致的 <code>thread_count</code>（通常等于参与线程总数）；</li>
+<li>主线程也要调用（否则主线程上的 fiber 不进入共享池）；</li>
+<li>若希望空闲线程真正挂起而不是忙等，用 <code>work_stealing(thread_count, /*suspend=*/true)</code>。</li>
+</ol>
+</li>
+</ul>
+<h3 id="7-6-阻塞的系统调用会卡住整个线程上的所有-fiber"><a href="#7-6-阻塞的系统调用会卡住整个线程上的所有-fiber" class="headerlink" title="7.6 阻塞的系统调用会卡住整个线程上的所有 fiber"></a>7.6 阻塞的系统调用会卡住整个线程上的所有 fiber</h3><ul>
+<li><strong>问题</strong>：某个 fiber 调用了 <code>read()</code>&#x2F;<code>fread()</code>&#x2F;<code>std::this_thread::sleep_for()</code>&#x2F;同步 HTTP 请求等阻塞调用，同一线程上其他 fiber 全部停止响应。</li>
+<li><strong>原因</strong>：Boost.Fiber 是<strong>协作式</strong>的，只有 fiber 感知的 API 才会让出。阻塞的<strong>系统调用</strong>会阻塞整个 OS 线程，调度器自然无法运行。</li>
+<li><strong>解决</strong>：<ol>
+<li>把阻塞 I&#x2F;O 换成非阻塞 I&#x2F;O + 事件循环（Boost.Asio + <code>round_robin</code> 调度器 + <code>yield</code>）；</li>
+<li>或临时方案：用 <code>this_fiber::yield()</code> 轮询（见 §5.3 方式 C）；</li>
+<li>或把阻塞操作隔离到专用的 <code>std::thread</code> 中，通过 <code>buffered_channel</code> &#x2F; <code>future</code> 与 fiber 通信；</li>
+<li>长计算循环必须周期性调用 <code>this_fiber::yield()</code>。</li>
+</ol>
+</li>
+</ul>
+<h3 id="7-7-用-std-mutex-std-condition-variable-做-fiber-同步"><a href="#7-7-用-std-mutex-std-condition-variable-做-fiber-同步" class="headerlink" title="7.7 用 std::mutex &#x2F; std::condition_variable 做 fiber 同步"></a>7.7 用 <code>std::mutex</code> &#x2F; <code>std::condition_variable</code> 做 fiber 同步</h3><ul>
+<li><strong>问题</strong>：在 fiber 里用 <code>std::mutex</code> 等待，性能差甚至整体卡死。</li>
+<li><strong>原因</strong>：<code>std::mutex::lock()</code> 竞争时会<strong>阻塞整个线程</strong>，该线程上的其他 fiber 也无法运行（对比 <code>fibers::mutex</code> 只挂起当前 fiber）。<code>std::condition_variable</code> 同理。</li>
+<li><strong>解决</strong>：fiber 间同步用 <code>boost::fibers::mutex</code> &#x2F; <code>condition_variable</code>（配 <code>fibers::mutex</code>）&#x2F; <code>condition_variable_any</code>（配 <code>std::mutex</code>）&#x2F; <code>buffered_channel</code>。只有<strong>跨线程</strong>共享数据时才用 <code>std::mutex</code>，且要避免在 fiber 内长时间持锁等待。</li>
+</ul>
+<h3 id="7-8-buffered-channel-的-capacity-不是元素个数"><a href="#7-8-buffered-channel-的-capacity-不是元素个数" class="headerlink" title="7.8 buffered_channel 的 capacity 不是元素个数"></a>7.8 <code>buffered_channel</code> 的 <code>capacity</code> 不是元素个数</h3><ul>
+<li><strong>问题</strong>：构造 <code>buffered_channel&lt;int&gt; chan(1)</code> 抛 <code>std::invalid_argument</code>；或以为容量为 8 的通道能存 8 个元素。</li>
+<li><strong>原因</strong>：<code>capacity</code> 必须是 <strong>2 的幂且 ≥ 2</strong>（否则抛 <code>std::invalid_argument</code>）；且内部<strong>最多存 <code>capacity - 1</code> 个元素</strong>，达到该数量即视为「满」。</li>
+<li><strong>解决</strong>：按「能存多少元素」+1 来选容量，并向上取 2 的幂（例如想存 7 个就用 8）。判断关闭请检查 <code>pop()</code>&#x2F;<code>try_pop()</code> 返回的 <code>channel_op_status::closed</code>（官方 API 没有 <code>is_closed()</code>）。</li>
+</ul>
+<h3 id="7-9-future-未就绪时-promise-被销毁-→-broken-promise"><a href="#7-9-future-未就绪时-promise-被销毁-→-broken-promise" class="headerlink" title="7.9 future 未就绪时 promise 被销毁 → broken_promise"></a>7.9 <code>future</code> 未就绪时 <code>promise</code> 被销毁 → <code>broken_promise</code></h3><ul>
+<li><strong>问题</strong>：<code>future::get()</code> 抛出 <code>boost::fibers::future_error</code>，错误码 <code>broken_promise</code>。</li>
+<li><strong>原因</strong>：<code>promise</code> 析构时既没 <code>set_value()</code> 也没 <code>set_exception()</code>，共享状态被标记为「已放弃」。</li>
+<li><strong>解决</strong>：确保每条代码路径（包括异常路径）都调用 <code>set_value()</code> 或 <code>set_exception()</code>；用 <code>try/catch(...)</code> 包住 fiber 主体并在 <code>catch</code> 里 <code>p.set_exception(std::current_exception())</code>。另外 <code>get_future()</code> 每个 <code>promise</code> 只能调用一次，重复调用会抛 <code>future_error</code>。</li>
+</ul>
+<hr>
+<h2 id="8-参考资料"><a href="#8-参考资料" class="headerlink" title="8. 参考资料"></a>8. 参考资料</h2><h3 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h3><ul>
+<li>Boost.Fiber 总目录：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/index.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/index.html</a></li>
+<li>概述（Overview）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/overview.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/overview.html</a></li>
+<li>设计动机（Rationale）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/rationale.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/rationale.html</a></li>
+<li>fiber 管理（Fiber management）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt.html</a><ul>
+<li><code>fiber</code> 类：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt/fiber.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt/fiber.html</a></li>
+<li><code>fiber::id</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt/id.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt/id.html</a></li>
+<li><code>this_fiber</code> 命名空间：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt/this_fiber.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fiber_mgmt/this_fiber.html</a></li>
+<li>栈分配器：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/stack.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/stack.html</a></li>
+</ul>
+</li>
+<li>调度（Scheduling，含 algorithm &#x2F; round_robin &#x2F; work_stealing &#x2F; shared_work &#x2F; fiber_properties）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/scheduling.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/scheduling.html</a></li>
+<li>同步（Synchronization）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization.html</a><ul>
+<li>互斥量：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/mutex_types.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/mutex_types.html</a></li>
+<li>条件变量：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/conditions.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/conditions.html</a></li>
+<li>barrier：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/barriers.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/barriers.html</a></li>
+<li>通道（channels）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/channels.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/channels.html</a><ul>
+<li><code>buffered_channel</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/channels/buffered_channel.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/channels/buffered_channel.html</a></li>
+<li><code>unbuffered_channel</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/channels/unbuffered_channel.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/channels/unbuffered_channel.html</a></li>
+</ul>
+</li>
+<li>future&#x2F;promise：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures.html</a><ul>
+<li><code>future</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures/future.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures/future.html</a></li>
+<li><code>promise</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures/promise.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures/promise.html</a></li>
+<li><code>packaged_task</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures/packaged_task.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/synchronization/futures/packaged_task.html</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>fiber 本地存储（FLS）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fls.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/fls.html</a></li>
+<li>fiber 迁移（Migration）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/migration.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/migration.html</a></li>
+<li>与异步框架集成（回调改造）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/callbacks.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/callbacks.html</a><ul>
+<li>与 Boost.Asio 集成：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/callbacks/then_there_s____boost_asio__.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/callbacks/then_there_s____boost_asio__.html</a></li>
+</ul>
+</li>
+<li>非阻塞 API 适配：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/callbacks/adapt_nonblocking.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/callbacks/adapt_nonblocking.html</a></li>
+<li>与已有主循环集成：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/integration.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/integration.html</a><ul>
+<li>事件驱动程序：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/integration/event_driven_program.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/integration/event_driven_program.html</a></li>
+<li>嵌入已有主循环：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/integration/embedded_main_loop.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/integration/embedded_main_loop.html</a></li>
+</ul>
+</li>
+<li>自定义调度器（Custom scheduler）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/custom.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/custom.html</a></li>
+<li>工作线程（Worker threads）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/worker.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/worker.html</a></li>
+<li>性能（Performance）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/performance.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/performance.html</a></li>
+<li>调优（Tuning）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/tuning.html">https://www.boost.org/doc/libs/latest/libs/fiber/doc/html/fiber/tuning.html</a></li>
+</ul>
+<h3 id="官方示例"><a href="#官方示例" class="headerlink" title="官方示例"></a>官方示例</h3><ul>
+<li>examples 目录：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/tree/develop/examples">https://github.com/boostorg/fiber/tree/develop/examples</a></li>
+<li><code>simple.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/simple.cpp">https://github.com/boostorg/fiber/blob/develop/examples/simple.cpp</a></li>
+<li><code>join.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/join.cpp">https://github.com/boostorg/fiber/blob/develop/examples/join.cpp</a></li>
+<li><code>ping_pong.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/ping_pong.cpp">https://github.com/boostorg/fiber/blob/develop/examples/ping_pong.cpp</a></li>
+<li><code>barrier.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/barrier.cpp">https://github.com/boostorg/fiber/blob/develop/examples/barrier.cpp</a></li>
+<li><code>future.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/future.cpp">https://github.com/boostorg/fiber/blob/develop/examples/future.cpp</a></li>
+<li><code>range_for.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/range_for.cpp">https://github.com/boostorg/fiber/blob/develop/examples/range_for.cpp</a></li>
+<li><code>work_stealing.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/work_stealing.cpp">https://github.com/boostorg/fiber/blob/develop/examples/work_stealing.cpp</a></li>
+<li><code>work_sharing.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/work_sharing.cpp">https://github.com/boostorg/fiber/blob/develop/examples/work_sharing.cpp</a></li>
+<li><code>priority.cpp</code>（自定义调度器 + fiber_properties）：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/priority.cpp">https://github.com/boostorg/fiber/blob/develop/examples/priority.cpp</a></li>
+<li><code>adapt_callbacks.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/adapt_callbacks.cpp">https://github.com/boostorg/fiber/blob/develop/examples/adapt_callbacks.cpp</a></li>
+<li><code>adapt_nonblocking.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/adapt_nonblocking.cpp">https://github.com/boostorg/fiber/blob/develop/examples/adapt_nonblocking.cpp</a></li>
+<li><code>wait_stuff.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/wait_stuff.cpp">https://github.com/boostorg/fiber/blob/develop/examples/wait_stuff.cpp</a></li>
+<li>Asio 集成示例：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/tree/develop/examples/asio">https://github.com/boostorg/fiber/tree/develop/examples/asio</a><ul>
+<li><code>round_robin.hpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/asio/round_robin.hpp">https://github.com/boostorg/fiber/blob/develop/examples/asio/round_robin.hpp</a></li>
+<li><code>yield.hpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/asio/yield.hpp">https://github.com/boostorg/fiber/blob/develop/examples/asio/yield.hpp</a></li>
+<li><code>detail/yield.hpp</code>（<code>yield_t</code> 的 <code>async_result</code> 特化，为各种 Asio 异步操作提供完成令牌支持）：<br><a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/asio/detail/yield.hpp">https://github.com/boostorg/fiber/blob/develop/examples/asio/detail/yield.hpp</a></li>
+<li><code>exchange.cpp</code>：<a target="_blank" rel="noopener" href="https://github.com/boostorg/fiber/blob/develop/examples/asio/exchange.cpp">https://github.com/boostorg/fiber/blob/develop/examples/asio/exchange.cpp</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul>
+<li>Boost.Context 文档（栈分配器与上下文切换）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/context/doc/html/index.html">https://www.boost.org/doc/libs/latest/libs/context/doc/html/index.html</a></li>
+<li>Boost.Asio 文档（<code>yield</code> 完成令牌机制）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html</a></li>
+<li>提案 N4045（Library Foundations for Asynchronous Operations, Revision 2）：<a target="_blank" rel="noopener" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4045.pdf">https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4045.pdf</a></li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/boost-fiber/" class="tag-item">
+                    boost.fiber
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/18/03-fiber/">https://narciostyx.github.io/2025/11/18/03-fiber/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/18/02-beast/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">boost.beast</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/18/C++20%20concepts/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++20 concepts</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

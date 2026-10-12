@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | boost.redis</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Boost-Redis-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3"><span class="toc-number">1.</span> <span class="toc-text">Boost.Redis 使用文档</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.</span> <span class="toc-text">1. 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91"><span class="toc-number">1.3.</span> <span class="toc-text">2. 依赖与编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F%E4%B8%80%EF%BC%9A%E9%93%BE%E6%8E%A5%E5%B7%B2%E7%BC%96%E8%AF%91%E5%BA%93%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">1.3.1.</span> <span class="toc-text">2.1 构建方式一：链接已编译库（推荐）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F%E4%BA%8C%EF%BC%9Aheader-only"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.2 构建方式二：header-only</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-CMake"><span class="toc-number">1.3.3.</span> <span class="toc-text">2.3 CMake</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E8%BF%90%E8%A1%8C%E5%89%8D%E6%8F%90%EF%BC%9A%E5%87%86%E5%A4%87%E4%B8%80%E4%B8%AA-Redis-%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.3.4.</span> <span class="toc-text">2.4 运行前提：准备一个 Redis 服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.4.</span> <span class="toc-text">3. 核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-io-context-%E9%A9%B1%E5%8A%A8%E4%B8%80%E5%88%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">3.1 io_context 驱动一切</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-connection%EF%BC%9A%E9%95%BF%E6%9C%9F%E5%AD%98%E6%B4%BB%E7%9A%84%E8%BF%9E%E6%8E%A5%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.4.2.</span> <span class="toc-text">3.2 connection：长期存活的连接对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E8%AF%B7%E6%B1%82-%E5%93%8D%E5%BA%94%E6%A8%A1%E5%9E%8B%E4%B8%8E-async-exec"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.3 请求&#x2F;响应模型与 async_exec</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-RESP3-%E5%8D%8F%E8%AE%AE%E4%B8%8E%E5%93%8D%E5%BA%94%E9%80%82%E9%85%8D"><span class="toc-number">1.4.4.</span> <span class="toc-text">3.4 RESP3 协议与响应适配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%EF%BC%88Push-%E6%B6%88%E6%81%AF%EF%BC%89"><span class="toc-number">1.4.5.</span> <span class="toc-text">3.5 发布订阅（Push 消息）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E5%93%A8%E5%85%B5%EF%BC%88Sentinel%EF%BC%89"><span class="toc-number">1.4.6.</span> <span class="toc-text">3.6 哨兵（Sentinel）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-SSL-TLS"><span class="toc-number">1.4.7.</span> <span class="toc-text">3.7 SSL &#x2F; TLS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88Pipeline%EF%BC%89"><span class="toc-number">1.4.8.</span> <span class="toc-text">3.8 流水线（Pipeline）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-9-%E5%85%B3%E4%BA%8E%E3%80%8C%E5%8E%8B%E7%BC%A9%E3%80%8D"><span class="toc-number">1.4.9.</span> <span class="toc-text">3.9 关于「压缩」</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-10-%E6%97%A5%E5%BF%97"><span class="toc-number">1.4.10.</span> <span class="toc-text">3.10 日志</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98"><span class="toc-number">1.5.</span> <span class="toc-text">4. 常用类与成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%B1%BB%E6%80%BB%E8%A7%88"><span class="toc-number">1.5.1.</span> <span class="toc-text">4.1 类总览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%80%90%E4%B8%AA%E7%B1%BB%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.5.2.</span> <span class="toc-text">4.2 逐个类详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-connection"><span class="toc-number">1.5.2.1.</span> <span class="toc-text">boost::redis::connection</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-config-%E4%B8%8E-boost-redis-address"><span class="toc-number">1.5.2.2.</span> <span class="toc-text">boost::redis::config 与 boost::redis::address</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-request-%E4%B8%8E-request-config"><span class="toc-number">1.5.2.3.</span> <span class="toc-text">boost::redis::request 与 request::config</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-response"><span class="toc-number">1.5.2.4.</span> <span class="toc-text">boost::redis::response&lt;Ts...&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-generic-response-%E4%B8%8E-boost-redis-resp3-node"><span class="toc-number">1.5.2.5.</span> <span class="toc-text">boost::redis::generic_response 与 boost::redis::resp3::node</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-resp3-type-%E4%B8%8E-resp3-to-string"><span class="toc-number">1.5.2.6.</span> <span class="toc-text">boost::redis::resp3::type 与 resp3::to_string()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-error-%E4%B8%8E-make-error-code"><span class="toc-number">1.5.2.7.</span> <span class="toc-text">boost::redis::error 与 make_error_code()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-ignore-t-%E4%B8%8E-boost-redis-ignore"><span class="toc-number">1.5.2.8.</span> <span class="toc-text">boost::redis::ignore_t 与 boost::redis::ignore</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-operation"><span class="toc-number">1.5.2.9.</span> <span class="toc-text">boost::redis::operation</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-logger"><span class="toc-number">1.5.2.10.</span> <span class="toc-text">boost::redis::logger</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-usage"><span class="toc-number">1.5.2.11.</span> <span class="toc-text">boost::redis::usage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-redis-any-adapter-%E4%B8%8E-boost-redis-adapter-result"><span class="toc-number">1.5.2.12.</span> <span class="toc-text">boost::redis::any_adapter 与 boost::redis::adapter::result&lt;Value&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E9%85%8D%E7%B1%BB%E5%9E%8B%E9%80%9F%E6%9F%A5"><span class="toc-number">1.5.2.13.</span> <span class="toc-text">适配类型速查</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.5.2.14.</span> <span class="toc-text">高级：自定义序列化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%EF%BC%9ASSL-%E4%B8%8A%E4%B8%8B%E6%96%87%E3%80%81Sentinel%E3%80%81rebind-executor"><span class="toc-number">1.5.2.15.</span> <span class="toc-text">高级：SSL 上下文、Sentinel、rebind_executor</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.</span> <span class="toc-text">5. 使用流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E8%BF%9E%E6%8E%A5-%E5%8F%91%E9%80%81%E8%AF%B7%E6%B1%82-%E5%A4%84%E7%90%86%E5%93%8D%E5%BA%94"><span class="toc-number">1.6.1.</span> <span class="toc-text">5.1 连接 + 发送请求 + 处理响应</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E8%AE%A2%E9%98%85%EF%BC%88Pub-Sub%EF%BC%89%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.2.</span> <span class="toc-text">5.2 订阅（Pub&#x2F;Sub）流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD"><span class="toc-number">1.6.3.</span> <span class="toc-text">5.3 优雅关闭</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.7.</span> <span class="toc-text">6. 代码示例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1%EF%BC%9AC-20-%E5%8D%8F%E7%A8%8B%E6%9C%80%E5%B0%8F%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.7.1.</span> <span class="toc-text">示例 1：C++20 协程最小示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2%EF%BC%9AC-17-%E5%9B%9E%E8%B0%83%E7%89%88%E6%9C%AC%E6%9C%80%E5%B0%8F%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.7.2.</span> <span class="toc-text">示例 2：C++17 回调版本最小示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-3%EF%BC%9A%E7%94%A8-response-%E8%A7%A3%E6%9E%90-SET-GET-INCR"><span class="toc-number">1.7.3.</span> <span class="toc-text">示例 3：用 response&lt;std::string, int64_t&gt; 解析 SET &#x2F; GET &#x2F; INCR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-4%EF%BC%9Ageneric-response-%E9%81%8D%E5%8E%86-resp3-node-%E5%A4%84%E7%90%86%E4%BB%BB%E6%84%8F%E5%93%8D%E5%BA%94"><span class="toc-number">1.7.4.</span> <span class="toc-text">示例 4：generic_response + 遍历 resp3::node 处理任意响应</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-5%EF%BC%9A%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%EF%BC%88SUBSCRIBE-push-%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-number">1.7.5.</span> <span class="toc-text">示例 5：发布订阅（SUBSCRIBE + push 处理）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-6%EF%BC%9A%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88%E4%B8%80%E6%AC%A1%E5%8F%91%E9%80%81%E5%A4%9A%E6%9D%A1%E5%91%BD%E4%BB%A4%EF%BC%89"><span class="toc-number">1.7.6.</span> <span class="toc-text">示例 6：流水线（一次发送多条命令）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-7%EF%BC%9A%E9%85%8D%E7%BD%AE%E7%94%A8%E6%88%B7%E5%90%8D-%E5%AF%86%E7%A0%81-SSL-%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.7.7.</span> <span class="toc-text">示例 7：配置用户名 &#x2F; 密码 &#x2F; SSL 连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-8%EF%BC%9A%E8%B6%85%E6%97%B6%E6%8E%A7%E5%88%B6%E3%80%81%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%E4%B8%8E%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E"><span class="toc-number">1.7.8.</span> <span class="toc-text">示例 8：超时控制、健康检查与自动重连</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-9%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89%EF%BC%9A%E7%94%A8-Sentinel-%E8%A7%A3%E6%9E%90%E4%B8%BB%E8%8A%82%E7%82%B9%E5%9C%B0%E5%9D%80"><span class="toc-number">1.7.9.</span> <span class="toc-text">示例 9（可选）：用 Sentinel 解析主节点地址</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1"><span class="toc-number">1.8.</span> <span class="toc-text">7. 常见问题与陷阱</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E9%97%AE%E9%A2%98%EF%BC%9Aasync-exec-%E4%B8%80%E7%9B%B4%E4%B8%8D%E8%BF%94%E5%9B%9E%EF%BC%8C%E7%A8%8B%E5%BA%8F%E5%83%8F%E5%8D%A1%E4%BD%8F%E4%BA%86"><span class="toc-number">1.8.1.</span> <span class="toc-text">7.1 问题：async_exec 一直不返回，程序像卡住了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E9%97%AE%E9%A2%98%EF%BC%9A%E8%BF%9E%E6%8E%A5%E5%BB%BA%E7%AB%8B%E5%89%8D%E8%B0%83%E7%94%A8-async-exec%EF%BC%8C%E6%98%AF%E5%BA%94%E8%AF%A5%E7%AD%89%E5%BE%85%E8%BF%98%E6%98%AF%E7%AB%8B%E5%8D%B3%E5%A4%B1%E8%B4%A5%EF%BC%9F"><span class="toc-number">1.8.2.</span> <span class="toc-text">7.2 问题：连接建立前调用 async_exec，是应该等待还是立即失败？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E9%97%AE%E9%A2%98%EF%BC%9A%E7%A8%8B%E5%BA%8F%E9%9A%8F%E6%9C%BA%E5%B4%A9%E6%BA%83-async-run-%E8%AE%BF%E9%97%AE%E5%B7%B2%E9%87%8A%E6%94%BE%E7%9A%84-connection"><span class="toc-number">1.8.3.</span> <span class="toc-text">7.3 问题：程序随机崩溃 &#x2F; async_run 访问已释放的 connection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E9%97%AE%E9%A2%98%EF%BC%9A%E4%BB%80%E4%B9%88%E9%83%BD%E6%B2%A1%E5%8F%91%E7%94%9F%EF%BC%8C%E5%9B%9E%E8%B0%83%E4%B8%80%E6%AC%A1%E9%83%BD%E6%B2%A1%E8%A2%AB%E8%B0%83%E7%94%A8"><span class="toc-number">1.8.4.</span> <span class="toc-text">7.4 问题：什么都没发生，回调一次都没被调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-%E9%97%AE%E9%A2%98%EF%BC%9A%E8%AE%A2%E9%98%85%E5%88%B0%E4%BA%86%E6%B6%88%E6%81%AF%EF%BC%8C%E4%BD%86-response-%E9%87%8C%E8%AF%BB%E4%B8%8D%E5%88%B0"><span class="toc-number">1.8.5.</span> <span class="toc-text">7.5 问题：订阅到了消息，但 response&lt;...&gt; 里读不到</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-6-%E9%97%AE%E9%A2%98%EF%BC%9Aasync-exec-%E6%88%90%E5%8A%9F%E4%BD%86-std-get-resp-value-%E6%8A%9B%E5%BC%82%E5%B8%B8"><span class="toc-number">1.8.6.</span> <span class="toc-text">7.6 问题：async_exec 成功但 std::get&lt;N&gt;(resp).value() 抛异常</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-7-%E9%97%AE%E9%A2%98%EF%BC%9A%E8%AF%B7%E6%B1%82%E9%95%BF%E6%97%B6%E9%97%B4%E6%8C%82%E8%B5%B7%EF%BC%8C%E6%97%A0%E6%B3%95%E8%AE%BE%E7%BD%AE%E8%B6%85%E6%97%B6"><span class="toc-number">1.8.7.</span> <span class="toc-text">7.7 问题：请求长时间挂起，无法设置超时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-8-%E9%97%AE%E9%A2%98%EF%BC%9A%E8%BF%9E%E6%8E%A5%E5%A4%B1%E8%B4%A5%EF%BC%8C%E6%97%A5%E5%BF%97%E9%87%8C%E5%8F%8D%E5%A4%8D%E5%87%BA%E7%8E%B0%E9%87%8D%E8%BF%9E%E4%BF%A1%E6%81%AF"><span class="toc-number">1.8.8.</span> <span class="toc-text">7.8 问题：连接失败，日志里反复出现重连信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-9-%E9%97%AE%E9%A2%98%EF%BC%9AHELLO-%E5%A4%B1%E8%B4%A5%EF%BC%8C%E9%94%99%E8%AF%AF%E7%A0%81%E6%98%AF-boost-redis-error-resp3-hello"><span class="toc-number">1.8.9.</span> <span class="toc-text">7.9 问题：HELLO 失败，错误码是 boost::redis::error::resp3_hello</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-10-%E9%97%AE%E9%A2%98%EF%BC%9A%E9%93%BE%E6%8E%A5%E9%94%99%E8%AF%AF-multiple-definition-of-undefined-reference-to"><span class="toc-number">1.8.10.</span> <span class="toc-text">7.10 问题：链接错误 multiple definition of ... &#x2F; undefined reference to ...</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.9.</span> <span class="toc-text">8. 参考资料</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="toc-number">1.9.1.</span> <span class="toc-text">官方文档</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E7%A4%BA%E4%BE%8B%EF%BC%88example-%E7%9B%AE%E5%BD%95%EF%BC%89"><span class="toc-number">1.9.2.</span> <span class="toc-text">官方示例（example&#x2F; 目录）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E8%A7%84%E8%8C%83%E4%B8%8E%E8%83%8C%E6%99%AF"><span class="toc-number">1.9.3.</span> <span class="toc-text">相关规范与背景</span></a></li></ol></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>boost.redis</h1>
+    </section>
+    <section class="article">
+        <p>Boost.Redis Redis库的核心概念与基本使用方法</p>
+<span id="more"></span>
+<h1 id="Boost-Redis-使用文档"><a href="#Boost-Redis-使用文档" class="headerlink" title="Boost.Redis 使用文档"></a>Boost.Redis 使用文档</h1><blockquote>
+<p>本文基于 Boost 官方文档（Boost 1.88 文档与 boostorg&#x2F;redis develop 分支的 Antora 文档）以及官方 <code>example/</code> 目录源码整理。<br>官方文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/redis/doc/html/index.html">https://www.boost.org/doc/libs/latest/libs/redis/doc/html/index.html</a><br>1.88 文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/index.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/index.html</a><br>源码仓库：<a target="_blank" rel="noopener" href="https://github.com/boostorg/redis">https://github.com/boostorg/redis</a><br>适用标准：C++17（协程示例需 C++20，文中已单独标注）<br>编译示例：g++ &#x2F; clang++ &#x2F; MSVC 均可，链接库要求见「依赖与编译」。</p>
+</blockquote>
+<hr>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#1-%E6%A6%82%E8%BF%B0">概述</a></li>
+<li><a href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91">依赖与编译</a></li>
+<li><a href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5">核心概念</a></li>
+<li><a href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98">常用类与成员</a></li>
+<li><a href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B">使用流程</a></li>
+<li><a href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B">代码示例</a></li>
+<li><a href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1">常见问题与陷阱</a></li>
+<li><a href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a></li>
+</ol>
+<hr>
+<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p><strong>Boost.Redis</strong> 是一个构建在 <a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/release/doc/html/boost_asio.html">Boost.Asio</a> 之上的高级 Redis &#x2F; Valkey 客户端库，<br>它实现了 Redis 的 <a target="_blank" rel="noopener" href="https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md">RESP3</a> 协议。<br>库自 <strong>Boost 1.84</strong> 起随 Boost 正式发行，1.87 起 API 趋于稳定（本文以 1.87 &#x2F; 1.88 的 API 为准）。</p>
+<p>它解决的问题：</p>
+<ul>
+<li>在 Asio 的异步模型下提供<strong>类型安全</strong>的 Redis 客户端：把 RESP3 的简单类型与聚合类型直接映射到<br><code>std::string</code>、<code>int64_t</code>、<code>std::optional</code>、<code>std::vector</code>、<code>std::map</code> 等 C++ 类型，避免手工解析协议。</li>
+<li>把「一个命令」「一条流水线」「一个事务」统一成同一种抽象（<code>request</code>），因此**自动流水线（auto-pipelining）**成为默认行为，<br>而不是需要用户显式构造的特殊对象。</li>
+<li>把连接管理（DNS 解析、建连、TLS 握手、RESP3 握手、健康检查、自动重连）封装进一个长期存活的 <code>connection</code> 对象。</li>
+</ul>
+<p>典型使用场景：</p>
+<ol>
+<li>高并发的后端服务把 Redis 当作缓存 &#x2F; 计数器 &#x2F; 限流器，需要极低延迟与高吞吐。</li>
+<li>需要用 C++20 协程（<code>co_await</code>）写出结构清晰的异步代码，而不是回调地狱。</li>
+<li>需要在一个连接上同时进行普通请求&#x2F;响应与 Pub&#x2F;Sub 订阅（RESP3 的多路复用能力）。</li>
+<li>需要连接 Redis Sentinel 集群并在故障转移后自动重新解析主节点地址。</li>
+<li>需要 TLS 连接到托管 Redis（如云厂商提供的 <code>rediss://</code> 端点）。</li>
+</ol>
+<p>与替代方案的对比：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Boost.Redis</strong></td>
+<td>原生 Asio 异步模型、RESP3、协程、错误码、取消、零临时对象解析</td>
+</tr>
+<tr>
+<td>hiredis</td>
+<td>C 库，同步&#x2F;简单异步，需要自己管理协议解析与连接</td>
+</tr>
+<tr>
+<td>redis-plus-plus</td>
+<td>同步 API 友好，但依赖第三方事件循环做异步，流水线&#x2F;事务需要新建连接，不支持 RESP3 与协程</td>
+</tr>
+</tbody></table>
+<p>一句话总结：如果你已经在用 Boost.Asio，并且需要高性能 + 现代 C++ 异步风格，Boost.Redis 是最自然的选择。</p>
+<hr>
+<h2 id="2-依赖与编译"><a href="#2-依赖与编译" class="headerlink" title="2. 依赖与编译"></a>2. 依赖与编译</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主头文件</td>
+<td><code>&lt;boost/redis/connection.hpp&gt;</code>、<code>&lt;boost/redis/request.hpp&gt;</code>、<code>&lt;boost/redis/response.hpp&gt;</code>、<code>&lt;boost/redis/config.hpp&gt;</code>、<code>&lt;boost/redis/logger.hpp&gt;</code></td>
+</tr>
+<tr>
+<td>实现入口</td>
+<td><code>&lt;boost/redis/src.hpp&gt;</code>（<strong>在且仅在一个</strong> <code>.cpp</code> 中包含，否则是 header-only 模式）</td>
+</tr>
+<tr>
+<td>需要链接的库</td>
+<td><code>-lboost_redis</code>（Boost 提供的已编译库）；另外<strong>必须</strong>链接 OpenSSL：<code>-lssl -lcrypto</code>（MSVC 为 <code>libssl.lib</code> &#x2F; <code>libcrypto.lib</code>）</td>
+</tr>
+<tr>
+<td>最低 Boost 版本</td>
+<td>Boost 1.84 起随 Boost 发布；<strong>建议 1.87 或更高</strong>（本文按 1.87 &#x2F; 1.88 的 API 编写）</td>
+</tr>
+<tr>
+<td>依赖的其他 Boost 库</td>
+<td>Boost.Asio、Boost.System、Boost.Mp11（内部）、Boost.Assert；OpenSSL 为硬性依赖</td>
+</tr>
+<tr>
+<td>Redis 服务端</td>
+<td>Redis <strong>6.0 或更高</strong>（必须支持 RESP3 &#x2F; <code>HELLO</code>），或任意版本的 Valkey</td>
+</tr>
+<tr>
+<td>C++ 标准</td>
+<td><strong>C++17</strong>；协程示例需要 <strong>C++20</strong>（<code>BOOST_ASIO_HAS_CO_AWAIT</code>）</td>
+</tr>
+<tr>
+<td>支持的编译器</td>
+<td>gcc 11+、clang 11+、Visual Studio 2019 (16) &#x2F; 2022 (17)</td>
+</tr>
+<tr>
+<td>头文件命名空间</td>
+<td><code>boost::redis</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-1-构建方式一：链接已编译库（推荐）"><a href="#2-1-构建方式一：链接已编译库（推荐）" class="headerlink" title="2.1 构建方式一：链接已编译库（推荐）"></a>2.1 构建方式一：链接已编译库（推荐）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Linux / macOS，使用 g++ 或 clang++</span><br>g++ -std=c++20 example.cpp -o example \<br>    -lboost_redis -lssl -lcrypto -lpthread<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bat"><span class="hljs-comment">REM Windows + MSVC（假设已通过 vcpkg 安装 boost 与 openssl）</span><br>cl /std:c++<span class="hljs-number">20</span> /EHsc example.cpp ^<br>   /I C:\vcpkg\installed\x64-windows\include ^<br>   /link /LIBPATH:C:\vcpkg\installed\x64-windows\lib ^<br>   boost_redis.lib libssl.lib libcrypto.lib ws2_32.lib crypt32.lib<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-构建方式二：header-only"><a href="#2-2-构建方式二：header-only" class="headerlink" title="2.2 构建方式二：header-only"></a>2.2 构建方式二：header-only</h3><p>在<strong>恰好一个</strong> <code>.cpp</code> 文件里加入：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>其余源文件正常包含 <code>&lt;boost/redis/connection.hpp&gt;</code> 等头文件。此时不需要 <code>-lboost_redis</code>，但仍然需要 OpenSSL。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ -std=c++20 example.cpp -o example -lssl -lcrypto -lpthread<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：<code>src.hpp</code> 只能被一个翻译单元包含，否则会出现重复定义（ODR）链接错误。</p>
+</blockquote>
+<h3 id="2-3-CMake"><a href="#2-3-CMake" class="headerlink" title="2.3 CMake"></a>2.3 CMake</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">cmake_minimum_required</span>(VERSION <span class="hljs-number">3.16</span>)<br><span class="hljs-keyword">project</span>(redis_demo CXX)<br><br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD <span class="hljs-number">20</span>)<br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="hljs-keyword">ON</span>)<br><br><span class="hljs-keyword">find_package</span>(Boost REQUIRED COMPONENTS redis)<br><span class="hljs-keyword">find_package</span>(OpenSSL REQUIRED)<br><br><span class="hljs-keyword">add_executable</span>(redis_demo main.cpp)<br><span class="hljs-keyword">target_link_libraries</span>(redis_demo PRIVATE Boost::redis OpenSSL::SSL OpenSSL::Crypto)<br></code></pre></td></tr></table></figure>
+
+<p>如果你的 Boost 发行版没有提供 <code>Boost::redis</code> 目标（或你使用 header-only 模式），改成：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">target_include_directories</span>(redis_demo PRIVATE <span class="hljs-variable">$&#123;Boost_INCLUDE_DIRS&#125;</span>)<br><span class="hljs-keyword">target_link_libraries</span>(redis_demo PRIVATE OpenSSL::SSL OpenSSL::Crypto)<br><span class="hljs-comment"># 并在 main.cpp 中 #include &lt;boost/redis/src.hpp&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-4-运行前提：准备一个-Redis-服务"><a href="#2-4-运行前提：准备一个-Redis-服务" class="headerlink" title="2.4 运行前提：准备一个 Redis 服务"></a>2.4 运行前提：准备一个 Redis 服务</h3><p>示例需要本地或远程的 Redis 6+。用 Docker 最快：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 启动一个 Redis 7（RESP3 支持完善）</span><br>docker run --<span class="hljs-built_in">rm</span> -d --name my-redis -p 6379:6379 redis:7<br><br><span class="hljs-comment"># 可选：带密码</span><br>docker run --<span class="hljs-built_in">rm</span> -d --name my-redis-auth -p 6379:6379 redis:7 \<br>    redis-server --requirepass mypassword<br><br><span class="hljs-comment"># 验证（-3 表示使用 RESP3 协议）</span><br>redis-cli -3 ping<br></code></pre></td></tr></table></figure>
+
+<p>如果使用远程服务器或非默认端口，可以在示例中通过命令行参数传入 <code>host port</code>，或直接修改 <code>config::addr</code>。</p>
+<hr>
+<h2 id="3-核心概念"><a href="#3-核心概念" class="headerlink" title="3. 核心概念"></a>3. 核心概念</h2><h3 id="3-1-io-context-驱动一切"><a href="#3-1-io-context-驱动一切" class="headerlink" title="3.1 io_context 驱动一切"></a>3.1 <code>io_context</code> 驱动一切</h3><p>Boost.Redis 不创建任何线程，也不会自己阻塞。所有操作都挂在一个 Asio 执行器（executor）上，<br>必须由用户运行 <code>io_context::run()</code>（或 <code>co_spawn</code> + <code>run()</code>）来推进：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::asio::io_context ioc;<br>boost::redis::connection conn&#123;ioc&#125;;   <span class="hljs-comment">// 绑定 ioc 的执行器</span><br><span class="hljs-comment">// ... 提交异步操作 ...</span><br>ioc.<span class="hljs-built_in">run</span>();                            <span class="hljs-comment">// 事件循环：不调用它，什么都不会发生</span><br></code></pre></td></tr></table></figure>
+
+<p>C++20 协程版本通常是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::asio::io_context ioc;<br>boost::asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(cfg), boost::asio::detached);<br>ioc.<span class="hljs-built_in">run</span>();<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-connection：长期存活的连接对象"><a href="#3-2-connection：长期存活的连接对象" class="headerlink" title="3.2 connection：长期存活的连接对象"></a>3.2 <code>connection</code>：长期存活的连接对象</h3><p><code>boost::redis::connection</code> 是一个<strong>长期存活</strong>的对象，它内部完成：</p>
+<ol>
+<li>解析 <code>config::addr</code>（DNS）；</li>
+<li>建立 TCP 连接；</li>
+<li>如果 <code>config::use_ssl == true</code>，执行 TLS 握手；</li>
+<li>发送 <code>HELLO 3</code> 完成 RESP3 握手（并按需带上 <code>AUTH</code> 参数）；</li>
+<li>按 <code>config::health_check_interval</code> 周期性地发送 <code>PING</code> 做健康检查；</li>
+<li>启动读写循环，把 <code>async_exec</code> 提交的请求写出去、把响应读回来；</li>
+<li><strong>连接断开后自动重连</strong>（间隔为 <code>config::reconnect_wait_interval</code>，设为 0 可禁用重连）。</li>
+</ol>
+<p>这些工作全部由 <strong><code>async_run()</code></strong> 一个操作负责：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;boost::redis::connection&gt;(ex);<br>conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, boost::asio::<span class="hljs-built_in">consign</span>(boost::asio::detached, conn));<br></code></pre></td></tr></table></figure>
+
+<p><code>async_run</code> 每个 <code>connection</code> 只应调用一次；它会一直运行到连接被 <code>cancel()</code> 为止。</p>
+<h3 id="3-3-请求-响应模型与-async-exec"><a href="#3-3-请求-响应模型与-async-exec" class="headerlink" title="3.3 请求&#x2F;响应模型与 async_exec"></a>3.3 请求&#x2F;响应模型与 <code>async_exec</code></h3><ul>
+<li><code>boost::redis::request</code> 表示「一条流水线」：一个或多个 Redis 命令。</li>
+<li><code>boost::redis::connection::async_exec(req, resp)</code> 把请求排队发送，并把每条命令的响应写入 <code>resp</code>。</li>
+<li>多个 <code>async_exec</code> 可以<strong>并发</strong>调用（来自不同协程&#x2F;回调），实现内部会自动排队与合并写（coalescing）。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::redis::request req;<br>req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SET&quot;</span>, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-string">&quot;value&quot;</span>, <span class="hljs-string">&quot;EX&quot;</span>, <span class="hljs-string">&quot;10&quot;</span>);   <span class="hljs-comment">// 命令 + 参数</span><br>req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;key&quot;</span>);<br><br>boost::redis::response&lt;std::string, std::optional&lt;std::string&gt;&gt; resp;<br><span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, boost::asio::use_awaitable);<br></code></pre></td></tr></table></figure>
+
+<p><code>request</code> 内部使用 <code>std::string</code> 存储 RESP3 载荷（<code>payload()</code>），因此可以 <code>reserve()</code> &#x2F; <code>clear()</code> 复用缓冲区，避免重复分配。</p>
+<h3 id="3-4-RESP3-协议与响应适配"><a href="#3-4-RESP3-协议与响应适配" class="headerlink" title="3.4 RESP3 协议与响应适配"></a>3.4 RESP3 协议与响应适配</h3><p>Boost.Redis 只支持 RESP3（不再支持 RESP2），这意味着：</p>
+<ul>
+<li>需要 Redis 6+；</li>
+<li>建连时会发送 <code>HELLO 3</code>；</li>
+<li>聚合类型区分更细（Array &#x2F; Map &#x2F; Set &#x2F; Push &#x2F; Attribute 等），可以直接映射到 <code>std::map</code>、<code>std::set</code> 等。</li>
+</ul>
+<p>响应有两条路径：</p>
+<table>
+<thead>
+<tr>
+<th>响应类型</th>
+<th>使用场合</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>response&lt;T1, T2, ...&gt;</code>（即 <code>std::tuple&lt;adapter::result&lt;T1&gt;, ...&gt;</code>）</td>
+<td>命令数量在编译期已知</td>
+</tr>
+<tr>
+<td><code>generic_response</code>（即 <code>adapter::result&lt;std::vector&lt;resp3::node&gt;&gt;</code>）</td>
+<td>命令数量动态、响应含嵌套聚合、或需要处理任意 RESP3 结构</td>
+</tr>
+</tbody></table>
+<p>RESP3 类型到 C++ 类型的映射：</p>
+<table>
+<thead>
+<tr>
+<th>RESP3 类型</th>
+<th>可用的 C++ 类型</th>
+<th>类别</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Simple-string</td>
+<td><code>std::string</code></td>
+<td>Simple</td>
+</tr>
+<tr>
+<td>Simple-error</td>
+<td><code>std::string</code></td>
+<td>Simple</td>
+</tr>
+<tr>
+<td>Blob-string</td>
+<td><code>std::string</code>、<code>std::vector</code></td>
+<td>Simple</td>
+</tr>
+<tr>
+<td>Blob-error</td>
+<td><code>std::string</code>、<code>std::vector</code></td>
+<td>Simple</td>
+</tr>
+<tr>
+<td>Number</td>
+<td><code>long long</code>、<code>int</code>、<code>std::size_t</code>、<code>std::string</code></td>
+<td>Simple</td>
+</tr>
+<tr>
+<td>Double</td>
+<td><code>double</code>、<code>std::string</code></td>
+<td>Simple</td>
+</tr>
+<tr>
+<td>Null</td>
+<td><code>std::optional&lt;T&gt;</code></td>
+<td>Simple</td>
+</tr>
+<tr>
+<td>Array</td>
+<td><code>std::vector</code>、<code>std::list</code>、<code>std::array</code>、<code>std::deque</code></td>
+<td>Aggregate</td>
+</tr>
+<tr>
+<td>Map</td>
+<td><code>std::vector</code>、<code>std::map</code>、<code>std::unordered_map</code></td>
+<td>Aggregate</td>
+</tr>
+<tr>
+<td>Set</td>
+<td><code>std::vector</code>、<code>std::set</code>、<code>std::unordered_set</code></td>
+<td>Aggregate</td>
+</tr>
+<tr>
+<td>Push</td>
+<td><code>std::vector</code>、<code>std::map</code>、<code>std::unordered_map</code></td>
+<td>Aggregate</td>
+</tr>
+</tbody></table>
+<p>当响应形状不确定时，使用 <code>resp3::node</code>：它把响应树按<strong>前序遍历</strong>展平成一个 <code>std::vector&lt;resp3::node&gt;</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::redis::generic_response resp;<br><span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, boost::asio::use_awaitable);<br><br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; node : resp.<span class="hljs-built_in">value</span>())<br>   std::cout &lt;&lt; std::<span class="hljs-built_in">string</span>(node.depth, <span class="hljs-string">&#x27; &#x27;</span>)<br>             &lt;&lt; boost::redis::resp3::<span class="hljs-built_in">to_string</span>(node.data_type)<br>             &lt;&lt; <span class="hljs-string">&quot;: &quot;</span> &lt;&lt; node.value &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-5-发布订阅（Push-消息）"><a href="#3-5-发布订阅（Push-消息）" class="headerlink" title="3.5 发布订阅（Push 消息）"></a>3.5 发布订阅（Push 消息）</h3><p>Redis 的 Pub&#x2F;Sub 消息、键空间通知、客户端缓存失效通知等都以 RESP3 的 <strong>push</strong> 类型异步到达。<br>它们<strong>不占用</strong> <code>response&lt;...&gt;</code> 的槽位，而是通过独立的接收通道交付：</p>
+<ul>
+<li>先用 <code>connection::set_receive_response(resp)</code> 指定接收对象；</li>
+<li>再调用 <code>connection::async_receive(...)</code>（或在 1.88 中用非阻塞的 <code>connection::receive(ec)</code> 先取缓存）；</li>
+<li>push 数据被解析进 <code>generic_response</code>，用 <code>boost::redis::consume_one(resp)</code> 逐条消费。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::redis::generic_response push_resp;<br>conn-&gt;<span class="hljs-built_in">set_receive_response</span>(push_resp);<br><br>boost::redis::request req;<br>req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SUBSCRIBE&quot;</span>, <span class="hljs-string">&quot;channel&quot;</span>);<br><span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, boost::redis::ignore, boost::asio::use_awaitable);<br><br>boost::system::error_code ec;<br><span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_receive</span>(boost::asio::<span class="hljs-built_in">redirect_error</span>(boost::asio::use_awaitable, ec));<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-6-哨兵（Sentinel）"><a href="#3-6-哨兵（Sentinel）" class="headerlink" title="3.6 哨兵（Sentinel）"></a>3.6 哨兵（Sentinel）</h3><p>在 <strong>1.87 &#x2F; 1.88</strong> 中，Sentinel 需要手动实现：向 Sentinel 发送<br><code>SENTINEL get-master-addr-by-name &lt;master&gt;</code>，拿到主节点地址后再用它建连（官方示例 <code>cpp20_resolve_with_sentinel.cpp</code>）。</p>
+<p>在 <strong>develop &#x2F; 更新版本</strong> 中，Sentinel 已被内建到 <code>config::sentinel</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::redis::config cfg;<br>cfg.sentinel.addresses = &#123;<br>   &#123;<span class="hljs-string">&quot;sentinel1.example.com&quot;</span>, <span class="hljs-string">&quot;26379&quot;</span>&#125;,<br>   &#123;<span class="hljs-string">&quot;sentinel2.example.com&quot;</span>, <span class="hljs-string">&quot;26379&quot;</span>&#125;,<br>&#125;;<br>cfg.sentinel.master_name = <span class="hljs-string">&quot;mymaster&quot;</span>;<br>cfg.sentinel.server_role = boost::redis::role::replica; <span class="hljs-comment">// 可选：连到随机副本</span><br>cfg.sentinel.use_ssl = <span class="hljs-literal">true</span>;                            <span class="hljs-comment">// 可选：Sentinel 走 TLS</span><br></code></pre></td></tr></table></figure>
+
+<p>此后 <code>async_run</code> 会自动联系 Sentinel、解析主节点、连接主节点，并在故障转移后重新解析。</p>
+<h3 id="3-7-SSL-TLS"><a href="#3-7-SSL-TLS" class="headerlink" title="3.7 SSL &#x2F; TLS"></a>3.7 SSL &#x2F; TLS</h3><p>设置 <code>config::use_ssl = true</code> 即启用 TLS。<code>connection</code> 的构造函数接受一个 <code>asio::ssl::context</code><br>（默认 <code>tlsv12_client</code>），也可以在建连前通过 <code>connection::next_layer()</code> 拿到底层 <code>ssl::stream</code> 来配置证书校验：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp">cfg.use_ssl = <span class="hljs-literal">true</span>;<br>cfg.addr.host = <span class="hljs-string">&quot;db.example.com&quot;</span>;<br>cfg.addr.port = <span class="hljs-string">&quot;6380&quot;</span>;<br><br><span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;boost::redis::connection&gt;(ex);<br>conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, boost::asio::<span class="hljs-built_in">consign</span>(boost::asio::detached, conn));<br><br>conn-&gt;<span class="hljs-built_in">next_layer</span>().<span class="hljs-built_in">set_verify_mode</span>(boost::asio::ssl::verify_peer);<br>conn-&gt;<span class="hljs-built_in">next_layer</span>().<span class="hljs-built_in">set_verify_callback</span>(verify_certificate);<br></code></pre></td></tr></table></figure>
+
+<p><code>connection::get_ssl_context()</code> 可以取回连接持有的 <code>ssl::context</code>。</p>
+<h3 id="3-8-流水线（Pipeline）"><a href="#3-8-流水线（Pipeline）" class="headerlink" title="3.8 流水线（Pipeline）"></a>3.8 流水线（Pipeline）</h3><p>在 Boost.Redis 里，「流水线」不是一个单独的类，而是 <code>request</code> 的天然能力：<br>往同一个 <code>request</code> 里 <code>push</code> 多条命令，然后一次 <code>async_exec</code>，响应按顺序写入 <code>response&lt;...&gt;</code> 的各个槽位。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::redis::request req;<br>req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SET&quot;</span>, <span class="hljs-string">&quot;k1&quot;</span>, <span class="hljs-string">&quot;v1&quot;</span>);<br>req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SET&quot;</span>, <span class="hljs-string">&quot;k2&quot;</span>, <span class="hljs-string">&quot;v2&quot;</span>);<br>req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;k1&quot;</span>);<br>req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;k2&quot;</span>);<br><br>boost::redis::response&lt;<br>   std::string, std::string, std::optional&lt;std::string&gt;, std::optional&lt;std::string&gt;&gt; resp;<br><span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, boost::asio::use_awaitable);<br></code></pre></td></tr></table></figure>
+
+<p>此外 <code>request::push_range</code> 可以把 <code>std::vector</code> &#x2F; <code>std::list</code> &#x2F; <code>std::map</code> &#x2F; <code>std::set</code> 整体展开成一条命令的多个参数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">std::map&lt;std::string, std::string&gt; fields&#123;&#123;<span class="hljs-string">&quot;f1&quot;</span>, <span class="hljs-string">&quot;v1&quot;</span>&#125;, &#123;<span class="hljs-string">&quot;f2&quot;</span>, <span class="hljs-string">&quot;v2&quot;</span>&#125;&#125;;<br>req.<span class="hljs-built_in">push_range</span>(<span class="hljs-string">&quot;HSET&quot;</span>, <span class="hljs-string">&quot;myhash&quot;</span>, fields);              <span class="hljs-comment">// HSET myhash f1 v1 f2 v2</span><br>req.<span class="hljs-built_in">push_range</span>(<span class="hljs-string">&quot;SUBSCRIBE&quot;</span>, std::<span class="hljs-built_in">cbegin</span>(channels), std::<span class="hljs-built_in">cend</span>(channels));<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-9-关于「压缩」"><a href="#3-9-关于「压缩」" class="headerlink" title="3.9 关于「压缩」"></a>3.9 关于「压缩」</h3><p>Boost.Redis 本身<strong>不实现</strong> RESP3 报文压缩：协议层没有压缩扩展，库也不依赖 zlib &#x2F; brotli &#x2F; zstd。<br>减少网络开销的推荐做法是：</p>
+<ul>
+<li><strong>流水线批量化</strong>：把多个命令合并进一个 <code>request</code>，一次 <code>async_exec</code>（减少 RTT 与系统调用）；</li>
+<li>使用 <code>push_range</code> 一次写入大批元素（如 <code>RPUSH</code> &#x2F; <code>HSET</code>）；</li>
+<li>对大对象应用层自行压缩（例如把 gzip 后的字节串存进 Redis），再在客户端解压。</li>
+</ul>
+<p>如果一定要在传输层压缩，可以自行扩展 <code>basic_connection</code> 的读写路径，但这超出了库的公开 API 范围。</p>
+<h3 id="3-10-日志"><a href="#3-10-日志" class="headerlink" title="3.10 日志"></a>3.10 日志</h3><p><code>connection::async_run</code> 是一个复杂算法（含重连），因此库内置了一个轻量 logger，默认把部分状态信息打到 <code>stderr</code>。<br>可以通过向构造函数传 <code>boost::redis::logger</code> 控制级别：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::asio::io_context ioc;<br>boost::redis::connection conn&#123;ioc, boost::redis::logger&#123;boost::redis::logger::level::disabled&#125;&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>日志级别是 syslog 风格：<code>disabled</code>、<code>emerg</code>、<code>alert</code>、<code>crit</code>、<code>err</code>、<code>warning</code>、<code>notice</code>、<code>info</code>、<code>debug</code>。<br>级别为 N 时只输出严重性 ≥ N 的消息（例如 <code>level::err</code> 会隐藏所有 info 类输出）。<br><code>config::log_prefix</code> 会给每条日志加前缀（默认 <code>&quot;(Boost.Redis) &quot;</code>）。</p>
+<hr>
+<h2 id="4-常用类与成员"><a href="#4-常用类与成员" class="headerlink" title="4. 常用类与成员"></a>4. 常用类与成员</h2><h3 id="4-1-类总览"><a href="#4-1-类总览" class="headerlink" title="4.1 类总览"></a>4.1 类总览</h3><table>
+<thead>
+<tr>
+<th>类 &#x2F; 模板</th>
+<th>头文件</th>
+<th>作用</th>
+<th>关键成员</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>boost::redis::connection</code></td>
+<td><code>&lt;boost/redis/connection.hpp&gt;</code></td>
+<td>类型擦除的 Redis 连接（<code>any_io_executor</code>）</td>
+<td><code>async_run()</code>, <code>async_exec()</code>, <code>async_receive()</code>, <code>receive()</code>, <code>cancel()</code>, <code>next_layer()</code>, <code>set_receive_response()</code>, <code>will_reconnect()</code>, <code>get_usage()</code>, <code>reset_stream()</code>, <code>get_ssl_context()</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::basic_connection&lt;Executor&gt;</code></td>
+<td><code>&lt;boost/redis/connection.hpp&gt;</code></td>
+<td>上述类型的模板化底层实现</td>
+<td>同上 + <code>rebind_executor&lt;&gt;</code>, <code>executor_type</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::config</code></td>
+<td><code>&lt;boost/redis/config.hpp&gt;</code></td>
+<td>连接参数</td>
+<td><code>use_ssl</code>, <code>addr</code>, <code>username</code>, <code>password</code>, <code>clientname</code>, <code>database_index</code>, <code>health_check_id</code>, <code>log_prefix</code>, <code>resolve_timeout</code>, <code>connect_timeout</code>, <code>ssl_handshake_timeout</code>, <code>health_check_interval</code>, <code>reconnect_wait_interval</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::address</code></td>
+<td><code>&lt;boost/redis/config.hpp&gt;</code></td>
+<td><code>host</code> + <code>port</code> 二元组</td>
+<td><code>host</code>, <code>port</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::request</code></td>
+<td><code>&lt;boost/redis/request.hpp&gt;</code></td>
+<td>一条流水线（若干 Redis 命令）</td>
+<td><code>push()</code>, <code>push_range()</code>, <code>clear()</code>, <code>reserve()</code>, <code>payload()</code>, <code>get_config()</code>, <code>get_commands()</code>, <code>get_expected_responses()</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::request::config</code></td>
+<td><code>&lt;boost/redis/request.hpp&gt;</code></td>
+<td>请求级策略</td>
+<td><code>cancel_on_connection_lost</code>, <code>cancel_if_not_connected</code>, <code>cancel_if_unresponded</code>, <code>hello_with_priority</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::response&lt;Ts...&gt;</code></td>
+<td><code>&lt;boost/redis/response.hpp&gt;</code></td>
+<td>编译期定长的响应元组</td>
+<td><code>std::get&lt;N&gt;()</code>、元素为 <code>adapter::result&lt;T&gt;</code>（<code>value()</code>, <code>has_value()</code>, <code>error()</code>）</td>
+</tr>
+<tr>
+<td><code>boost::redis::generic_response</code></td>
+<td><code>&lt;boost/redis/response.hpp&gt;</code></td>
+<td>任意 RESP3 响应的通用容器</td>
+<td><code>value()</code>（<code>std::vector&lt;resp3::node&gt;</code>）, <code>has_value()</code>, <code>error()</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::resp3::basic_node&lt;String&gt;</code> &#x2F; <code>node</code> &#x2F; <code>node_view</code></td>
+<td><code>&lt;boost/redis/resp3/node.hpp&gt;</code></td>
+<td>响应树中的一个节点</td>
+<td><code>data_type</code>, <code>aggregate_size</code>, <code>depth</code>, <code>value</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::resp3::type</code></td>
+<td><code>&lt;boost/redis/resp3/type.hpp&gt;</code></td>
+<td>RESP3 数据类型枚举</td>
+<td>见 4.2.10</td>
+</tr>
+<tr>
+<td><code>boost::redis::error</code></td>
+<td><code>&lt;boost/redis/error.hpp&gt;</code></td>
+<td>库自身的错误码枚举</td>
+<td><code>not_connected</code>, <code>resp3_*</code>, <code>incompatible_size</code>, <code>resolve_timeout</code>, …</td>
+</tr>
+<tr>
+<td><code>boost::redis::ignore_t</code> &#x2F; <code>ignore</code></td>
+<td><code>&lt;boost/redis/ignore.hpp&gt;</code></td>
+<td>忽略响应的占位类型 &#x2F; 全局对象</td>
+<td><code>ignore</code>（全局变量）</td>
+</tr>
+<tr>
+<td><code>boost::redis::operation</code></td>
+<td><code>&lt;boost/redis/operation.hpp&gt;</code></td>
+<td>可取消的操作集合</td>
+<td><code>resolve</code>, <code>connect</code>, <code>ssl_handshake</code>, <code>exec</code>, <code>run</code>, <code>receive</code>, <code>reconnection</code>, <code>health_check</code>, <code>all</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::logger</code></td>
+<td><code>&lt;boost/redis/logger.hpp&gt;</code></td>
+<td>日志器</td>
+<td>构造函数 <code>logger(level)</code>, <code>set_prefix()</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::usage</code></td>
+<td><code>&lt;boost/redis/usage.hpp&gt;</code></td>
+<td>连接统计</td>
+<td><code>commands_sent</code>, <code>bytes_sent</code>, <code>responses_received</code>, <code>pushes_received</code>, <code>response_bytes_received</code>, <code>push_bytes_received</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::any_adapter</code></td>
+<td><code>&lt;boost/redis/adapter/any_adapter.hpp&gt;</code></td>
+<td>类型擦除的响应适配器</td>
+<td>构造函数 <code>any_adapter(T&amp; resp)</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::adapter::result&lt;Value&gt;</code></td>
+<td><code>&lt;boost/redis/adapter/result.hpp&gt;</code></td>
+<td><code>boost::system::result&lt;Value, adapter::error&gt;</code></td>
+<td><code>value()</code>, <code>has_value()</code>, <code>error()</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::adapter::error</code></td>
+<td><code>&lt;boost/redis/adapter/result.hpp&gt;</code></td>
+<td>RESP3 错误（<code>-ERR ...</code> &#x2F; <code>!...</code>）</td>
+<td><code>data_type</code>, <code>diagnostic</code></td>
+</tr>
+<tr>
+<td><code>boost::redis::consume_one()</code></td>
+<td><code>&lt;boost/redis/response.hpp&gt;</code></td>
+<td>从 <code>generic_response</code> 中消费一条响应</td>
+<td><code>void consume_one(generic_response&amp;)</code> &#x2F; <code>void consume_one(generic_response&amp;, system::error_code&amp;)</code></td>
+</tr>
+</tbody></table>
+<h3 id="4-2-逐个类详解"><a href="#4-2-逐个类详解" class="headerlink" title="4.2 逐个类详解"></a>4.2 逐个类详解</h3><h4 id="boost-redis-connection"><a href="#boost-redis-connection" class="headerlink" title="boost::redis::connection"></a><code>boost::redis::connection</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/connection.hpp&gt;</code></li>
+<li><strong>作用</strong>：长期存活的 Redis 连接；负责解析、建连、TLS&#x2F;RESP3 握手、健康检查、自动重连与读写协调。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造函数</td>
+<td><code>explicit connection(executor_type ex, asio::ssl::context ctx = {asio::ssl::context::tlsv12_client}, std::size_t max_read_size = SIZE_MAX)</code></td>
+<td>从执行器构造</td>
+</tr>
+<tr>
+<td>构造函数</td>
+<td><code>explicit connection(asio::io_context&amp; ioc, asio::ssl::context ctx = {...}, std::size_t max_read_size = SIZE_MAX)</code></td>
+<td>从 <code>io_context</code> 构造</td>
+</tr>
+<tr>
+<td><code>async_run</code></td>
+<td><code>template&lt;class CToken&gt; auto async_run(config const&amp; cfg, logger l, CToken&amp;&amp; token = {})</code></td>
+<td>启动连接；完成签名为 <code>void(system::error_code)</code>。每个连接只调用一次</td>
+</tr>
+<tr>
+<td><code>async_exec</code></td>
+<td><code>template&lt;class Response, class CToken&gt; auto async_exec(request const&amp; req, Response&amp; resp, CToken&amp;&amp; token = {})</code></td>
+<td>执行请求，响应写入 <code>resp</code>；完成签名为 <code>void(system::error_code, std::size_t)</code>（第二个参数是响应字节数）</td>
+</tr>
+<tr>
+<td><code>async_exec</code>（适配器重载）</td>
+<td><code>template&lt;class CToken&gt; auto async_exec(request const&amp; req, any_adapter adapter, CToken&amp;&amp; token = {})</code></td>
+<td>1.88 新增，允许传入类型擦除的适配器（便于分离编译）</td>
+</tr>
+<tr>
+<td><code>async_receive</code></td>
+<td><code>template&lt;class CToken&gt; auto async_receive(CToken&amp;&amp; token = {})</code></td>
+<td>异步等待 push 消息；完成签名为 <code>void(system::error_code, std::size_t)</code></td>
+</tr>
+<tr>
+<td><code>receive</code></td>
+<td><code>std::size_t receive(system::error_code&amp; ec)</code></td>
+<td>非阻塞地取出已缓冲的 push；无数据时 <code>ec == error::sync_receive_push_failed</code></td>
+</tr>
+<tr>
+<td><code>set_receive_response</code></td>
+<td><code>template&lt;class Response&gt; void set_receive_response(Response&amp; response)</code></td>
+<td>指定 <code>async_receive</code> 的接收对象（通常是 <code>generic_response</code>）</td>
+</tr>
+<tr>
+<td><code>cancel</code></td>
+<td><code>void cancel(operation op = operation::all)</code></td>
+<td>取消操作；<code>cancel(operation::all)</code> 常用于优雅关闭</td>
+</tr>
+<tr>
+<td><code>next_layer</code></td>
+<td><code>auto&amp; next_layer() noexcept</code> &#x2F; <code>auto const&amp; next_layer() const noexcept</code></td>
+<td>底层 <code>asio::ssl::stream&lt;tcp::socket&gt;</code>，用于设置证书校验等</td>
+</tr>
+<tr>
+<td><code>get_executor</code></td>
+<td><code>executor_type get_executor() noexcept</code></td>
+<td>返回关联执行器（<code>asio::any_io_executor</code>）</td>
+</tr>
+<tr>
+<td><code>get_ssl_context</code></td>
+<td><code>auto const&amp; get_ssl_context() const noexcept</code></td>
+<td>返回连接持有的 <code>ssl::context</code></td>
+</tr>
+<tr>
+<td><code>will_reconnect</code></td>
+<td><code>bool will_reconnect() const noexcept</code></td>
+<td>是否仍允许重连（<code>reconnect_wait_interval != 0</code>）；订阅循环的条件</td>
+</tr>
+<tr>
+<td><code>reset_stream</code></td>
+<td><code>void reset_stream()</code></td>
+<td>重建底层流（用于手动重连场景）</td>
+</tr>
+<tr>
+<td><code>get_usage</code></td>
+<td><code>usage get_usage() const noexcept</code></td>
+<td>连接统计信息</td>
+</tr>
+<tr>
+<td><code>rebind_executor</code></td>
+<td><code>template&lt;class Executor1&gt; struct rebind_executor { using other = basic_connection&lt;Executor1&gt;; }</code></td>
+<td>换绑执行器（仅 <code>basic_connection</code>）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>async_run()</code> 必须先于任何 <code>async_exec()</code> 生效；否则请求会一直排队等待连接建立。</li>
+<li><code>connection</code> 通常用 <code>std::shared_ptr</code> 管理，并用 <code>asio::consign(asio::detached, conn)</code> 让 <code>async_run</code> 持有它，<br>保证连接在异步操作完成前不被销毁。</li>
+<li>1.88 起默认完成令牌是 <code>asio::deferred</code>，所以回调风格必须显式传 completion token（如 lambda、<code>asio::detached</code>）。</li>
+<li><code>cancel(operation::all)</code> 会同时取消解析、重连、健康检查、读写与未写出的请求，是推荐的关闭方式。</li>
+<li>构造函数里默认执行了 <code>set_receive_response(ignore)</code>，也就是说<strong>在调用 <code>set_receive_response</code> 之前，<br>所有 push（订阅消息、键空间通知等）都会被丢弃</strong>。要接收 push 必须先绑定自己的 <code>generic_response</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-config-与-boost-redis-address"><a href="#boost-redis-config-与-boost-redis-address" class="headerlink" title="boost::redis::config 与 boost::redis::address"></a><code>boost::redis::config</code> 与 <code>boost::redis::address</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/config.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>async_run</code> 使用的全部连接参数。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>类型 &#x2F; 默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>use_ssl</code></td>
+<td><code>bool = false</code></td>
+<td>是否使用 TLS</td>
+</tr>
+<tr>
+<td><code>addr</code></td>
+<td><code>address = {&quot;127.0.0.1&quot;, &quot;6379&quot;}</code></td>
+<td>服务器地址</td>
+</tr>
+<tr>
+<td><code>username</code></td>
+<td><code>std::string = &quot;default&quot;</code></td>
+<td><code>HELLO</code> 的 <code>AUTH</code> 用户名；为空则 <code>HELLO</code> 不带认证参数</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td><code>std::string = &quot;&quot;</code></td>
+<td><code>HELLO</code> 的 <code>AUTH</code> 密码</td>
+</tr>
+<tr>
+<td><code>clientname</code></td>
+<td><code>std::string = &quot;Boost.Redis&quot;</code></td>
+<td><code>HELLO</code> 的 client name</td>
+</tr>
+<tr>
+<td><code>database_index</code></td>
+<td><code>std::optional&lt;int&gt; = 0</code></td>
+<td>建连后 <code>SELECT</code> 的逻辑库；<code>std::nullopt</code> 表示不选库</td>
+</tr>
+<tr>
+<td><code>health_check_id</code></td>
+<td><code>std::string = &quot;Boost.Redis&quot;</code></td>
+<td>健康检查 <code>PING</code> 携带的消息体</td>
+</tr>
+<tr>
+<td><code>log_prefix</code></td>
+<td><code>std::string = &quot;(Boost.Redis) &quot;</code></td>
+<td>日志前缀</td>
+</tr>
+<tr>
+<td><code>resolve_timeout</code></td>
+<td><code>steady_clock::duration = 10s</code></td>
+<td>DNS 解析超时</td>
+</tr>
+<tr>
+<td><code>connect_timeout</code></td>
+<td><code>steady_clock::duration = 10s</code></td>
+<td>TCP 建连超时</td>
+</tr>
+<tr>
+<td><code>ssl_handshake_timeout</code></td>
+<td><code>steady_clock::duration = 10s</code></td>
+<td>TLS 握手超时</td>
+</tr>
+<tr>
+<td><code>health_check_interval</code></td>
+<td><code>steady_clock::duration = 2s</code></td>
+<td>健康检查间隔；<strong>设为 0 关闭健康检查</strong></td>
+</tr>
+<tr>
+<td><code>reconnect_wait_interval</code></td>
+<td><code>steady_clock::duration = 1s</code></td>
+<td>重连前等待时间；<strong>设为 0 关闭自动重连</strong></td>
+</tr>
+</tbody></table>
+<p><code>address</code> 只有两个成员：<code>std::string host = &quot;127.0.0.1&quot;;</code> 与 <code>std::string port = &quot;6379&quot;;</code>。</p>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>想关闭重连用 <code>cfg.reconnect_wait_interval = std::chrono::seconds::zero();</code>，或运行时调用 <code>conn.cancel(operation::reconnection)</code>。</li>
+<li>健康检查：若 Redis 在 <code>2 × health_check_interval</code> 内没有回应 <code>PING</code>，连接会被判定为不可用并重建。</li>
+<li>用户名默认是 <code>&quot;default&quot;</code>，因此在 Redis 里只配置了 <code>requirepass</code> 时也能直接工作。</li>
+<li>早期版本中字段名是 <code>reconnect_wait_time</code>、<code>resolve_timeout</code> 之外还曾用过 <code>timeouts</code> 结构；请以你所用 Boost 版本的<br><code>&lt;boost/redis/config.hpp&gt;</code> 为准。TLS 上下文不在 <code>config</code> 中，而是作为 <code>connection</code> 构造函数的参数传入。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-request-与-request-config"><a href="#boost-redis-request-与-request-config" class="headerlink" title="boost::redis::request 与 request::config"></a><code>boost::redis::request</code> 与 <code>request::config</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/request.hpp&gt;</code></li>
+<li><strong>作用</strong>：构造一条流水线；内部用 <code>std::string</code> 存放 RESP3 载荷。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>push</code></td>
+<td><code>template&lt;class... Ts&gt; void push(std::string_view cmd, Ts const&amp;... args)</code></td>
+<td>追加一条命令，参数个数可变。非字符串参数通过 ADL 找到 <code>boost_redis_to_bulk</code> 转换</td>
+</tr>
+<tr>
+<td><code>push_range</code></td>
+<td><code>template&lt;class FwdIt&gt; void push_range(std::string_view cmd, std::string_view key, FwdIt begin, FwdIt end)</code></td>
+<td>带 key 的变长参数命令，如 <code>HSET key f1 v1 f2 v2</code></td>
+</tr>
+<tr>
+<td><code>push_range</code></td>
+<td><code>template&lt;class FwdIt&gt; void push_range(std::string_view cmd, FwdIt begin, FwdIt end)</code></td>
+<td>不带 key 的变长参数命令，如 <code>SUBSCRIBE ch1 ch2</code></td>
+</tr>
+<tr>
+<td><code>push_range</code></td>
+<td><code>template&lt;class Range&gt; void push_range(std::string_view cmd, Range const&amp; range)</code> &#x2F; <code>(cmd, key, range)</code></td>
+<td>直接传容器（<code>std::vector</code> &#x2F; <code>std::list</code> &#x2F; <code>std::map</code> &#x2F; <code>std::set</code>）</td>
+</tr>
+<tr>
+<td><code>clear</code></td>
+<td><code>void clear()</code></td>
+<td>清空请求但保留已分配内存</td>
+</tr>
+<tr>
+<td><code>reserve</code></td>
+<td><code>void reserve(std::size_t new_cap = 0)</code></td>
+<td>预留内部字符串容量</td>
+</tr>
+<tr>
+<td><code>payload</code></td>
+<td><code>std::string_view payload() const noexcept</code></td>
+<td>序列化后的 RESP3 字节流</td>
+</tr>
+<tr>
+<td><code>get_config</code></td>
+<td><code>auto&amp; get_config() noexcept</code> &#x2F; <code>auto const&amp; get_config() const noexcept</code></td>
+<td>访问请求级配置</td>
+</tr>
+<tr>
+<td><code>get_commands</code></td>
+<td><code>std::size_t get_commands() const noexcept</code></td>
+<td>请求中的命令条数</td>
+</tr>
+<tr>
+<td><code>get_expected_responses</code></td>
+<td><code>std::size_t get_expected_responses() const noexcept</code></td>
+<td>期望的响应条数（push 类命令不计入）</td>
+</tr>
+</tbody></table>
+<p><code>request::config</code> 的成员：</p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cancel_on_connection_lost</code></td>
+<td><code>true</code></td>
+<td>连接丢失时，尚未写出的请求会以错误完成</td>
+</tr>
+<tr>
+<td><code>cancel_if_not_connected</code></td>
+<td><code>false</code></td>
+<td>若为 <code>true</code>，在连接建立前调用 <code>async_exec</code> 会立刻以 <code>boost::redis::error::not_connected</code> 失败，而不是排队等待</td>
+</tr>
+<tr>
+<td><code>cancel_if_unresponded</code></td>
+<td><code>true</code></td>
+<td>若为 <code>false</code>，已写出但未收到响应的请求不会在连接丢失时被取消，重连后会<strong>重发</strong>（仅对幂等命令安全）</td>
+</tr>
+<tr>
+<td><code>hello_with_priority</code></td>
+<td><code>true</code></td>
+<td>含 <code>HELLO</code> 的请求会被移到队列最前，保证先认证再发其他命令</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>旧教程里常见的 <code>redis::command::ping</code> 枚举在 1.87 &#x2F; 1.88 中<strong>已不存在</strong>，命令一律以字符串传入（如 <code>&quot;PING&quot;</code>、<code>&quot;SET&quot;</code>）。</li>
+<li><code>request</code> 没有 <code>pipeline</code> &#x2F; <code>append</code> 成员——一个 <code>request</code> 本身就是一条流水线。</li>
+<li><code>SUBSCRIBE</code> &#x2F; <code>PSUBSCRIBE</code> &#x2F; <code>UNSUBSCRIBE</code> 这类命令<strong>不要</strong>计入 <code>response&lt;...&gt;</code> 的槽位。</li>
+<li>更新版本（develop）额外提供 <code>request::subscribe()</code>、<code>psubscribe()</code>、<code>unsubscribe()</code>、<code>punsubscribe()</code>、<code>hello()</code>，<br>其中 <code>subscribe()</code> 系列会让连接在重连后<strong>自动重新订阅</strong>；<code>request::config::cancel_if_not_connected</code> 的行为保持不变。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-response"><a href="#boost-redis-response" class="headerlink" title="boost::redis::response&lt;Ts...&gt;"></a><code>boost::redis::response&lt;Ts...&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/response.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>using response = std::tuple&lt;adapter::result&lt;Ts&gt;...&gt;;</code>，编译期定长的响应容器。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>std::get&lt;N&gt;(resp)</code></td>
+<td>取第 N 个响应，类型是 <code>adapter::result&lt;T&gt;</code>（即 <code>boost::system::result&lt;T, adapter::error&gt;</code>）</td>
+</tr>
+<tr>
+<td><code>.value()</code></td>
+<td>取实际值；若该命令返回 RESP3 错误则抛 <code>system::system_error</code></td>
+</tr>
+<tr>
+<td><code>.has_value()</code> &#x2F; <code>.has_error()</code></td>
+<td>判断成功&#x2F;失败</td>
+</tr>
+<tr>
+<td><code>.error()</code></td>
+<td>返回 <code>adapter::error{data_type, diagnostic}</code>，<code>diagnostic</code> 是 Redis 返回的错误文本</td>
+</tr>
+<tr>
+<td><code>std::tuple_size&lt;response&lt;...&gt;&gt;::value</code></td>
+<td>元素个数（元组大小），必须与请求中「会产生响应」的命令数一致</td>
+</tr>
+<tr>
+<td><code>ignore_t</code> 槽位</td>
+<td>用 <code>boost::redis::ignore_t</code> 占位，忽略该条响应</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>response</code> 就是 <code>std::tuple</code>，没有 <code>operator[]</code>、<code>get()</code> 或 <code>size()</code> 成员——取值一律用 <code>std::get&lt;N&gt;(resp)</code>，<br>元素个数用 <code>std::tuple_size&lt;decltype(resp)&gt;::value</code>。</li>
+<li><code>response</code> 的元素个数必须与 <code>request</code> 中会产生响应的命令数一致；不一致会导致解析错误（<code>incompatible_size</code>）。</li>
+<li>想整体忽略响应，直接把全局对象 <code>boost::redis::ignore</code> 传给 <code>async_exec</code>。</li>
+<li>键可能不存在时用 <code>std::optional&lt;T&gt;</code> 包一层；<code>MGET</code> 这类「数组里每个元素都可能为空」的情况可用<br><code>std::vector&lt;std::optional&lt;std::string&gt;&gt;</code>（1.88 新增支持）。</li>
+<li>事务（<code>MULTI</code>&#x2F;<code>EXEC</code>）用<strong>嵌套的</strong> <code>response&lt;...&gt;</code> 表示 <code>EXEC</code> 返回的数组。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-generic-response-与-boost-redis-resp3-node"><a href="#boost-redis-generic-response-与-boost-redis-resp3-node" class="headerlink" title="boost::redis::generic_response 与 boost::redis::resp3::node"></a><code>boost::redis::generic_response</code> 与 <code>boost::redis::resp3::node</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/response.hpp&gt;</code>、<code>&lt;boost/redis/resp3/node.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>generic_response = adapter::result&lt;std::vector&lt;resp3::node&gt;&gt;</code>，是响应树的<strong>前序遍历</strong>视图，可承载任意 RESP3 结构。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>generic_response::value()</code></td>
+<td>返回 <code>std::vector&lt;resp3::node&gt;&amp;</code></td>
+</tr>
+<tr>
+<td><code>resp3::node::data_type</code></td>
+<td>该节点的 RESP3 类型（<code>resp3::type</code>）</td>
+</tr>
+<tr>
+<td><code>resp3::node::aggregate_size</code></td>
+<td>聚合元素的个数；简单类型为 1</td>
+</tr>
+<tr>
+<td><code>resp3::node::depth</code></td>
+<td>该节点在响应树中的深度（根为 0）</td>
+</tr>
+<tr>
+<td><code>resp3::node::value</code></td>
+<td>实际数据；聚合类型的节点此字段为空</td>
+</tr>
+<tr>
+<td><code>boost::redis::consume_one(resp)</code></td>
+<td>旋转 <code>generic_response</code>，丢弃最前面一条响应（订阅循环里逐条消费 push）</td>
+</tr>
+<tr>
+<td><code>resp3::node_view</code></td>
+<td><code>basic_node&lt;std::string_view&gt;</code>，不拥有数据的视图版本</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>每个命令的响应构成一棵子树；<code>depth</code> 回到 0 表示下一条命令的响应开始。</li>
+<li><code>generic_response</code> 里 <strong>RESP3 错误不会让 <code>async_exec</code> 失败</strong>，而是作为普通节点出现，需要用户自行检查。</li>
+<li>订阅场景下，一次 <code>async_receive</code> 可能带回多条 push，必须用 <code>consume_one()</code> 逐条消费而不是直接 <code>clear()</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-resp3-type-与-resp3-to-string"><a href="#boost-redis-resp3-type-与-resp3-to-string" class="headerlink" title="boost::redis::resp3::type 与 resp3::to_string()"></a><code>boost::redis::resp3::type</code> 与 <code>resp3::to_string()</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/resp3/type.hpp&gt;</code></li>
+<li><strong>作用</strong>：RESP3 数据类型枚举，以及到字符串的转换。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>array</code> &#x2F; <code>push</code> &#x2F; <code>set</code> &#x2F; <code>map</code> &#x2F; <code>attribute</code></td>
+<td>聚合类型（<code>is_aggregate()</code> 为 true）</td>
+</tr>
+<tr>
+<td><code>simple_string</code> &#x2F; <code>simple_error</code></td>
+<td><code>+...</code> &#x2F; <code>-...</code></td>
+</tr>
+<tr>
+<td><code>blob_string</code> &#x2F; <code>blob_error</code> &#x2F; <code>verbatim_string</code></td>
+<td><code>$...</code> &#x2F; <code>!...</code> &#x2F; <code>=...</code></td>
+</tr>
+<tr>
+<td><code>number</code> &#x2F; <code>doublean</code> &#x2F; <code>boolean</code> &#x2F; <code>big_number</code></td>
+<td><code>:...</code> &#x2F; <code>,...</code> &#x2F; <code>#...</code> &#x2F; <code>(...)</code></td>
+</tr>
+<tr>
+<td><code>null</code></td>
+<td><code>_</code></td>
+</tr>
+<tr>
+<td><code>streamed_string</code> &#x2F; <code>streamed_string_part</code></td>
+<td>流式字符串</td>
+</tr>
+<tr>
+<td><code>invalid</code></td>
+<td>非法&#x2F;未初始化</td>
+</tr>
+<tr>
+<td><code>to_string(type)</code></td>
+<td>返回 <code>char const*</code> 形式的类型名</td>
+</tr>
+<tr>
+<td><code>operator&lt;&lt;(std::ostream&amp;, type)</code></td>
+<td>直接输出类型名</td>
+</tr>
+<tr>
+<td><code>is_aggregate(type)</code></td>
+<td>是否为聚合类型</td>
+</tr>
+<tr>
+<td><code>element_multiplicity(type)</code></td>
+<td><code>map</code> &#x2F; <code>attribute</code> 返回 2，其余返回 1</td>
+</tr>
+<tr>
+<td><code>to_code(type)</code> &#x2F; <code>to_type(char)</code></td>
+<td>与 wire 格式字符互转</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>浮点类型的枚举名是 <strong><code>doublean</code></strong>（不是 <code>double_</code>），这一点在写 <code>switch</code> 时容易写错。</li>
+<li>1.87 &#x2F; 1.88 没有单独的 <code>node_type</code> 类型别名，节点里的字段就叫 <code>data_type</code>，类型为 <code>resp3::type</code>。</li>
+<li>打印未知响应结构时，<code>to_string(node.data_type)</code> 是最方便的调试手段。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-error-与-make-error-code"><a href="#boost-redis-error-与-make-error-code" class="headerlink" title="boost::redis::error 与 make_error_code()"></a><code>boost::redis::error</code> 与 <code>make_error_code()</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/error.hpp&gt;</code></li>
+<li><strong>作用</strong>：库自身的错误码枚举，<code>std::is_error_code_enum&lt;boost::redis::error&gt;</code> 已特化。</li>
+<li><strong>关键成员</strong>（部分）：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>枚举值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>invalid_data_type</code></td>
+<td>非法的 RESP3 类型</td>
+</tr>
+<tr>
+<td><code>not_a_number</code> &#x2F; <code>not_a_double</code></td>
+<td>字符串无法解析成数字</td>
+</tr>
+<tr>
+<td><code>exceeeds_max_nested_depth</code></td>
+<td>嵌套深度超限（注意官方拼写）</td>
+</tr>
+<tr>
+<td><code>expects_resp3_simple_type</code> &#x2F; <code>expects_resp3_aggregate</code> &#x2F; <code>expects_resp3_map</code> &#x2F; <code>expects_resp3_set</code></td>
+<td>期望的类型与实际不符</td>
+</tr>
+<tr>
+<td><code>nested_aggregate_not_supported</code></td>
+<td>该容器不支持嵌套聚合</td>
+</tr>
+<tr>
+<td><code>resp3_simple_error</code> &#x2F; <code>resp3_blob_error</code> &#x2F; <code>resp3_null</code></td>
+<td>Redis 返回了 RESP3 错误 &#x2F; null</td>
+</tr>
+<tr>
+<td><code>incompatible_size</code></td>
+<td>聚合容器大小不匹配（响应槽位与命令数不一致）</td>
+</tr>
+<tr>
+<td><code>not_connected</code></td>
+<td>尚未建立连接（配合 <code>cancel_if_not_connected</code>）</td>
+</tr>
+<tr>
+<td><code>resolve_timeout</code> &#x2F; <code>connect_timeout</code> &#x2F; <code>ssl_handshake_timeout</code> &#x2F; <code>pong_timeout</code></td>
+<td>各类超时</td>
+</tr>
+<tr>
+<td><code>sync_receive_push_failed</code></td>
+<td><code>receive()</code> 非阻塞取 push 时无数据</td>
+</tr>
+<tr>
+<td><code>incompatible_node_depth</code></td>
+<td>节点深度不匹配</td>
+</tr>
+<tr>
+<td><code>resp3_hello</code></td>
+<td><code>HELLO</code> 命令失败（认证失败等）</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>make_error_code</code></td>
+<td><code>auto make_error_code(error e) -&gt; system::error_code</code></td>
+<td>把枚举转成 <code>boost::system::error_code</code>，一般由 <code>error_code</code> 的隐式转换自动调用</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>枚举值位于 <code>boost::redis</code> 命名空间（<code>boost::redis::error::not_connected</code>），不是 <code>boost::redis::resp3::error</code>。</li>
+<li>所有异步操作完成签名里的错误类型是 <code>boost::system::error_code</code>，可以直接与 <code>boost::redis::error</code> 比较。</li>
+<li>也可以用 <code>error_code == boost::asio::error::operation_aborted</code> 判断「被取消」。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-ignore-t-与-boost-redis-ignore"><a href="#boost-redis-ignore-t-与-boost-redis-ignore" class="headerlink" title="boost::redis::ignore_t 与 boost::redis::ignore"></a><code>boost::redis::ignore_t</code> 与 <code>boost::redis::ignore</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/ignore.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>using ignore_t = std::decay_t&lt;decltype(std::ignore)&gt;;</code>，全局对象 <code>extern ignore_t ignore;</code>。</li>
+<li><strong>要点</strong>：<ol>
+<li><code>response&lt;ignore_t, std::string, ignore_t&gt;</code> 忽略第 1、3 条响应。</li>
+<li><code>co_await conn-&gt;async_exec(req, ignore, use_awaitable);</code> 忽略全部响应。</li>
+<li>被忽略的槽位<strong>不会</strong>吞掉 RESP3 错误：错误仍然会让 <code>async_exec</code> 以 <code>error_code</code> 失败。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-operation"><a href="#boost-redis-operation" class="headerlink" title="boost::redis::operation"></a><code>boost::redis::operation</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/operation.hpp&gt;</code></li>
+<li><strong>作用</strong>：传给 <code>connection::cancel()</code> 的操作集合。</li>
+<li><strong>关键成员</strong>：<code>resolve</code>、<code>connect</code>、<code>ssl_handshake</code>、<code>exec</code>、<code>run</code>、<code>receive</code>、<code>reconnection</code>、<code>health_check</code>、<code>all</code>。</li>
+<li><strong>要点</strong>：<ol>
+<li><code>cancel(operation::exec)</code> 只取消<strong>尚未写出</strong>的请求（已写出等待响应的请求不受影响）。</li>
+<li><code>cancel(operation::reconnection)</code> 等价于把 <code>reconnect_wait_interval</code> 置零，用于跳出重连循环。</li>
+<li><code>cancel(operation::all)</code> 是默认参数，也是优雅关闭的标准做法。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-logger"><a href="#boost-redis-logger" class="headerlink" title="boost::redis::logger"></a><code>boost::redis::logger</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/logger.hpp&gt;</code></li>
+<li><strong>作用</strong>：轻量日志器，可传给 <code>connection</code> &#x2F; <code>async_run</code>。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>enum class level</code></td>
+<td><code>disabled</code>, <code>emerg</code>, <code>alert</code>, <code>crit</code>, <code>err</code>, <code>warning</code>, <code>notice</code>, <code>info</code>, <code>debug</code></td>
+</tr>
+<tr>
+<td><code>logger(level l = level::debug)</code></td>
+<td>构造函数（1.88）；develop 版本还接受第二个 <code>std::function&lt;void(level, std::string_view)&gt;</code> 参数用于对接第三方日志</td>
+</tr>
+<tr>
+<td><code>set_prefix(std::string_view)</code></td>
+<td>设置日志前缀；<code>async_run</code> 会用 <code>config::log_prefix</code> 自动调用</td>
+</tr>
+<tr>
+<td><code>on_resolve</code> &#x2F; <code>on_connect</code> &#x2F; <code>on_ssl_handshake</code> &#x2F; <code>on_write</code> &#x2F; <code>on_read</code> &#x2F; <code>on_hello</code></td>
+<td>各阶段回调，可用于自定义日志</td>
+</tr>
+<tr>
+<td><code>trace(std::string_view)</code></td>
+<td>输出一条 trace 消息</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>注意枚举名是 <code>err</code>（不是 <code>error</code>），以及 <code>disabled</code> 用于彻底关闭日志。</li>
+<li>1.87 起默认日志级别从 <code>disabled</code> 改为 <code>debug</code>，因此默认会在 <code>stderr</code> 看到输出。</li>
+<li>该类目前没有稳定接口承诺，跨版本升级时需留意。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-redis-usage"><a href="#boost-redis-usage" class="headerlink" title="boost::redis::usage"></a><code>boost::redis::usage</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/usage.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>connection::get_usage()</code> 返回的连接统计。</li>
+<li><strong>关键成员</strong>：<code>commands_sent</code>、<code>bytes_sent</code>、<code>responses_received</code>、<code>pushes_received</code>、<code>response_bytes_received</code>、<code>push_bytes_received</code>。</li>
+<li><strong>要点</strong>：<code>commands_sent</code> &#x2F; <code>bytes_sent</code> 是在写入 socket 前统计的，出错时可能略高于服务端实际收到的量。</li>
+</ul>
+<h4 id="boost-redis-any-adapter-与-boost-redis-adapter-result"><a href="#boost-redis-any-adapter-与-boost-redis-adapter-result" class="headerlink" title="boost::redis::any_adapter 与 boost::redis::adapter::result&lt;Value&gt;"></a><code>boost::redis::any_adapter</code> 与 <code>boost::redis::adapter::result&lt;Value&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/redis/adapter/any_adapter.hpp&gt;</code>、<code>&lt;boost/redis/adapter/result.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>any_adapter</code> 是类型擦除的响应适配器（1.88 新增的 <code>async_exec</code> 重载使用它，便于分离编译）；<br><code>adapter::result&lt;Value&gt;</code> 是 <code>boost::system::result&lt;Value, adapter::error&gt;</code> 的别名，用来保存单条响应及其错误诊断。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>any_adapter(T&amp; resp)</code></td>
+<td>从任意合法响应对象构造；<strong>内部持有引用</strong>，<code>resp</code> 必须存活</td>
+</tr>
+<tr>
+<td><code>adapter::result&lt;Value&gt;::value()</code></td>
+<td>取值，失败时抛异常</td>
+</tr>
+<tr>
+<td><code>adapter::result&lt;Value&gt;::has_value()</code> &#x2F; <code>error()</code></td>
+<td>判定与取错</td>
+</tr>
+<tr>
+<td><code>adapter::error::data_type</code></td>
+<td><code>resp3::type::simple_error</code> &#x2F; <code>blob_error</code> &#x2F; <code>null</code> 等</td>
+</tr>
+<tr>
+<td><code>adapter::error::diagnostic</code></td>
+<td>Redis 返回的错误文本</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>co_await conn.async_exec(req, resp)</code> 与 <code>co_await conn.async_exec(req, any_adapter(resp))</code> 等价。</li>
+<li>直接使用 <code>any_adapter</code> 时要注意生命周期：适配器不延长响应对象的寿命。</li>
+<li><code>boost_redis_adapt(resp)</code> 是适配器的底层定制点，也可用于把自定义类型接入响应体系。</li>
+</ol>
+</li>
+</ul>
+<h4 id="适配类型速查"><a href="#适配类型速查" class="headerlink" title="适配类型速查"></a>适配类型速查</h4><table>
+<thead>
+<tr>
+<th>C++ 类型</th>
+<th>可接收的 RESP3 类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>std::string</code></td>
+<td>simple-string、simple-error、blob-string、blob-error、number、double、big-number</td>
+</tr>
+<tr>
+<td><code>int</code> &#x2F; <code>int64_t</code> &#x2F; <code>long long</code> &#x2F; <code>std::size_t</code></td>
+<td>number</td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>std::optional&lt;T&gt;</code></td>
+<td>null 或 T</td>
+</tr>
+<tr>
+<td><code>std::vector&lt;T&gt;</code> &#x2F; <code>std::list&lt;T&gt;</code> &#x2F; <code>std::deque&lt;T&gt;</code> &#x2F; <code>std::array&lt;T,N&gt;</code></td>
+<td>array、set、push、map（map 展平成键值序列）</td>
+</tr>
+<tr>
+<td><code>std::map&lt;K,V&gt;</code> &#x2F; <code>std::unordered_map&lt;K,V&gt;</code></td>
+<td>map、push</td>
+</tr>
+<tr>
+<td><code>std::set&lt;T&gt;</code> &#x2F; <code>std::unordered_set&lt;T&gt;</code></td>
+<td>set</td>
+</tr>
+<tr>
+<td><code>std::tuple&lt;...&gt;</code> &#x2F; <code>boost::redis::response&lt;...&gt;</code></td>
+<td>对应多条命令的响应</td>
+</tr>
+<tr>
+<td><code>std::variant&lt;...&gt;</code></td>
+<td>类型不确定时的多选一</td>
+</tr>
+<tr>
+<td><code>std::monostate</code></td>
+<td>与 <code>std::variant</code> 配合表示「空」分支</td>
+</tr>
+<tr>
+<td><code>resp3::node</code> 向量 &#x2F; <code>generic_response</code></td>
+<td>任意 RESP3 结构</td>
+</tr>
+</tbody></table>
+<h4 id="高级：自定义序列化"><a href="#高级：自定义序列化" class="headerlink" title="高级：自定义序列化"></a>高级：自定义序列化</h4><ul>
+<li><strong>定制点</strong>（通过 ADL 查找，需定义在全局命名空间或类型所在命名空间）：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>boost_redis_to_bulk</code></td>
+<td><code>void boost_redis_to_bulk(std::string&amp; to, mystruct const&amp; obj);</code></td>
+<td>序列化：把对象写入请求载荷（通常内部调用 <code>boost::redis::resp3::boost_redis_to_bulk(to, str)</code>）</td>
+</tr>
+<tr>
+<td><code>boost_redis_from_bulk</code></td>
+<td><code>void boost_redis_from_bulk(mystruct&amp; u, node_view const&amp; node, boost::system::error_code&amp;);</code></td>
+<td>反序列化：从 <code>resp3::node_view</code> 读取对象</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>有了这两个函数，就可以把 <code>std::map&lt;std::string, mystruct&gt;</code> 直接当作响应类型，避免产生临时字符串。</li>
+<li>官方示例 <code>cpp20_json.cpp</code>（Boost.Json）与 <code>cpp20_protobuf.cpp</code>（protobuf）演示了完整做法。</li>
+<li>整数类型已有内置重载（<code>boost_redis_to_bulk(std::string&amp;, T n)</code>）。</li>
+</ol>
+</li>
+</ul>
+<h4 id="高级：SSL-上下文、Sentinel、rebind-executor"><a href="#高级：SSL-上下文、Sentinel、rebind-executor" class="headerlink" title="高级：SSL 上下文、Sentinel、rebind_executor"></a>高级：SSL 上下文、Sentinel、<code>rebind_executor</code></h4><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>1.87 &#x2F; 1.88</th>
+<th>更新版本（develop）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TLS</td>
+<td><code>config::use_ssl = true</code>；<code>asio::ssl::context</code> 作为 <code>connection</code> 构造函数参数；<code>connection::next_layer()</code> &#x2F; <code>get_ssl_context()</code> 访问底层流与上下文</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Sentinel</td>
+<td>手动：<code>req.push(&quot;SENTINEL&quot;, &quot;get-master-addr-by-name&quot;, &quot;mymaster&quot;)</code> 自行解析主节点地址</td>
+<td>内建：<code>config::sentinel.addresses</code> &#x2F; <code>master_name</code> &#x2F; <code>server_role</code> &#x2F; <code>use_ssl</code> &#x2F; <code>setup</code>，由 <code>async_run</code> 自动处理故障转移</td>
+</tr>
+<tr>
+<td>认证</td>
+<td><code>config::username</code> &#x2F; <code>password</code> 由库在 <code>HELLO</code> 中携带</td>
+<td>更灵活：<code>config::use_setup = true</code> + <code>config::setup</code> 自定义握手请求（<code>cfg.setup.hello(user, pass)</code>、<code>cfg.setup.push(&quot;SELECT&quot;, 42)</code>）</td>
+</tr>
+<tr>
+<td>执行器换绑</td>
+<td><code>basic_connection&lt;Executor&gt;::rebind_executor&lt;Executor1&gt;::other</code></td>
+<td>同上</td>
+</tr>
+<tr>
+<td>取消&#x2F;超时</td>
+<td><code>asio::cancel_after</code> 完成令牌（Boost 1.83+ 提供）；<code>connection::cancel(operation)</code></td>
+<td>同上；另有 <code>async_receive2</code> + <code>generic_flat_response</code> + <code>push_parser</code> 的推送 API</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-使用流程"><a href="#5-使用流程" class="headerlink" title="5. 使用流程"></a>5. 使用流程</h2><h3 id="5-1-连接-发送请求-处理响应"><a href="#5-1-连接-发送请求-处理响应" class="headerlink" title="5.1 连接 + 发送请求 + 处理响应"></a>5.1 连接 + 发送请求 + 处理响应</h3><ol>
+<li><strong>准备配置</strong>：创建 <code>boost::redis::config cfg;</code>，按需设置 <code>cfg.addr.host</code> &#x2F; <code>cfg.addr.port</code> &#x2F;<br><code>cfg.username</code> &#x2F; <code>cfg.password</code> &#x2F; <code>cfg.use_ssl</code> &#x2F; <code>cfg.health_check_interval</code> &#x2F; <code>cfg.reconnect_wait_interval</code>。</li>
+<li><strong>创建执行上下文</strong>：<code>boost::asio::io_context ioc;</code>（协程版本还需要 <code>co_spawn</code>）。</li>
+<li><strong>创建连接对象</strong>：<code>auto conn = std::make_shared&lt;boost::redis::connection&gt;(ex);</code><br>用 <code>shared_ptr</code> 保证生命周期覆盖所有异步操作。</li>
+<li><strong>启动连接</strong>：<code>conn-&gt;async_run(cfg, {}, boost::asio::consign(boost::asio::detached, conn));</code><br>—— 解析 → 建连 → TLS 握手 → <code>HELLO 3</code> → 健康检查 → 读写循环。<strong>必须早于 <code>async_exec</code>。</strong></li>
+<li><strong>构造请求</strong>：<code>boost::redis::request req; req.push(&quot;SET&quot;, &quot;k&quot;, &quot;v&quot;); req.push(&quot;GET&quot;, &quot;k&quot;);</code></li>
+<li><strong>准备响应对象</strong>：<code>boost::redis::response&lt;std::string, std::optional&lt;std::string&gt;&gt; resp;</code><br>槽位个数必须等于会产生响应的命令数。</li>
+<li><strong>执行</strong>：<code>co_await conn-&gt;async_exec(req, resp, boost::asio::use_awaitable);</code><br>（或回调 <code>conn.async_exec(req, resp, handler);</code>）</li>
+<li><strong>检查结果</strong>：判断完成签名中的 <code>error_code</code>；成功则用 <code>std::get&lt;N&gt;(resp).value()</code> 取值，<br>失败则查看 <code>std::get&lt;N&gt;(resp).error().diagnostic</code> 或 <code>ec.message()</code>。</li>
+<li><strong>复用</strong>：<code>req.clear();</code>（保留缓冲区）后可以重新组装下一条请求。</li>
+</ol>
+<h3 id="5-2-订阅（Pub-Sub）流程"><a href="#5-2-订阅（Pub-Sub）流程" class="headerlink" title="5.2 订阅（Pub&#x2F;Sub）流程"></a>5.2 订阅（Pub&#x2F;Sub）流程</h3><ol>
+<li>创建 <code>connection</code> 并 <code>async_run</code>（同 5.1 的第 1–4 步）。</li>
+<li>准备接收对象：<code>boost::redis::generic_response push_resp;</code></li>
+<li>绑定接收对象：<code>conn-&gt;set_receive_response(push_resp);</code>（必须在任何接收操作之前调用，且对象要一直存活）。</li>
+<li>构造订阅请求：<code>boost::redis::request sub; sub.push(&quot;SUBSCRIBE&quot;, &quot;channel&quot;);</code></li>
+<li>执行订阅：<code>co_await conn-&gt;async_exec(sub, boost::redis::ignore, boost::asio::use_awaitable);</code><br>—— 注意 <code>SUBSCRIBE</code> <strong>不占响应槽位</strong>。</li>
+<li>进入接收循环：<code>while (conn-&gt;will_reconnect()) { ... }</code><ol>
+<li>先尝试非阻塞取缓存：<code>conn-&gt;receive(ec);</code><br>若 <code>ec == boost::redis::error::sync_receive_push_failed</code>，清空 <code>ec</code> 并改为<br><code>co_await conn-&gt;async_receive(boost::asio::redirect_error(boost::asio::use_awaitable, ec));</code></li>
+<li><code>ec</code> 非空说明连接断开：跳出内层循环，回到外层重新 <code>SUBSCRIBE</code>（重连后需要重新订阅）。</li>
+<li>消费 push：从 <code>push_resp.value()</code> 中读取（pubsub 消息通常是<br><code>[0]==&quot;message&quot;</code>, <code>[1]==channel</code>, <code>[2]==payload</code>），然后调用 <code>boost::redis::consume_one(push_resp);</code><br>丢弃这一条，继续处理下一条。</li>
+</ol>
+</li>
+<li>需要退出时：<code>conn-&gt;cancel(operation::all);</code>，让 <code>async_receive</code> 与 <code>async_run</code> 一起返回。</li>
+</ol>
+<h3 id="5-3-优雅关闭"><a href="#5-3-优雅关闭" class="headerlink" title="5.3 优雅关闭"></a>5.3 优雅关闭</h3><ol>
+<li>停止接收新请求（业务层保证不再调用 <code>async_exec</code>）。</li>
+<li>等待在途请求完成，或直接放弃：<code>conn-&gt;cancel(operation::exec);</code> 取消尚未写出的请求。</li>
+<li>取消整个连接：<code>conn-&gt;cancel(operation::all);</code><br>—— 这会取消解析&#x2F;建连&#x2F;TLS 握手&#x2F;健康检查&#x2F;重连&#x2F;读写&#x2F;未写出的请求。</li>
+<li><code>async_run</code> 的完成处理器被调用（通常带 <code>asio::error::operation_aborted</code>），此时连接不再重连。</li>
+<li>停止事件循环：让所有 handler 跑完后 <code>ioc.run()</code> 自然返回；如果还有定时器等长期操作，<br>显式调用 <code>boost::asio::post(ioc, [&amp;]{ ioc.stop(); });</code> 或 <code>ioc.stop();</code>。</li>
+<li>释放资源：<code>shared_ptr&lt;connection&gt;</code> 的最后一个引用消失，连接析构。<br>如果使用了 <code>asio::consign(asio::detached, conn)</code>，请确认 handler 已执行完毕再销毁 <code>ioc</code>。</li>
+</ol>
+<hr>
+<h2 id="6-代码示例"><a href="#6-代码示例" class="headerlink" title="6. 代码示例"></a>6. 代码示例</h2><blockquote>
+<p>所有示例都需要一个可用的 Redis 6+ 服务（见 2.4 节）。<br><code>#include &lt;boost/redis/src.hpp&gt;</code> 可以放在独立的 <code>.cpp</code> 中（推荐），下面的示例为了自包含直接放在同一个文件里，<br>因此<strong>不要把多个示例的 <code>.cpp</code> 一起链接</strong>，否则会出现重复定义。<br>默认服务器地址为 <code>127.0.0.1:6379</code>，示例 2 支持用命令行参数覆盖。</p>
+</blockquote>
+<h3 id="示例-1：C-20-协程最小示例"><a href="#示例-1：C-20-协程最小示例" class="headerlink" title="示例 1：C++20 协程最小示例"></a>示例 1：C++20 协程最小示例</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：改编自官方 example/cpp20_intro.cpp</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 ex1.cpp -o ex1 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span>          <span class="hljs-comment">// 仅在恰好一个 .cpp 中包含</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::redis::response;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-comment">// 用 shared_ptr 保证连接活到所有异步操作结束</span><br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br><br>   <span class="hljs-comment">// async_run 负责解析、建连、RESP3 握手、健康检查与自动重连</span><br>   conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   request req;<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;PING&quot;</span>, <span class="hljs-string">&quot;Hello world&quot;</span>);<br><br>   response&lt;std::string&gt; resp;<br><br>   <span class="hljs-comment">// 1.88 起默认完成令牌是 deferred，这里显式使用 use_awaitable</span><br>   <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();   <span class="hljs-comment">// 优雅关闭</span><br><br>   std::cout &lt;&lt; <span class="hljs-string">&quot;PING: &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; std::endl;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-2：C-17-回调版本最小示例"><a href="#示例-2：C-17-回调版本最小示例" class="headerlink" title="示例 2：C++17 回调版本最小示例"></a>示例 2：C++17 回调版本最小示例</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：改编自官方 example/cpp17_intro.cpp</span><br><span class="hljs-comment">// 编译：g++ -std=c++17 ex2.cpp -o ex2 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/system/error_code.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::redis::response;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      config cfg;<br>      <span class="hljs-keyword">if</span> (argc == <span class="hljs-number">3</span>) &#123;<br>         cfg.addr.host = argv[<span class="hljs-number">1</span>];<br>         cfg.addr.port = argv[<span class="hljs-number">2</span>];<br>      &#125;<br><br>      asio::io_context ioc;<br>      connection conn&#123;ioc&#125;;<br><br>      <span class="hljs-comment">// 1) 先启动连接</span><br>      conn.<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::detached);<br><br>      <span class="hljs-comment">// 2) 再提交请求（回调风格必须显式传 completion token）</span><br>      request req;<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;PING&quot;</span>, <span class="hljs-string">&quot;Hello world&quot;</span>);<br>      response&lt;std::string&gt; resp;<br><br>      conn.<span class="hljs-built_in">async_exec</span>(req, resp,<br>         [&amp;](boost::system::error_code ec, std::<span class="hljs-type">size_t</span> <span class="hljs-comment">/*bytes*/</span>) &#123;<br>            <span class="hljs-keyword">if</span> (ec) &#123;<br>               std::cerr &lt;&lt; <span class="hljs-string">&quot;async_exec error: &quot;</span> &lt;&lt; ec.<span class="hljs-built_in">message</span>() &lt;&lt; std::endl;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>               std::cout &lt;&lt; <span class="hljs-string">&quot;PING: &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; std::endl;<br>            &#125;<br>            conn.<span class="hljs-built_in">cancel</span>();   <span class="hljs-comment">// 关闭连接，让 ioc.run() 得以返回</span><br>         &#125;);<br><br>      <span class="hljs-comment">// 3) 运行事件循环</span><br>      ioc.<span class="hljs-built_in">run</span>();<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-3：用-response-解析-SET-GET-INCR"><a href="#示例-3：用-response-解析-SET-GET-INCR" class="headerlink" title="示例 3：用 response&lt;std::string, int64_t&gt; 解析 SET &#x2F; GET &#x2F; INCR"></a>示例 3：用 <code>response&lt;std::string, int64_t&gt;</code> 解析 <code>SET</code> &#x2F; <code>GET</code> &#x2F; <code>INCR</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 编译：g++ -std=c++20 ex3.cpp -o ex3 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdint&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;optional&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::redis::response;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br>   conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   <span class="hljs-comment">// SET 返回 simple-string（+OK），INCR 返回 number</span><br>   &#123;<br>      request req;<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SET&quot;</span>, <span class="hljs-string">&quot;counter&quot;</span>, <span class="hljs-string">&quot;41&quot;</span>);<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;INCR&quot;</span>, <span class="hljs-string">&quot;counter&quot;</span>);<br><br>      response&lt;std::string, std::<span class="hljs-type">int64_t</span>&gt; resp;<br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br><br>      <span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; set_result  = std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp);<br>      <span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; incr_result = std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">1</span>&gt;(resp);<br><br>      <span class="hljs-keyword">if</span> (!set_result)<br>         std::cerr &lt;&lt; <span class="hljs-string">&quot;SET failed: &quot;</span> &lt;&lt; set_result.<span class="hljs-built_in">error</span>().diagnostic &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>      <span class="hljs-keyword">else</span><br>         std::cout &lt;&lt; <span class="hljs-string">&quot;SET -&gt; &quot;</span> &lt;&lt; set_result.<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>      <span class="hljs-keyword">if</span> (!incr_result)<br>         std::cerr &lt;&lt; <span class="hljs-string">&quot;INCR failed: &quot;</span> &lt;&lt; incr_result.<span class="hljs-built_in">error</span>().diagnostic &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>      <span class="hljs-keyword">else</span><br>         std::cout &lt;&lt; <span class="hljs-string">&quot;INCR -&gt; &quot;</span> &lt;&lt; incr_result.<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>   &#125;<br><br>   <span class="hljs-comment">// GET 返回 blob-string 或 null（键不存在时），因此用 std::optional</span><br>   &#123;<br>      request req;<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;counter&quot;</span>);<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;this-key-does-not-exist&quot;</span>);<br><br>      response&lt;std::optional&lt;std::string&gt;, std::optional&lt;std::string&gt;&gt; resp;<br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br><br>      std::cout &lt;&lt; <span class="hljs-string">&quot;GET counter   -&gt; &quot;</span><br>                &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>().<span class="hljs-built_in">value_or</span>(<span class="hljs-string">&quot;(null)&quot;</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;GET missing   -&gt; &quot;</span><br>                &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">1</span>&gt;(resp).<span class="hljs-built_in">value</span>().<span class="hljs-built_in">value_or</span>(<span class="hljs-string">&quot;(null)&quot;</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>   &#125;<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-4：generic-response-遍历-resp3-node-处理任意响应"><a href="#示例-4：generic-response-遍历-resp3-node-处理任意响应" class="headerlink" title="示例 4：generic_response + 遍历 resp3::node 处理任意响应"></a>示例 4：<code>generic_response</code> + 遍历 <code>resp3::node</code> 处理任意响应</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：思路来自官方文档「The general case」一节</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 ex4.cpp -o ex4 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/resp3/node.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/resp3/type.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">namespace</span> resp3 = boost::redis::resp3;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::generic_response;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br>   conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   request req;<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;DEL&quot;</span>, <span class="hljs-string">&quot;myhash&quot;</span>);<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;HSET&quot;</span>, <span class="hljs-string">&quot;myhash&quot;</span>, <span class="hljs-string">&quot;f1&quot;</span>, <span class="hljs-string">&quot;v1&quot;</span>, <span class="hljs-string">&quot;f2&quot;</span>, <span class="hljs-string">&quot;v2&quot;</span>);<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;HGETALL&quot;</span>, <span class="hljs-string">&quot;myhash&quot;</span>);<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;LRANGE&quot;</span>, <span class="hljs-string">&quot;myhash&quot;</span>, <span class="hljs-number">0</span>, <span class="hljs-number">-1</span>);<br><br>   <span class="hljs-comment">// 接收任意 RESP3 结构：嵌套聚合、类型不定的命令都可以</span><br>   generic_response resp;<br>   <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br><br>   <span class="hljs-keyword">if</span> (!resp.<span class="hljs-built_in">has_value</span>()) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;exec failed\n&quot;</span>;<br>      conn-&gt;<span class="hljs-built_in">cancel</span>();<br>      <span class="hljs-keyword">co_return</span>;<br>   &#125;<br><br>   <span class="hljs-comment">// resp.value() 是响应树的前序遍历；depth == 0 表示一条新命令的响应开始</span><br>   <span class="hljs-type">int</span> command_index = <span class="hljs-number">-1</span>;<br>   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; node : resp.<span class="hljs-built_in">value</span>()) &#123;<br>      <span class="hljs-keyword">if</span> (node.depth == <span class="hljs-number">0</span>) &#123;<br>         ++command_index;<br>         std::cout &lt;&lt; <span class="hljs-string">&quot;\n--- response #&quot;</span> &lt;&lt; command_index<br>                   &lt;&lt; <span class="hljs-string">&quot; (&quot;</span> &lt;&lt; resp3::<span class="hljs-built_in">to_string</span>(node.data_type)<br>                   &lt;&lt; <span class="hljs-string">&quot;, size=&quot;</span> &lt;&lt; node.aggregate_size &lt;&lt; <span class="hljs-string">&quot;) ---\n&quot;</span>;<br>      &#125;<br>      std::cout &lt;&lt; std::<span class="hljs-built_in">string</span>(node.depth * <span class="hljs-number">2</span>, <span class="hljs-string">&#x27; &#x27;</span>)<br>                &lt;&lt; resp3::<span class="hljs-built_in">to_string</span>(node.data_type) &lt;&lt; <span class="hljs-string">&quot;: &quot;</span><br>                &lt;&lt; (node.value.<span class="hljs-built_in">empty</span>() ? std::<span class="hljs-built_in">string</span>(<span class="hljs-string">&quot;&lt;aggregate&gt;&quot;</span>) : node.value)<br>                &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>   &#125;<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-5：发布订阅（SUBSCRIBE-push-处理）"><a href="#示例-5：发布订阅（SUBSCRIBE-push-处理）" class="headerlink" title="示例 5：发布订阅（SUBSCRIBE + push 处理）"></a>示例 5：发布订阅（<code>SUBSCRIBE</code> + push 处理）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：改编自官方 example/cpp20_subscriber.cpp</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 ex5.cpp -o ex5 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-comment">// 测试：另开终端执行  redis-cli -3  -&gt;  PUBLISH channel hello</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/logger.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/awaitable.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/redirect_error.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/signal_set.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/system/error_code.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::consume_one;<br><span class="hljs-keyword">using</span> boost::redis::error;<br><span class="hljs-keyword">using</span> boost::redis::generic_response;<br><span class="hljs-keyword">using</span> boost::redis::ignore;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::system::error_code;<br><br><span class="hljs-comment">// 接收并打印服务器 push</span><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">receiver</span><span class="hljs-params">(std::shared_ptr&lt;connection&gt; conn)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   request req;<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SUBSCRIBE&quot;</span>, <span class="hljs-string">&quot;channel&quot;</span>);   <span class="hljs-comment">// SUBSCRIBE 不占响应槽位</span><br><br>   generic_response push_resp;<br>   conn-&gt;<span class="hljs-built_in">set_receive_response</span>(push_resp);   <span class="hljs-comment">// 必须在接收前绑定，且对象要一直存活</span><br><br>   <span class="hljs-comment">// will_reconnect() 为 false 表示连接已被取消</span><br>   <span class="hljs-keyword">while</span> (conn-&gt;<span class="hljs-built_in">will_reconnect</span>()) &#123;<br><br>      <span class="hljs-comment">// 每次（重）连上都要重新订阅</span><br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, ignore, asio::use_awaitable);<br><br>      <span class="hljs-keyword">for</span> (error_code ec;;) &#123;<br>         <span class="hljs-comment">// 先尝试取已缓冲的 push（非阻塞）</span><br>         conn-&gt;<span class="hljs-built_in">receive</span>(ec);<br>         <span class="hljs-keyword">if</span> (ec == error::sync_receive_push_failed) &#123;<br>            ec = &#123;&#125;;<br>            <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_receive</span>(<br>               asio::<span class="hljs-built_in">redirect_error</span>(asio::use_awaitable, ec));<br>         &#125;<br><br>         <span class="hljs-keyword">if</span> (ec)<br>            <span class="hljs-keyword">break</span>;   <span class="hljs-comment">// 连接断开：跳出内层循环，回到外层重新订阅</span><br><br>         <span class="hljs-comment">// pubsub 消息形如：[0]=&quot;message&quot; [1]=channel [2]=payload</span><br>         <span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; nodes = push_resp.<span class="hljs-built_in">value</span>();<br>         <span class="hljs-keyword">if</span> (nodes.<span class="hljs-built_in">size</span>() &gt;= <span class="hljs-number">3</span>)<br>            std::cout &lt;&lt; nodes.<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>).value &lt;&lt; <span class="hljs-string">&quot; : &quot;</span> &lt;&lt; nodes.<span class="hljs-built_in">at</span>(<span class="hljs-number">2</span>).value &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>         <span class="hljs-comment">// 一次可能带回多条 push，逐条消费</span><br>         <span class="hljs-built_in">consume_one</span>(push_resp);<br>      &#125;<br>   &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">auto</span> ex = <span class="hljs-keyword">co_await</span> asio::this_coro::executor;<br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(ex);<br><br>   asio::<span class="hljs-built_in">co_spawn</span>(ex, <span class="hljs-built_in">receiver</span>(conn), asio::detached);<br>   conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   <span class="hljs-comment">// 等待 Ctrl+C</span><br>   <span class="hljs-function">asio::signal_set <span class="hljs-title">sig_set</span><span class="hljs-params">(ex, SIGINT, SIGTERM)</span></span>;<br>   <span class="hljs-keyword">co_await</span> sig_set.<span class="hljs-built_in">async_wait</span>();<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();   <span class="hljs-comment">// 取消接收循环与 async_run</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-6：流水线（一次发送多条命令）"><a href="#示例-6：流水线（一次发送多条命令）" class="headerlink" title="示例 6：流水线（一次发送多条命令）"></a>示例 6：流水线（一次发送多条命令）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 编译：g++ -std=c++20 ex6.cpp -o ex6 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdint&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;list&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;map&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;optional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::ignore;<br><span class="hljs-keyword">using</span> boost::redis::<span class="hljs-type">ignore_t</span>;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::redis::response;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br>   conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   <span class="hljs-comment">// 方式 A：多条命令组成一条流水线，一次 RTT 完成</span><br>   &#123;<br>      request req;<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;DEL&quot;</span>, <span class="hljs-string">&quot;plist&quot;</span>, <span class="hljs-string">&quot;phash&quot;</span>);<br>      req.<span class="hljs-built_in">push_range</span>(<span class="hljs-string">&quot;RPUSH&quot;</span>, <span class="hljs-string">&quot;plist&quot;</span>, std::vector&lt;std::string&gt;&#123;<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>&#125;);<br>      req.<span class="hljs-built_in">push_range</span>(<span class="hljs-string">&quot;HSET&quot;</span>, <span class="hljs-string">&quot;phash&quot;</span>,<br>                     std::map&lt;std::string, std::string&gt;&#123;&#123;<span class="hljs-string">&quot;f1&quot;</span>, <span class="hljs-string">&quot;v1&quot;</span>&#125;, &#123;<span class="hljs-string">&quot;f2&quot;</span>, <span class="hljs-string">&quot;v2&quot;</span>&#125;&#125;);<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;LRANGE&quot;</span>, <span class="hljs-string">&quot;plist&quot;</span>, <span class="hljs-number">0</span>, <span class="hljs-number">-1</span>);<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;HGETALL&quot;</span>, <span class="hljs-string">&quot;phash&quot;</span>);<br><br>      response&lt;<br>         <span class="hljs-type">int</span>,                             <span class="hljs-comment">// DEL</span><br>         <span class="hljs-type">int</span>,                             <span class="hljs-comment">// RPUSH</span><br>         <span class="hljs-type">int</span>,                             <span class="hljs-comment">// HSET</span><br>         std::vector&lt;std::string&gt;,        <span class="hljs-comment">// LRANGE</span><br>         std::map&lt;std::string, std::string&gt; <span class="hljs-comment">// HGETALL</span><br>      &gt; resp;<br><br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br><br>      std::cout &lt;&lt; <span class="hljs-string">&quot;DEL    -&gt; &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;RPUSH  -&gt; &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">1</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;HSET   -&gt; &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">2</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>      std::cout &lt;&lt; <span class="hljs-string">&quot;LRANGE -&gt; &quot;</span>;<br>      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; s : std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">3</span>&gt;(resp).<span class="hljs-built_in">value</span>())<br>         std::cout &lt;&lt; s &lt;&lt; <span class="hljs-string">&#x27; &#x27;</span>;<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>      std::cout &lt;&lt; <span class="hljs-string">&quot;HGETALL -&gt; &quot;</span>;<br>      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; kv : std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">4</span>&gt;(resp).<span class="hljs-built_in">value</span>())<br>         std::cout &lt;&lt; kv.first &lt;&lt; <span class="hljs-string">&#x27;=&#x27;</span> &lt;&lt; kv.second &lt;&lt; <span class="hljs-string">&#x27; &#x27;</span>;<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>   &#125;<br><br>   <span class="hljs-comment">// 方式 B：用 ignore_t 忽略部分响应</span><br>   &#123;<br>      request req;<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;PING&quot;</span>);                       <span class="hljs-comment">// 忽略</span><br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SET&quot;</span>, <span class="hljs-string">&quot;pk&quot;</span>, <span class="hljs-string">&quot;pv&quot;</span>);            <span class="hljs-comment">// 保留</span><br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;QUIT&quot;</span>);                       <span class="hljs-comment">// 忽略</span><br><br>      response&lt;<span class="hljs-type">ignore_t</span>, std::string, <span class="hljs-type">ignore_t</span>&gt; resp;<br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;SET -&gt; &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">1</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>   &#125;<br><br>   <span class="hljs-comment">// 方式 C：全部忽略</span><br>   &#123;<br>      request req;<br>      req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SET&quot;</span>, <span class="hljs-string">&quot;fire-and-forget&quot;</span>, <span class="hljs-string">&quot;1&quot;</span>);<br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, ignore, asio::use_awaitable);<br>   &#125;<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-7：配置用户名-密码-SSL-连接"><a href="#示例-7：配置用户名-密码-SSL-连接" class="headerlink" title="示例 7：配置用户名 &#x2F; 密码 &#x2F; SSL 连接"></a>示例 7：配置用户名 &#x2F; 密码 &#x2F; SSL 连接</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：改编自官方 example/cpp20_intro_tls.cpp</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 ex7.cpp -o ex7 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-comment">// 前提：Redis 端开启了 TLS 与 ACL（示例使用 redis:7 的 TLS 端口 + 用户/密码）</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/ssl/verify_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::redis::response;<br><br><span class="hljs-comment">// 自定义证书校验回调（生产环境请实现真正的校验逻辑）</span><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">verify_certificate</span><span class="hljs-params">(<span class="hljs-type">bool</span> <span class="hljs-comment">/*preverified*/</span>, asio::ssl::verify_context&amp;)</span> -&gt; <span class="hljs-type">bool</span></span><br><span class="hljs-function"></span>&#123;<br>   std::cout &lt;&lt; <span class="hljs-string">&quot;verify_certificate called\n&quot;</span>;<br>   <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-comment">// ---- 连接参数 ----</span><br>   cfg.use_ssl   = <span class="hljs-literal">true</span>;<br>   cfg.username  = <span class="hljs-string">&quot;myuser&quot;</span>;<br>   cfg.password  = <span class="hljs-string">&quot;mypassword&quot;</span>;<br>   cfg.addr.host = <span class="hljs-string">&quot;redis.example.com&quot;</span>;<br>   cfg.addr.port = <span class="hljs-string">&quot;6380&quot;</span>;<br>   cfg.clientname = <span class="hljs-string">&quot;my-app&quot;</span>;<br>   cfg.health_check_interval   = std::chrono::seconds&#123;<span class="hljs-number">5</span>&#125;;<br>   cfg.reconnect_wait_interval = std::chrono::seconds&#123;<span class="hljs-number">2</span>&#125;;<br><br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br>   conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   <span class="hljs-comment">// 通过 next_layer() 访问底层 ssl::stream 配置证书校验</span><br>   conn-&gt;<span class="hljs-built_in">next_layer</span>().<span class="hljs-built_in">set_verify_mode</span>(asio::ssl::verify_peer);<br>   conn-&gt;<span class="hljs-built_in">next_layer</span>().<span class="hljs-built_in">set_verify_callback</span>(verify_certificate);<br><br>   request req;<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;PING&quot;</span>);<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;ACL&quot;</span>, <span class="hljs-string">&quot;WHOAMI&quot;</span>);   <span class="hljs-comment">// 确认认证后的用户名</span><br><br>   response&lt;std::string, std::string&gt; resp;<br>   <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br><br>   std::cout &lt;&lt; <span class="hljs-string">&quot;PING   -&gt; &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>   std::cout &lt;&lt; <span class="hljs-string">&quot;WHOAMI -&gt; &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">1</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-8：超时控制、健康检查与自动重连"><a href="#示例-8：超时控制、健康检查与自动重连" class="headerlink" title="示例 8：超时控制、健康检查与自动重连"></a>示例 8：超时控制、健康检查与自动重连</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：思路来自官方 example/cpp20_timeouts.cpp 与文档 cancellation 一节</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 ex8.cpp -o ex8 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/cancel_after.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;chrono&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std::chrono_literals;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::ignore;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::redis::response;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-comment">// 健康检查每 2 秒一次；断开后 1 秒重连（设 0 可关闭）</span><br>   cfg.health_check_interval   = <span class="hljs-number">2</span>s;<br>   cfg.reconnect_wait_interval = <span class="hljs-number">1</span>s;<br><br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br>   conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   request req;<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SET&quot;</span>, <span class="hljs-string">&quot;my_key&quot;</span>, <span class="hljs-string">&quot;42&quot;</span>);   <span class="hljs-comment">// SET 是幂等的</span><br><br>   <span class="hljs-comment">// 允许「已写出但未收到响应」时重发（仅对幂等命令安全）</span><br>   req.<span class="hljs-built_in">get_config</span>().cancel_if_unresponded = <span class="hljs-literal">false</span>;<br><br>   <span class="hljs-keyword">try</span> &#123;<br>      <span class="hljs-comment">// 若服务器宕机，async_exec 可能长时间挂起，用 cancel_after 加超时</span><br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, ignore, asio::<span class="hljs-built_in">cancel_after</span>(<span class="hljs-number">10</span>s));<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;SET ok\n&quot;</span>;<br>   &#125; <span class="hljs-built_in">catch</span> (boost::system::system_error <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;SET failed: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">code</span>().<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>   &#125;<br><br>   <span class="hljs-comment">// 读取连接统计</span><br>   <span class="hljs-keyword">auto</span> <span class="hljs-type">const</span> usage = conn-&gt;<span class="hljs-built_in">get_usage</span>();<br>   std::cout &lt;&lt; <span class="hljs-string">&quot;commands_sent=&quot;</span> &lt;&lt; usage.commands_sent<br>             &lt;&lt; <span class="hljs-string">&quot; bytes_sent=&quot;</span>    &lt;&lt; usage.bytes_sent<br>             &lt;&lt; <span class="hljs-string">&quot; responses=&quot;</span>     &lt;&lt; usage.responses_received<br>             &lt;&lt; <span class="hljs-string">&quot; pushes=&quot;</span>        &lt;&lt; usage.pushes_received &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();   <span class="hljs-comment">// 同时取消重连与健康检查</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-9（可选）：用-Sentinel-解析主节点地址"><a href="#示例-9（可选）：用-Sentinel-解析主节点地址" class="headerlink" title="示例 9（可选）：用 Sentinel 解析主节点地址"></a>示例 9（可选）：用 Sentinel 解析主节点地址</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：改编自官方 example/cpp20_resolve_with_sentinel.cpp（1.87/1.88 的手动做法）</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 ex9.cpp -o ex9 -lboost_redis -lssl -lcrypto -lpthread</span><br><span class="hljs-comment">// 前提：已按 redis 官方文档启动 Sentinel，且配置了 monitor mymaster ...</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/redis/src.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/consign.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/redirect_error.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/use_awaitable.hpp&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;array&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;optional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> asio = boost::asio;<br><span class="hljs-keyword">using</span> boost::redis::address;<br><span class="hljs-keyword">using</span> boost::redis::config;<br><span class="hljs-keyword">using</span> boost::redis::connection;<br><span class="hljs-keyword">using</span> boost::redis::<span class="hljs-type">ignore_t</span>;<br><span class="hljs-keyword">using</span> boost::redis::request;<br><span class="hljs-keyword">using</span> boost::redis::response;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">redir</span><span class="hljs-params">(boost::system::error_code&amp; ec)</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">return</span> asio::<span class="hljs-built_in">redirect_error</span>(asio::use_awaitable, ec);<br>&#125;<br><br><span class="hljs-comment">// 依次尝试每个 Sentinel，返回第一个能给出主节点地址的结果</span><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">resolve_master_address</span><span class="hljs-params">(std::vector&lt;address&gt; <span class="hljs-type">const</span>&amp; addresses)</span></span><br><span class="hljs-function">   -&gt; asio::awaitable&lt;address&gt;</span><br><span class="hljs-function"></span>&#123;<br>   request req;<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;SENTINEL&quot;</span>, <span class="hljs-string">&quot;get-master-addr-by-name&quot;</span>, <span class="hljs-string">&quot;mymaster&quot;</span>);<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;QUIT&quot;</span>);<br><br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br>   response&lt;std::optional&lt;std::array&lt;std::string, 2&gt;&gt;, <span class="hljs-type">ignore_t</span>&gt; resp;<br><br>   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; addr : addresses) &#123;<br>      boost::system::error_code ec;<br>      config cfg;<br>      cfg.addr = addr;<br>      cfg.reconnect_wait_interval = std::chrono::seconds::<span class="hljs-built_in">zero</span>();   <span class="hljs-comment">// 不重连，快速失败</span><br><br>      conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br>      <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, <span class="hljs-built_in">redir</span>(ec));<br>      conn-&gt;<span class="hljs-built_in">cancel</span>();<br>      conn-&gt;<span class="hljs-built_in">reset_stream</span>();   <span class="hljs-comment">// 为下一次尝试准备全新的流</span><br><br>      <span class="hljs-keyword">if</span> (!ec &amp;&amp; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp) &amp;&amp; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>()) &#123;<br>         <span class="hljs-keyword">auto</span> <span class="hljs-type">const</span>&amp; pair = std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>().<span class="hljs-built_in">value</span>();<br>         <span class="hljs-keyword">co_return</span> address&#123;pair.<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>), pair.<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>)&#125;;<br>      &#125;<br>   &#125;<br><br>   <span class="hljs-keyword">co_return</span> address&#123;&#125;;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">co_main</span><span class="hljs-params">(config cfg)</span> -&gt; asio::awaitable&lt;<span class="hljs-type">void</span>&gt;</span><br><span class="hljs-function"></span>&#123;<br>   std::vector&lt;address&gt; <span class="hljs-type">const</span> sentinels&#123;<br>      address&#123;<span class="hljs-string">&quot;127.0.0.1&quot;</span>, <span class="hljs-string">&quot;26379&quot;</span>&#125;,<br>      address&#123;<span class="hljs-string">&quot;127.0.0.1&quot;</span>, <span class="hljs-string">&quot;26380&quot;</span>&#125;,<br>      cfg.addr,<br>   &#125;;<br><br>   <span class="hljs-keyword">auto</span> <span class="hljs-type">const</span> master = <span class="hljs-keyword">co_await</span> <span class="hljs-built_in">resolve_master_address</span>(sentinels);<br>   std::cout &lt;&lt; <span class="hljs-string">&quot;master: &quot;</span> &lt;&lt; master.host &lt;&lt; <span class="hljs-string">&quot;:&quot;</span> &lt;&lt; master.port &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>   <span class="hljs-comment">// 拿到主节点地址后，用普通 config 建连即可</span><br>   config master_cfg;<br>   master_cfg.addr = master;<br><br>   <span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(<span class="hljs-keyword">co_await</span> asio::this_coro::executor);<br>   conn-&gt;<span class="hljs-built_in">async_run</span>(master_cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br><br>   request req;<br>   req.<span class="hljs-built_in">push</span>(<span class="hljs-string">&quot;PING&quot;</span>);<br>   response&lt;std::string&gt; resp;<br>   <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_exec</span>(req, resp, asio::use_awaitable);<br>   std::cout &lt;&lt; <span class="hljs-string">&quot;PING: &quot;</span> &lt;&lt; std::<span class="hljs-built_in">get</span>&lt;<span class="hljs-number">0</span>&gt;(resp).<span class="hljs-built_in">value</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>   conn-&gt;<span class="hljs-built_in">cancel</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">int</span></span><br><span class="hljs-function"></span>&#123;<br>   <span class="hljs-keyword">try</span> &#123;<br>      asio::io_context ioc;<br>      asio::<span class="hljs-built_in">co_spawn</span>(ioc, <span class="hljs-built_in">co_main</span>(config&#123;&#125;), asio::detached);<br>      ioc.<span class="hljs-built_in">run</span>();<br>   &#125; <span class="hljs-built_in">catch</span> (std::exception <span class="hljs-type">const</span>&amp; e) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-常见问题与陷阱"><a href="#7-常见问题与陷阱" class="headerlink" title="7. 常见问题与陷阱"></a>7. 常见问题与陷阱</h2><h3 id="7-1-问题：async-exec-一直不返回，程序像卡住了"><a href="#7-1-问题：async-exec-一直不返回，程序像卡住了" class="headerlink" title="7.1 问题：async_exec 一直不返回，程序像卡住了"></a>7.1 问题：<code>async_exec</code> 一直不返回，程序像卡住了</h3><ul>
+<li><strong>原因</strong>：<code>async_exec</code> 只负责「排队 + 发送」，真正的解析&#x2F;建连&#x2F;握手&#x2F;读写循环由 <code>async_run</code> 驱动。<br>如果没有先调用 <code>async_run</code>，请求会一直排队等待连接建立。</li>
+<li><strong>解决</strong>：确保每个 <code>connection</code> 都调用了 <code>async_run(cfg, {}, ...)</code>，并且它在 <code>async_exec</code> 之前就已经启动；<br>同时确认 <code>io_context::run()</code> 真的在跑（且没有被 <code>ioc.stop()</code> 提前终止）。</li>
+</ul>
+<h3 id="7-2-问题：连接建立前调用-async-exec，是应该等待还是立即失败？"><a href="#7-2-问题：连接建立前调用-async-exec，是应该等待还是立即失败？" class="headerlink" title="7.2 问题：连接建立前调用 async_exec，是应该等待还是立即失败？"></a>7.2 问题：连接建立前调用 <code>async_exec</code>，是应该等待还是立即失败？</h3><ul>
+<li><strong>原因</strong>：默认行为是<strong>排队等待</strong>，直到连接建立后自动发出。</li>
+<li><strong>解决</strong>：<ul>
+<li>想「快速失败」：设置 <code>req.get_config().cancel_if_not_connected = true;</code>，<br>此时 <code>async_exec</code> 会以 <code>boost::redis::error::not_connected</code> 完成。</li>
+<li>想「断开后重发幂等命令」：设置 <code>req.get_config().cancel_if_unresponded = false;</code><br>（注意：<code>INCR</code>、<code>LPUSH</code> 这类非幂等命令不能这么用，可能被执行两次）。</li>
+<li>想「不因连接丢失而失败」：<code>cancel_on_connection_lost = false</code>（默认 <code>true</code>）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-3-问题：程序随机崩溃-async-run-访问已释放的-connection"><a href="#7-3-问题：程序随机崩溃-async-run-访问已释放的-connection" class="headerlink" title="7.3 问题：程序随机崩溃 &#x2F; async_run 访问已释放的 connection"></a>7.3 问题：程序随机崩溃 &#x2F; <code>async_run</code> 访问已释放的 <code>connection</code></h3><ul>
+<li><strong>原因</strong>：<code>connection</code> 被提前析构。常见的坑是把 <code>connection</code> 放在局部作用域（栈上）或者 <code>shared_ptr</code> 的引用计数<br>在异步操作完成前归零，而 <code>async_run</code>、<code>async_exec</code>、<code>async_receive</code> 仍在运行。</li>
+<li><strong>解决</strong>：用 <code>std::shared_ptr&lt;connection&gt;</code>，并用 <code>asio::consign(asio::detached, conn)</code> 让 <code>async_run</code> 持有它：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">auto</span> conn = std::<span class="hljs-built_in">make_shared</span>&lt;connection&gt;(ex);<br>conn-&gt;<span class="hljs-built_in">async_run</span>(cfg, &#123;&#125;, asio::<span class="hljs-built_in">consign</span>(asio::detached, conn));<br></code></pre></td></tr></table></figure>
+同理，传给 <code>async_exec</code> 的 <code>request</code> 与 <code>response</code> 对象也必须活到操作完成（协程版本因为 <code>co_await</code> 天然满足）。</li>
+</ul>
+<h3 id="7-4-问题：什么都没发生，回调一次都没被调用"><a href="#7-4-问题：什么都没发生，回调一次都没被调用" class="headerlink" title="7.4 问题：什么都没发生，回调一次都没被调用"></a>7.4 问题：什么都没发生，回调一次都没被调用</h3><ul>
+<li><strong>原因</strong>：忘记运行 <code>io_context</code>，或者 <code>ioc.run()</code> 在所有 handler 注册前就已经返回（例如在 <code>run()</code> 之后才提交请求）。</li>
+<li><strong>解决</strong>：<ul>
+<li>在 <code>ioc.run()</code> 之前完成所有异步操作的提交；</li>
+<li>协程版本使用 <code>asio::co_spawn(ioc, co_main(cfg), asio::detached); ioc.run();</code></li>
+<li>若使用 <code>asio::consign(asio::detached, conn)</code> 且 <code>ioc.run()</code> 提前返回，可调用<br><code>boost::asio::executor_work_guard</code> 或检查是否所有操作都已被取消。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-5-问题：订阅到了消息，但-response-里读不到"><a href="#7-5-问题：订阅到了消息，但-response-里读不到" class="headerlink" title="7.5 问题：订阅到了消息，但 response&lt;...&gt; 里读不到"></a>7.5 问题：订阅到了消息，但 <code>response&lt;...&gt;</code> 里读不到</h3><ul>
+<li><strong>原因</strong>：Pub&#x2F;Sub 消息是 RESP3 <strong>push</strong>，不是命令响应；<code>SUBSCRIBE</code> &#x2F; <code>PSUBSCRIBE</code> &#x2F; <code>UNSUBSCRIBE</code><br>本身也不产生普通响应，因此<strong>不占用</strong> <code>response&lt;...&gt;</code> 的槽位。</li>
+<li><strong>解决</strong>：<ol>
+<li>用 <code>conn-&gt;set_receive_response(push_resp);</code> 绑定 <code>generic_response</code>；</li>
+<li>用 <code>conn-&gt;async_receive(...)</code>（或 <code>receive(ec)</code> 非阻塞探测）接收；</li>
+<li>用 <code>boost::redis::consume_one(push_resp);</code> 逐条消费（一次可能收到多条）；</li>
+<li>订阅请求用 <code>co_await conn-&gt;async_exec(req, ignore, use_awaitable);</code> 执行，不要写进 <code>response</code> 元组。</li>
+</ol>
+</li>
+</ul>
+<h3 id="7-6-问题：async-exec-成功但-std-get-resp-value-抛异常"><a href="#7-6-问题：async-exec-成功但-std-get-resp-value-抛异常" class="headerlink" title="7.6 问题：async_exec 成功但 std::get&lt;N&gt;(resp).value() 抛异常"></a>7.6 问题：<code>async_exec</code> 成功但 <code>std::get&lt;N&gt;(resp).value()</code> 抛异常</h3><ul>
+<li><strong>原因</strong>：响应类型与 Redis 实际返回的 RESP3 类型不匹配（例如 <code>SET</code> 在某些情况下返回 null，<br>或把 <code>HGETALL</code> 的 map 读进 <code>std::string</code>）。<code>adapter::result&lt;T&gt;</code> 里存的是一个 <code>adapter::error</code>，<br><code>.value()</code> 在失败时抛 <code>system::system_error</code>。</li>
+<li><strong>解决</strong>：<ul>
+<li>先用 <code>if (!std::get&lt;N&gt;(resp))</code> 检查，再读取 <code>std::get&lt;N&gt;(resp).error().diagnostic</code> 定位；</li>
+<li>不确定类型的命令（如 <code>SET</code>）用 <code>std::optional&lt;std::string&gt;</code>；</li>
+<li>嵌套聚合 &#x2F; 动态条数用 <code>generic_response</code>；</li>
+<li>响应槽位数量必须与命令数一致，否则会出现 <code>incompatible_size</code>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-7-问题：请求长时间挂起，无法设置超时"><a href="#7-7-问题：请求长时间挂起，无法设置超时" class="headerlink" title="7.7 问题：请求长时间挂起，无法设置超时"></a>7.7 问题：请求长时间挂起，无法设置超时</h3><ul>
+<li><strong>原因</strong>：<code>async_exec</code> 会等待连接建立，服务器宕机时可能挂起很久。</li>
+<li><strong>解决</strong>：<ul>
+<li>推荐用 Asio 的完成令牌：<code>co_await conn-&gt;async_exec(req, resp, asio::cancel_after(10s));</code><br>（内部走 per-operation cancellation 机制）；</li>
+<li>手动方案：起一个 <code>asio::steady_timer</code>，到期时调用 <code>conn-&gt;cancel(operation::exec);</code><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">asio::steady_timer <span class="hljs-title">timer</span><span class="hljs-params">(ex, std::chrono::seconds&#123;<span class="hljs-number">10</span>&#125;)</span></span>;<br>timer.<span class="hljs-built_in">async_wait</span>([&amp;](<span class="hljs-keyword">auto</span> ec) &#123; <span class="hljs-keyword">if</span> (!ec) conn-&gt;<span class="hljs-built_in">cancel</span>(operation::exec); &#125;);<br></code></pre></td></tr></table></figure>
+注意 <code>cancel(operation::exec)</code> <strong>只取消尚未写出的请求</strong>；已经写出等待响应的请求不会被取消，<br>这种情况下应改用 <code>cancel(operation::all)</code> 或直接放弃该连接。</li>
+<li>所有异步操作完成时都会收到 <code>asio::error::operation_aborted</code>，据此区分「超时取消」与「真实错误」。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-8-问题：连接失败，日志里反复出现重连信息"><a href="#7-8-问题：连接失败，日志里反复出现重连信息" class="headerlink" title="7.8 问题：连接失败，日志里反复出现重连信息"></a>7.8 问题：连接失败，日志里反复出现重连信息</h3><ul>
+<li><strong>原因</strong>：这是设计行为——<code>async_run</code> 会按 <code>reconnect_wait_interval</code> 无限重试，并默认把状态打到 <code>stderr</code>。</li>
+<li><strong>解决</strong>：<ul>
+<li>用日志定位问题（主机名、端口、认证），<code>logger</code> 可以过滤级别：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp">connection conn&#123;ioc, boost::redis::logger&#123;boost::redis::logger::level::err&#125;&#125;;<br></code></pre></td></tr></table></figure>
+或完全关闭：<code>logger{logger::level::disabled}</code>；</li>
+<li>不想重连时设置 <code>cfg.reconnect_wait_interval = std::chrono::seconds::zero();</code><br>或调用 <code>conn.cancel(operation::reconnection);</code>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-9-问题：HELLO-失败，错误码是-boost-redis-error-resp3-hello"><a href="#7-9-问题：HELLO-失败，错误码是-boost-redis-error-resp3-hello" class="headerlink" title="7.9 问题：HELLO 失败，错误码是 boost::redis::error::resp3_hello"></a>7.9 问题：<code>HELLO</code> 失败，错误码是 <code>boost::redis::error::resp3_hello</code></h3><ul>
+<li><strong>原因</strong>：Redis 版本低于 6（不支持 RESP3&#x2F;<code>HELLO</code>），或用户名&#x2F;密码错误，或 ACL 不允许该用户执行 <code>HELLO</code>。</li>
+<li><strong>解决</strong>：<ul>
+<li>确认服务端版本：<code>redis-cli INFO server | findstr redis_version</code>（需 ≥ 6.0）；</li>
+<li>确认 <code>config::username</code>（默认 <code>&quot;default&quot;</code>）与 <code>config::password</code> 正确；</li>
+<li>在 <code>redis-cli -3</code> 里手动执行 <code>HELLO 3 AUTH &lt;user&gt; &lt;pass&gt;</code> 验证凭据；</li>
+<li>Boost.Redis <strong>不支持 RESP2</strong>，无法降级到旧协议。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-10-问题：链接错误-multiple-definition-of-undefined-reference-to"><a href="#7-10-问题：链接错误-multiple-definition-of-undefined-reference-to" class="headerlink" title="7.10 问题：链接错误 multiple definition of ... &#x2F; undefined reference to ..."></a>7.10 问题：链接错误 <code>multiple definition of ...</code> &#x2F; <code>undefined reference to ...</code></h3><ul>
+<li><strong>原因</strong>：<code>&lt;boost/redis/src.hpp&gt;</code> 被多个翻译单元包含（重复定义），或者一个都没包含又没有链接 <code>boost_redis</code><br>（未定义引用）。</li>
+<li><strong>解决</strong>：二选一——(a) 链接 <code>-lboost_redis</code>；(b) 在<strong>恰好一个</strong> <code>.cpp</code> 中 <code>#include &lt;boost/redis/src.hpp&gt;</code>。<br>另外别忘了链接 OpenSSL（<code>-lssl -lcrypto</code>），否则会出现大量 <code>SSL_*</code> 未定义引用。</li>
+</ul>
+<hr>
+<h2 id="8-参考资料"><a href="#8-参考资料" class="headerlink" title="8. 参考资料"></a>8. 参考资料</h2><h3 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h3><ul>
+<li>Boost.Redis 文档首页（含 Requests&#x2F;Responses、Serialization、Examples、Changelog）：<br><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/redis/doc/html/index.html">https://www.boost.org/doc/libs/latest/libs/redis/doc/html/index.html</a></li>
+<li>1.88.0 版本文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/index.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/index.html</a></li>
+<li>1.87.0 版本文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_87_0/libs/redis/doc/html/index.html">https://www.boost.org/doc/libs/1_87_0/libs/redis/doc/html/index.html</a></li>
+<li>High-level API 分组页：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/group__high-level-api.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/group__high-level-api.html</a></li>
+<li>类参考：<ul>
+<li><code>boost::redis::connection</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1connection.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1connection.html</a></li>
+<li><code>boost::redis::basic_connection</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1basic__connection.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1basic__connection.html</a></li>
+<li><code>boost::redis::request</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1request.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1request.html</a></li>
+<li><code>boost::redis::logger</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1logger.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/classboost_1_1redis_1_1logger.html</a></li>
+<li><code>boost::redis::resp3::basic_node</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/structboost_1_1redis_1_1resp3_1_1basic__node.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/structboost_1_1redis_1_1resp3_1_1basic__node.html</a></li>
+</ul>
+</li>
+<li>头文件源码页（含完整 Doxygen 注释）：<ul>
+<li><code>config.hpp</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/config_8hpp_source.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/config_8hpp_source.html</a></li>
+<li><code>connection.hpp</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/connection_8hpp_source.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/connection_8hpp_source.html</a></li>
+<li><code>request.hpp</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/request_8hpp_source.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/request_8hpp_source.html</a></li>
+<li><code>response.hpp</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/response_8hpp_source.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/response_8hpp_source.html</a></li>
+<li><code>error.hpp</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/error_8hpp_source.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/error_8hpp_source.html</a></li>
+<li><code>node.hpp</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/node_8hpp_source.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/node_8hpp_source.html</a></li>
+<li><code>type.hpp</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/type_8hpp_source.html">https://www.boost.org/doc/libs/1_88_0/libs/redis/doc/html/type_8hpp_source.html</a></li>
+</ul>
+</li>
+<li>中文镜像（路径与 boost.org 一致）：<a target="_blank" rel="noopener" href="https://boost.ac.cn/doc/libs/latest/libs/redis/doc/html/index.html">https://boost.ac.cn/doc/libs/latest/libs/redis/doc/html/index.html</a></li>
+</ul>
+<h3 id="官方示例（example-目录）"><a href="#官方示例（example-目录）" class="headerlink" title="官方示例（example/ 目录）"></a>官方示例（<code>example/</code> 目录）</h3><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cpp20_intro.cpp</code></td>
+<td>C++20 协程最小示例（PING）</td>
+</tr>
+<tr>
+<td><code>cpp17_intro.cpp</code></td>
+<td>C++17 回调最小示例</td>
+</tr>
+<tr>
+<td><code>cpp17_intro_sync.cpp</code> + <code>sync_connection.hpp</code></td>
+<td>用独立线程 + <code>asio::use_future</code> 实现同步调用</td>
+</tr>
+<tr>
+<td><code>cpp20_intro_tls.cpp</code></td>
+<td>TLS 连接与证书校验</td>
+</tr>
+<tr>
+<td><code>cpp20_containers.cpp</code></td>
+<td>STL 容器响应、<code>std::optional</code>、事务（<code>MULTI</code>&#x2F;<code>EXEC</code>）</td>
+</tr>
+<tr>
+<td><code>cpp20_subscriber.cpp</code></td>
+<td>Pub&#x2F;Sub 订阅 + 断线重订阅</td>
+</tr>
+<tr>
+<td><code>cpp20_echo_server.cpp</code></td>
+<td>以 Redis 为后端的 TCP echo 服务器</td>
+</tr>
+<tr>
+<td><code>cpp20_chat_room.cpp</code></td>
+<td>基于 Pub&#x2F;Sub 的命令行聊天室</td>
+</tr>
+<tr>
+<td><code>cpp20_json.cpp</code> &#x2F; <code>cpp20_protobuf.cpp</code></td>
+<td>自定义类型序列化（Boost.Json &#x2F; protobuf）</td>
+</tr>
+<tr>
+<td><code>cpp20_resolve_with_sentinel.cpp</code></td>
+<td>用 Sentinel 解析主节点地址（1.87&#x2F;1.88 手动做法）</td>
+</tr>
+<tr>
+<td><code>cpp20_streams.cpp</code></td>
+<td>Redis Streams</td>
+</tr>
+<tr>
+<td><code>main.cpp</code></td>
+<td>各示例共用的 <code>main</code>（<code>co_spawn</code> + <code>ioc.run()</code>）</td>
+</tr>
+<tr>
+<td><code>cpp20_timeouts.cpp</code>（develop）</td>
+<td>用 <code>asio::cancel_after</code> 设置请求超时</td>
+</tr>
+<tr>
+<td><code>cpp20_sentinel.cpp</code>（develop）</td>
+<td>内建 Sentinel 支持</td>
+</tr>
+<tr>
+<td><code>cpp20_unix_sockets.cpp</code>（develop）</td>
+<td>Unix domain socket</td>
+</tr>
+<tr>
+<td><code>cpp17_spdlog.cpp</code>（develop）</td>
+<td>把库日志接入 spdlog</td>
+</tr>
+</tbody></table>
+<ul>
+<li>示例目录（1.88.0）：<a target="_blank" rel="noopener" href="https://github.com/boostorg/redis/tree/boost-1.88.0/example">https://github.com/boostorg/redis/tree/boost-1.88.0/example</a></li>
+<li>示例目录（develop）：<a target="_blank" rel="noopener" href="https://github.com/boostorg/redis/tree/develop/example">https://github.com/boostorg/redis/tree/develop/example</a></li>
+<li>README：<a target="_blank" rel="noopener" href="https://github.com/boostorg/redis/blob/develop/README.md">https://github.com/boostorg/redis/blob/develop/README.md</a></li>
+</ul>
+<h3 id="相关规范与背景"><a href="#相关规范与背景" class="headerlink" title="相关规范与背景"></a>相关规范与背景</h3><ul>
+<li>RESP3 协议规范：<a target="_blank" rel="noopener" href="https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md">https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md</a></li>
+<li>Redis 官方文档：<a target="_blank" rel="noopener" href="https://redis.io/docs/">https://redis.io/docs/</a></li>
+<li>Redis <code>HELLO</code> 命令：<a target="_blank" rel="noopener" href="https://redis.io/commands/hello/">https://redis.io/commands/hello/</a></li>
+<li>Redis Sentinel 客户端指南：<a target="_blank" rel="noopener" href="https://redis.io/docs/latest/develop/reference/sentinel-clients/">https://redis.io/docs/latest/develop/reference/sentinel-clients/</a></li>
+<li>Boost.Asio 文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/release/doc/html/boost_asio.html">https://www.boost.org/doc/libs/release/doc/html/boost_asio.html</a></li>
+<li>Boost.Asio <code>cancel_after</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/cancel_after.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/cancel_after.html</a></li>
+<li>Boost.Asio 协程与 <code>use_awaitable</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/composition/cpp20_coroutines.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/composition/cpp20_coroutines.html</a></li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/boost-redis/" class="tag-item">
+                    boost.redis
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/18/04-redis/">https://narciostyx.github.io/2025/11/18/04-redis/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/18/01-asio/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">boost.asio</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/18/02-beast/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">boost.beast</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

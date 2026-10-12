@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | boost.asio</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Boost-Asio-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3"><span class="toc-number">1.</span> <span class="toc-text">Boost.Asio 使用文档</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.</span> <span class="toc-text">1. 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91"><span class="toc-number">1.3.</span> <span class="toc-text">2. 依赖与编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#g-clang-%E6%9C%80%E5%B0%8F%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.1.</span> <span class="toc-text">g++ &#x2F; clang++ 最小命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MSVC-%E6%9C%80%E5%B0%8F%E5%91%BD%E4%BB%A4%EF%BC%88x64-Native-Tools-%E5%91%BD%E4%BB%A4%E6%8F%90%E7%A4%BA%E7%AC%A6%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">MSVC 最小命令（x64 Native Tools 命令提示符）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CMake-%E6%9C%80%E5%B0%8F%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.3.</span> <span class="toc-text">CMake 最小配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.4.</span> <span class="toc-text">3. 核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-I-O-%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%88I-O-execution-context%EF%BC%89%E4%B8%8E-io-context"><span class="toc-number">1.4.1.</span> <span class="toc-text">3.1 I&#x2F;O 执行上下文（I&#x2F;O execution context）与 io_context</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%90%8C%E6%AD%A5%E6%93%8D%E4%BD%9C-vs-%E5%BC%82%E6%AD%A5%E6%93%8D%E4%BD%9C"><span class="toc-number">1.4.2.</span> <span class="toc-text">3.2 同步操作 vs 异步操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%AE%8C%E6%88%90%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%88completion-handler%EF%BC%89%E4%B8%8E-completion-token"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.3 完成处理器（completion handler）与 completion token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-Proactor-%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.4.4.</span> <span class="toc-text">3.4 Proactor 模型与线程模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-strand%EF%BC%9A%E6%97%A0%E9%94%81%E5%8C%96%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-number">1.4.5.</span> <span class="toc-text">3.5 strand：无锁化的线程安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-buffer%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%9A%84%E5%86%85%E5%AD%98%E8%A7%86%E5%9B%BE"><span class="toc-number">1.4.6.</span> <span class="toc-text">3.6 buffer：数据的内存视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-%E6%B5%81%E5%BC%8F-I-O%E3%80%81%E7%9F%AD%E8%AF%BB%E7%9F%AD%E5%86%99%E4%B8%8E-read-write"><span class="toc-number">1.4.7.</span> <span class="toc-text">3.7 流式 I&#x2F;O、短读短写与 read&#x2F;write</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%8F%90%E4%BA%A4%E4%BB%BB%E6%84%8F%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.4.8.</span> <span class="toc-text">3.8 线程池提交任意任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-9-C-20-%E5%8D%8F%E7%A8%8B"><span class="toc-number">1.4.9.</span> <span class="toc-text">3.9 C++20 协程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98"><span class="toc-number">1.5.</span> <span class="toc-text">4. 常用类与成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%B1%BB%E6%80%BB%E8%A7%88"><span class="toc-number">1.5.1.</span> <span class="toc-text">4.1 类总览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%80%90%E4%B8%AA%E7%B1%BB%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.5.2.</span> <span class="toc-text">4.2 逐个类详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-io-context"><span class="toc-number">1.5.2.1.</span> <span class="toc-text">boost::asio::io_context</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-basic-waitable-timer-steady-timer"><span class="toc-number">1.5.2.2.</span> <span class="toc-text">boost::asio::basic_waitable_timer &#x2F; steady_timer</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-basic-stream-socket%EF%BC%88ip-tcp-socket%EF%BC%89"><span class="toc-number">1.5.2.3.</span> <span class="toc-text">boost::asio::basic_stream_socket（ip::tcp::socket）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-basic-socket-acceptor%EF%BC%88ip-tcp-acceptor%EF%BC%89"><span class="toc-number">1.5.2.4.</span> <span class="toc-text">boost::asio::basic_socket_acceptor（ip::tcp::acceptor）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-ip-basic-resolver%EF%BC%88ip-tcp-resolver-ip-udp-resolver%EF%BC%89"><span class="toc-number">1.5.2.5.</span> <span class="toc-text">boost::asio::ip::basic_resolver（ip::tcp::resolver &#x2F; ip::udp::resolver）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-strand-io-context-strand"><span class="toc-number">1.5.2.6.</span> <span class="toc-text">boost::asio::strand&lt;Executor&gt; &#x2F; io_context::strand</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-buffer-%E4%B8%8E%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-number">1.5.2.7.</span> <span class="toc-text">boost::asio::buffer 与缓冲区</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-streambuf%EF%BC%88basic-streambuf%EF%BC%89"><span class="toc-number">1.5.2.8.</span> <span class="toc-text">boost::asio::streambuf（basic_streambuf）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E7%94%B1%E5%87%BD%E6%95%B0%EF%BC%9Aasync-read-async-write-read-write-read-until"><span class="toc-number">1.5.2.9.</span> <span class="toc-text">自由函数：async_read &#x2F; async_write &#x2F; read &#x2F; write &#x2F; read_until</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-connect-async-connect"><span class="toc-number">1.5.2.10.</span> <span class="toc-text">boost::asio::connect &#x2F; async_connect</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-thread-pool"><span class="toc-number">1.5.2.11.</span> <span class="toc-text">boost::asio::thread_pool</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-signal-set%EF%BC%88basic-signal-set%EF%BC%89"><span class="toc-number">1.5.2.12.</span> <span class="toc-text">boost::asio::signal_set（basic_signal_set）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-asio-executor-work-guard"><span class="toc-number">1.5.2.13.</span> <span class="toc-text">boost::asio::executor_work_guard&lt;Executor&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#C-20-%E5%8D%8F%E7%A8%8B%EF%BC%9Aco-spawn-awaitable-use-awaitable"><span class="toc-number">1.5.2.14.</span> <span class="toc-text">C++20 协程：co_spawn &#x2F; awaitable &#x2F; use_awaitable</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.</span> <span class="toc-text">5. 使用流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%90%8C%E6%AD%A5-TCP-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.1.</span> <span class="toc-text">5.1 同步 TCP 客户端流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%90%8C%E6%AD%A5-TCP-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.2.</span> <span class="toc-text">5.2 同步 TCP 服务端流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E5%BC%82%E6%AD%A5-TCP-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.3.</span> <span class="toc-text">5.3 异步 TCP 服务端流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.7.</span> <span class="toc-text">6. 代码示例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1%EF%BC%9A%E5%90%8C%E6%AD%A5%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Timer-1%EF%BC%89"><span class="toc-number">1.7.1.</span> <span class="toc-text">示例 1：同步定时器（Timer.1）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2%EF%BC%9A%E5%BC%82%E6%AD%A5%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%8E%E9%87%8D%E5%A4%8D%E5%AE%9A%E6%97%B6%EF%BC%88Timer-2-Timer-3%EF%BC%89"><span class="toc-number">1.7.2.</span> <span class="toc-text">示例 2：异步定时器与重复定时（Timer.2 &#x2F; Timer.3）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-3%EF%BC%9ATCP-%E5%90%8C%E6%AD%A5-echo-%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">1.7.3.</span> <span class="toc-text">示例 3：TCP 同步 echo 服务端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-4%EF%BC%9ATCP-%E5%90%8C%E6%AD%A5-echo-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">1.7.4.</span> <span class="toc-text">示例 4：TCP 同步 echo 客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-5%EF%BC%9ATCP-%E5%BC%82%E6%AD%A5-echo-%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">1.7.5.</span> <span class="toc-text">示例 5：TCP 异步 echo 服务端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-6%EF%BC%9AUDP-%E5%BC%82%E6%AD%A5-echo-%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">1.7.6.</span> <span class="toc-text">示例 6：UDP 异步 echo 服务端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-7%EF%BC%9A%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90-TCP-%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%88Daytime-%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%89"><span class="toc-number">1.7.7.</span> <span class="toc-text">示例 7：域名解析 + TCP 客户端（Daytime 客户端）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-8%EF%BC%9A%E7%94%A8-strand-%E4%BF%9D%E8%AF%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8B%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%EF%BC%88Timer-5%EF%BC%89"><span class="toc-number">1.7.8.</span> <span class="toc-text">示例 8：用 strand 保证多线程下的线程安全（Timer.5）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-9%EF%BC%9A%E8%B6%85%E6%97%B6%E6%8E%A7%E5%88%B6%EF%BC%88steady-timer-%E4%B8%8E-socket-%E7%AB%9E%E4%BA%89%EF%BC%89"><span class="toc-number">1.7.9.</span> <span class="toc-text">示例 9：超时控制（steady_timer 与 socket 竞争）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-10%EF%BC%9AC-20-%E5%8D%8F%E7%A8%8B-echo-%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%88co-spawn-awaitable%EF%BC%89"><span class="toc-number">1.7.10.</span> <span class="toc-text">示例 10：C++20 协程 echo 服务端（co_spawn + awaitable）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-11%EF%BC%9ASSL-TLS-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">1.7.11.</span> <span class="toc-text">示例 11：SSL&#x2F;TLS 客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-12%EF%BC%9A%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8%E7%9A%84%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA-%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="toc-number">1.7.12.</span> <span class="toc-text">示例 12：信号驱动的优雅退出 + 线程池</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-13%EF%BC%88%E9%99%84%E5%8A%A0%EF%BC%89%EF%BC%9Athread-pool-%E6%8F%90%E4%BA%A4%E8%AE%A1%E7%AE%97%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.7.13.</span> <span class="toc-text">示例 13（附加）：thread_pool 提交计算任务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1"><span class="toc-number">1.8.</span> <span class="toc-text">7. 常见问题与陷阱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.9.</span> <span class="toc-text">8. 参考资料</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%EF%BC%88%E7%AB%A0%E8%8A%82%E7%BA%A7%EF%BC%89"><span class="toc-number">1.9.1.</span> <span class="toc-text">官方文档（章节级）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9-examples"><span class="toc-number">1.9.2.</span> <span class="toc-text">官方 examples</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%8F%AF%E9%9D%A0%E8%B5%84%E6%96%99"><span class="toc-number">1.9.3.</span> <span class="toc-text">其他可靠资料</span></a></li></ol></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>boost.asio</h1>
+    </section>
+    <section class="article">
+        <p>Boost.Asio 异步IO库的核心概念与基本使用方法</p>
+<span id="more"></span>
+<h1 id="Boost-Asio-使用文档"><a href="#Boost-Asio-使用文档" class="headerlink" title="Boost.Asio 使用文档"></a>Boost.Asio 使用文档</h1><blockquote>
+<p>本文基于 Boost 官方文档（Boost 1.92.0 &#x2F; 最新版）与官方 examples 整理。<br>官方文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html</a><br>中文镜像：<a target="_blank" rel="noopener" href="https://boost.ac.cn/doc/libs/latest/doc/html/boost_asio.html">https://boost.ac.cn/doc/libs/latest/doc/html/boost_asio.html</a><br>适用标准：C++17（协程示例需要 C++20，已单独标注）<br>编译示例：g++ &#x2F; clang++ &#x2F; MSVC 均可，链接库要求见「依赖与编译」。</p>
+</blockquote>
+<hr>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#1-%E6%A6%82%E8%BF%B0">概述</a></li>
+<li><a href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91">依赖与编译</a></li>
+<li><a href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5">核心概念</a></li>
+<li><a href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98">常用类与成员</a></li>
+<li><a href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B">使用流程</a></li>
+<li><a href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B">代码示例</a></li>
+<li><a href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1">常见问题与陷阱</a></li>
+<li><a href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a></li>
+</ol>
+<hr>
+<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p>Boost.Asio 是一个<strong>跨平台的 C++ 网络与底层 I&#x2F;O 库</strong>，它统一了同步 I&#x2F;O 与异步 I&#x2F;O 的编程接口，<br>并额外提供定时器、信号、串口、文件、管道、SSL 等能力。</p>
+<p>它解决的问题：</p>
+<ul>
+<li>用同一套 API 同时支持**阻塞（同步）<strong>和</strong>非阻塞（异步）**操作，无需为两种模型写两套代码。</li>
+<li>在异步模型下，用少量线程支撑大量并发连接（不需要 thread-per-connection）。</li>
+<li>把「发起操作」与「处理结果」解耦，通过 **完成处理器（completion handler）**回调驱动业务逻辑。</li>
+<li>屏蔽各平台差异：Linux 上基于 <code>epoll</code>&#x2F;<code>kqueue</code> 的 Reactor，Windows 上基于 overlapped I&#x2F;O 与 I&#x2F;O 完成端口。</li>
+</ul>
+<p>典型使用场景：</p>
+<ol>
+<li>高性能 TCP&#x2F;UDP 服务器与客户端（长连接网关、代理、游戏后端、RPC 框架）。</li>
+<li>需要定时器、超时控制、心跳检测的网络程序。</li>
+<li>需要优雅处理 <code>SIGINT</code>&#x2F;<code>SIGTERM</code> 并平滑退出的服务进程。</li>
+<li>需要 TLS&#x2F;SSL 加密传输的客户端与服务器（<code>ssl::stream</code>）。</li>
+<li>把任意计算任务提交到线程池执行（<code>thread_pool</code> + <code>post</code>）。</li>
+</ol>
+<p>与标准库&#x2F;替代方案对比：C++ 标准库目前没有网络库；与裸 socket + <code>select/poll/epoll</code> 相比，<br>Boost.Asio 提供了可移植的异步抽象与对象生命周期管理；与 libevent&#x2F;libuv 相比，<br>它是 C++ 原生、类型安全且与 STL（<code>std::chrono</code>、<code>std::shared_ptr</code>、<code>std::bind</code>&#x2F;lambda）深度集成的方案。</p>
+<hr>
+<h2 id="2-依赖与编译"><a href="#2-依赖与编译" class="headerlink" title="2. 依赖与编译"></a>2. 依赖与编译</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>头文件</td>
+<td><code>#include &lt;boost/asio.hpp&gt;</code>（总入口），也可按需包含 <code>&lt;boost/asio/io_context.hpp&gt;</code> 等</td>
+</tr>
+<tr>
+<td>需要链接的库</td>
+<td><strong>Boost 1.69 起为 header-only</strong>，无需 <code>-lboost_system</code>；若使用 SSL 需链接 OpenSSL</td>
+</tr>
+<tr>
+<td>最低 Boost 版本</td>
+<td>本手册基于 1.92.0 编写；<code>steady_timer</code>&#x2F;<code>io_context</code> 自 1.66 起可用，<code>co_spawn</code> 自 1.78 起稳定</td>
+</tr>
+<tr>
+<td>依赖的其他 Boost 库</td>
+<td><code>Boost.System</code>（header-only）、<code>Boost.Chrono</code>（可选）、<code>Boost.Date_Time</code>（旧版定时器）</td>
+</tr>
+<tr>
+<td>线程库</td>
+<td>需要链接系统线程库（Linux 下 <code>-pthread</code>）</td>
+</tr>
+<tr>
+<td>SSL 附加依赖</td>
+<td>OpenSSL：<code>-lssl -lcrypto</code>（Windows 下 <code>libssl</code>、<code>libcrypto</code>）</td>
+</tr>
+<tr>
+<td>C++ 标准</td>
+<td>C++17（协程示例 C++20）</td>
+</tr>
+</tbody></table>
+<h3 id="g-clang-最小命令"><a href="#g-clang-最小命令" class="headerlink" title="g++ &#x2F; clang++ 最小命令"></a>g++ &#x2F; clang++ 最小命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 普通网络程序（Boost &gt;= 1.69，header-only）</span><br>g++ -std=c++17 -O2 -Wall echo_server.cpp -o echo_server -pthread<br><br><span class="hljs-comment"># 若使用较老 Boost（&lt; 1.69），额外链接 Boost.System</span><br>g++ -std=c++17 -O2 echo_server.cpp -o echo_server -lboost_system -pthread<br><br><span class="hljs-comment"># SSL 程序</span><br>g++ -std=c++17 -O2 ssl_client.cpp -o ssl_client -lssl -lcrypto -pthread<br><br><span class="hljs-comment"># C++20 协程程序</span><br>g++ -std=c++20 -O2 -fcoroutines coro_echo_server.cpp -o coro_echo_server -pthread<br></code></pre></td></tr></table></figure>
+
+<h3 id="MSVC-最小命令（x64-Native-Tools-命令提示符）"><a href="#MSVC-最小命令（x64-Native-Tools-命令提示符）" class="headerlink" title="MSVC 最小命令（x64 Native Tools 命令提示符）"></a>MSVC 最小命令（x64 Native Tools 命令提示符）</h3><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bat">cl /std:c++<span class="hljs-number">17</span> /EHsc /O2 /I C:\boost echo_server.cpp /link /LIBPATH:C:\boost\stage\lib<br>:: C++<span class="hljs-number">20</span> 协程<br>cl /std:c++<span class="hljs-number">20</span> /EHsc /O2 /I C:\boost coro_echo_server.cpp<br></code></pre></td></tr></table></figure>
+
+<h3 id="CMake-最小配置"><a href="#CMake-最小配置" class="headerlink" title="CMake 最小配置"></a>CMake 最小配置</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">cmake_minimum_required</span>(VERSION <span class="hljs-number">3.16</span>)<br><span class="hljs-keyword">project</span>(asio_demo CXX)<br><br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD <span class="hljs-number">17</span>)<br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="hljs-keyword">ON</span>)<br><br><span class="hljs-keyword">find_package</span>(Boost <span class="hljs-number">1.70</span> REQUIRED)           <span class="hljs-comment"># header-only，不需要 COMPONENTS</span><br><span class="hljs-keyword">find_package</span>(Threads REQUIRED)<br><br><span class="hljs-keyword">add_executable</span>(echo_server echo_server.cpp)<br><span class="hljs-keyword">target_link_libraries</span>(echo_server PRIVATE Boost::boost Threads::Threads)<br><br><span class="hljs-comment"># 需要 SSL 时：</span><br><span class="hljs-comment"># find_package(OpenSSL REQUIRED)</span><br><span class="hljs-comment"># target_link_libraries(ssl_client PRIVATE Boost::boost OpenSSL::SSL OpenSSL::Crypto Threads::Threads)</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：链接顺序很重要，<code>-lboost_system</code> 必须放在源文件之后；使用 <code>-pthread</code> 而不是 <code>-lpthread</code><br>才能同时拿到正确的编译与链接选项。</p>
+</blockquote>
+<hr>
+<h2 id="3-核心概念"><a href="#3-核心概念" class="headerlink" title="3. 核心概念"></a>3. 核心概念</h2><h3 id="3-1-I-O-执行上下文（I-O-execution-context）与-io-context"><a href="#3-1-I-O-执行上下文（I-O-execution-context）与-io-context" class="headerlink" title="3.1 I&#x2F;O 执行上下文（I&#x2F;O execution context）与 io_context"></a>3.1 I&#x2F;O 执行上下文（I&#x2F;O execution context）与 <code>io_context</code></h3><p>所有 Asio 程序都至少需要一个 <strong>I&#x2F;O 执行上下文</strong>，它代表程序与操作系统 I&#x2F;O 服务之间的连接。<br>最常用的是 <code>boost::asio::io_context</code>（也有 <code>boost::asio::thread_pool</code>、<code>boost::asio::system_context</code>）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  boost::asio::io_context io_context;            <span class="hljs-comment">// 执行上下文</span><br>  boost::asio::ip::<span class="hljs-function">tcp::socket <span class="hljs-title">socket</span><span class="hljs-params">(io_context)</span></span>; <span class="hljs-comment">// I/O 对象，绑定到该上下文</span><br>  <span class="hljs-comment">// ... 发起操作 ...</span><br>  io_context.<span class="hljs-built_in">run</span>();                              <span class="hljs-comment">// 驱动事件循环，分发完成处理器</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-同步操作-vs-异步操作"><a href="#3-2-同步操作-vs-异步操作" class="headerlink" title="3.2 同步操作 vs 异步操作"></a>3.2 同步操作 vs 异步操作</h3><p><strong>同步</strong>：调用即阻塞，直到操作完成；失败时抛 <code>boost::system::system_error</code>，或者用<br>带 <code>error_code&amp;</code> 参数的重载来避免异常。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::system::error_code ec;<br>socket.<span class="hljs-built_in">connect</span>(server_endpoint, ec);   <span class="hljs-comment">// 不抛异常</span><br><span class="hljs-keyword">if</span> (ec) &#123; <span class="hljs-comment">/* 处理错误 */</span> &#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>异步</strong>：调用立即返回，操作完成后由执行上下文调用<strong>完成处理器</strong>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">socket.<span class="hljs-built_in">async_connect</span>(server_endpoint,<br>    [](<span class="hljs-type">const</span> boost::system::error_code&amp; ec) &#123; <span class="hljs-comment">/* 完成时被调用 */</span> &#125;);<br>io_context.<span class="hljs-built_in">run</span>();   <span class="hljs-comment">// 必须有线程在 run()，否则 handler 永远不会被调用</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-3-完成处理器（completion-handler）与-completion-token"><a href="#3-3-完成处理器（completion-handler）与-completion-token" class="headerlink" title="3.3 完成处理器（completion handler）与 completion token"></a>3.3 完成处理器（completion handler）与 completion token</h3><p>异步操作接受一个 <strong>completion token</strong>，它决定结果如何交付。默认 token 会把「可调用对象」<br>当作 completion handler 直接使用；此外还有 <code>use_awaitable</code>、<code>use_future</code>、<code>detached</code>、<br><code>as_tuple</code>、<code>redirect_error</code> 等适配器。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 默认：handler 形式</span><br>socket.<span class="hljs-built_in">async_read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(buf),<br>    [](<span class="hljs-type">const</span> boost::system::error_code&amp; ec, std::<span class="hljs-type">size_t</span> n) &#123; &#125;);<br><br><span class="hljs-comment">// detached：显式忽略结果</span><br>socket.<span class="hljs-built_in">async_read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(buf), boost::asio::detached);<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-4-Proactor-模型与线程模型"><a href="#3-4-Proactor-模型与线程模型" class="headerlink" title="3.4 Proactor 模型与线程模型"></a>3.4 Proactor 模型与线程模型</h3><p>Asio 的异步基于 <strong>Proactor 设计模式</strong>：操作系统（或内部 Reactor）完成操作后把事件放入完成事件队列，<br><code>io_context</code> 取出事件并调用对应的 handler。</p>
+<p>关键保证：</p>
+<ul>
+<li><strong>handler 只会由正在调用 <code>io_context::run()</code>（或 <code>run_one/poll</code> 等）的线程调用</strong>。</li>
+<li>内部实现线程绝不会直接调用用户代码，并且会阻塞所有信号。</li>
+<li>因此<strong>线程的创建与管理完全是用户的责任</strong>：单线程 <code>run()</code> 即得到「隐式 strand」，<br>handler 之间天然不会并发；多线程 <code>run()</code> 则需要显式同步。</li>
+</ul>
+<h3 id="3-5-strand：无锁化的线程安全"><a href="#3-5-strand：无锁化的线程安全" class="headerlink" title="3.5 strand：无锁化的线程安全"></a>3.5 strand：无锁化的线程安全</h3><p><code>strand</code> 是一个 <strong>executor 适配器</strong>，保证通过它分发的 handler 严格串行执行（不会并发）。<br>它让你在多线程程序中避免显式加锁。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::asio::io_context io;<br><span class="hljs-keyword">auto</span> strand = boost::asio::<span class="hljs-built_in">make_strand</span>(io);<br><br>boost::asio::<span class="hljs-built_in">post</span>(strand, []&#123; <span class="hljs-comment">/* 与其它 strand handler 串行 */</span> &#125;);<br><br><span class="hljs-comment">// 或者把 strand 绑定到某个异步操作的 handler 上</span><br>socket.<span class="hljs-built_in">async_read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(buf),<br>    boost::asio::<span class="hljs-built_in">bind_executor</span>(strand,<br>        [](<span class="hljs-type">const</span> boost::system::error_code&amp;, std::<span class="hljs-type">size_t</span>) &#123; &#125;));<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-6-buffer：数据的内存视图"><a href="#3-6-buffer：数据的内存视图" class="headerlink" title="3.6 buffer：数据的内存视图"></a>3.6 buffer：数据的内存视图</h3><p>I&#x2F;O 操作传输的是<strong>连续内存区域</strong>（buffer）。Asio 用 <code>const_buffer</code> &#x2F; <code>mutable_buffer</code> 表示单个缓冲区，<br>用 <code>MutableBufferSequence</code> &#x2F; <code>ConstBufferSequence</code> 概念表示缓冲区序列，从而实现 scatter-gather。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">char</span> data[<span class="hljs-number">1024</span>];<br><span class="hljs-keyword">auto</span> b1 = boost::asio::<span class="hljs-built_in">buffer</span>(data);            <span class="hljs-comment">// 自动推导大小，防止越界</span><br><span class="hljs-keyword">auto</span> b2 = boost::asio::<span class="hljs-built_in">buffer</span>(data, <span class="hljs-number">128</span>);       <span class="hljs-comment">// 只使用前 128 字节</span><br>std::vector&lt;boost::asio::const_buffer&gt; seq&#123; b1 &#125;;  <span class="hljs-comment">// 缓冲区序列</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>生命周期铁律</strong>：异步操作进行期间，buffer 指向的内存必须保持有效，直到 handler 被调用。</p>
+<h3 id="3-7-流式-I-O、短读短写与-read-write"><a href="#3-7-流式-I-O、短读短写与-read-write" class="headerlink" title="3.7 流式 I&#x2F;O、短读短写与 read&#x2F;write"></a>3.7 流式 I&#x2F;O、短读短写与 <code>read</code>&#x2F;<code>write</code></h3><p>流式对象（TCP socket、SSL stream 等）没有消息边界，<code>read_some()</code>&#x2F;<code>write_some()</code> 可能只传输一部分数据<br>（short read &#x2F; short write）。若需要「读满 N 字节」或「写完全部数据」，应使用组合操作：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::asio::<span class="hljs-built_in">read</span>(socket, boost::asio::<span class="hljs-built_in">buffer</span>(data, <span class="hljs-number">128</span>));          <span class="hljs-comment">// 同步读满</span><br>boost::asio::<span class="hljs-built_in">async_write</span>(socket, boost::asio::<span class="hljs-built_in">buffer</span>(msg), handler); <span class="hljs-comment">// 异步写完全部</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-8-线程池提交任意任务"><a href="#3-8-线程池提交任意任务" class="headerlink" title="3.8 线程池提交任意任务"></a>3.8 线程池提交任意任务</h3><p><code>boost::asio::thread_pool</code> 是一个自带线程的执行上下文，可用 <code>post()</code> 提交计算任务，<br>用 <code>join()</code> 等待全部完成。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/thread_pool.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/post.hpp&gt;</span></span><br><br>boost::<span class="hljs-function">asio::thread_pool <span class="hljs-title">pool</span><span class="hljs-params">(<span class="hljs-number">4</span>)</span></span>;<br>boost::asio::<span class="hljs-built_in">post</span>(pool, []&#123; <span class="hljs-comment">/* 在池中某线程执行 */</span> &#125;);<br>pool.<span class="hljs-built_in">join</span>();   <span class="hljs-comment">// 阻塞直到所有任务完成</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-9-C-20-协程"><a href="#3-9-C-20-协程" class="headerlink" title="3.9 C++20 协程"></a>3.9 C++20 协程</h3><p><code>co_spawn</code> + <code>awaitable&lt;T&gt;</code> + <code>use_awaitable</code> 让异步逻辑写成同步风格，<code>co_await</code> 表达式<br>在出错时抛出 <code>boost::system::system_error</code>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::<span class="hljs-function">asio::awaitable&lt;<span class="hljs-type">void</span>&gt; <span class="hljs-title">echo</span><span class="hljs-params">(boost::asio::ip::tcp::socket socket)</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-type">char</span> data[<span class="hljs-number">1024</span>];<br>  <span class="hljs-keyword">for</span> (;;)<br>  &#123;<br>    std::<span class="hljs-type">size_t</span> n = <span class="hljs-keyword">co_await</span> socket.<span class="hljs-built_in">async_read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(data), boost::asio::use_awaitable);<br>    <span class="hljs-keyword">co_await</span> boost::asio::<span class="hljs-built_in">async_write</span>(socket, boost::asio::<span class="hljs-built_in">buffer</span>(data, n), boost::asio::use_awaitable);<br>  &#125;<br>&#125;<br><br><span class="hljs-comment">// 启动：boost::asio::co_spawn(io, echo(std::move(sock)), boost::asio::detached);</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-常用类与成员"><a href="#4-常用类与成员" class="headerlink" title="4. 常用类与成员"></a>4. 常用类与成员</h2><h3 id="4-1-类总览"><a href="#4-1-类总览" class="headerlink" title="4.1 类总览"></a>4.1 类总览</h3><table>
+<thead>
+<tr>
+<th>类 &#x2F; 模板</th>
+<th>头文件</th>
+<th>作用</th>
+<th>关键成员</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>boost::asio::io_context</code></td>
+<td><code>&lt;boost/asio/io_context.hpp&gt;</code></td>
+<td>核心 I&#x2F;O 执行上下文，驱动事件循环</td>
+<td><code>run()</code>, <code>run_one()</code>, <code>poll()</code>, <code>stop()</code>, <code>restart()</code>, <code>post()</code>, <code>dispatch()</code>, <code>defer()</code>, <code>get_executor()</code>, <code>work_guard</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::basic_waitable_timer&lt;Clock, WaitTraits, Executor&gt;</code></td>
+<td><code>&lt;boost/asio/basic_waitable_timer.hpp&gt;</code></td>
+<td>定时器</td>
+<td><code>expires_after()</code>, <code>expires_at()</code>, <code>expiry()</code>, <code>wait()</code>, <code>async_wait()</code>, <code>cancel()</code>, <code>cancel_one()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::steady_timer</code></td>
+<td>同上（typedef）</td>
+<td>单调时钟定时器（推荐）</td>
+<td>同 <code>basic_waitable_timer</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::ip::tcp::socket</code>（<code>basic_stream_socket</code>）</td>
+<td><code>&lt;boost/asio/ip/tcp.hpp&gt;</code></td>
+<td>面向流的 TCP 套接字</td>
+<td><code>connect()</code>, <code>async_connect()</code>, <code>read_some()</code>, <code>async_read_some()</code>, <code>write_some()</code>, <code>async_write_some()</code>, <code>close()</code>, <code>shutdown()</code>, <code>set_option()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::ip::tcp::acceptor</code>（<code>basic_socket_acceptor</code>）</td>
+<td><code>&lt;boost/asio/ip/tcp.hpp&gt;</code></td>
+<td>监听并接受新连接</td>
+<td><code>open()</code>, <code>bind()</code>, <code>listen()</code>, <code>accept()</code>, <code>async_accept()</code>, <code>close()</code>, <code>set_option()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::ip::udp::socket</code>（<code>basic_datagram_socket</code>）</td>
+<td><code>&lt;boost/asio/ip/udp.hpp&gt;</code></td>
+<td>数据报套接字</td>
+<td><code>send_to()</code>, <code>receive_from()</code>, <code>async_send_to()</code>, <code>async_receive_from()</code>, <code>open()</code>, <code>bind()</code>, <code>close()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::ip::tcp::resolver</code>（<code>ip::basic_resolver</code>）</td>
+<td><code>&lt;boost/asio/ip/tcp.hpp&gt;</code></td>
+<td>域名&#x2F;服务名 → 端点列表</td>
+<td><code>resolve()</code>, <code>async_resolve()</code>, <code>cancel()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::strand&lt;Executor&gt;</code></td>
+<td><code>&lt;boost/asio/strand.hpp&gt;</code></td>
+<td>executor 适配器，串行化 handler</td>
+<td><code>dispatch()</code>, <code>post()</code>, <code>defer()</code>, <code>running_in_this_thread()</code>, <code>on_work_started()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::io_context::strand</code></td>
+<td><code>&lt;boost/asio/io_context.hpp&gt;</code></td>
+<td>旧式 strand（已废弃）</td>
+<td><code>wrap()</code>, <code>dispatch()</code>, <code>post()</code>, <code>running_in_this_thread()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::buffer</code> &#x2F; <code>const_buffer</code> &#x2F; <code>mutable_buffer</code></td>
+<td><code>&lt;boost/asio/buffer.hpp&gt;</code></td>
+<td>缓冲区视图构造与表示</td>
+<td><code>buffer()</code>, <code>buffer_size()</code>, <code>buffer_cast()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::streambuf</code>（<code>basic_streambuf</code>）</td>
+<td><code>&lt;boost/asio/streambuf.hpp&gt;</code></td>
+<td>与 iostream 集成的动态缓冲区</td>
+<td><code>data()</code>, <code>prepare()</code>, <code>commit()</code>, <code>consume()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::async_read</code> &#x2F; <code>async_write</code> &#x2F; <code>async_read_until</code></td>
+<td><code>&lt;boost/asio/read.hpp&gt;</code> 等</td>
+<td>组合异步操作（读满&#x2F;写全&#x2F;读到分隔符）</td>
+<td>见 4.2.10</td>
+</tr>
+<tr>
+<td><code>boost::asio::read</code> &#x2F; <code>write</code> &#x2F; <code>read_until</code></td>
+<td>同上</td>
+<td>同步组合操作</td>
+<td>见 4.2.10</td>
+</tr>
+<tr>
+<td><code>boost::asio::connect</code> &#x2F; <code>async_connect</code></td>
+<td><code>&lt;boost/asio/connect.hpp&gt;</code></td>
+<td>依次尝试端点列表直至连上</td>
+<td><code>connect(s, endpoints)</code>, <code>async_connect(s, endpoints, token)</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::thread_pool</code></td>
+<td><code>&lt;boost/asio/thread_pool.hpp&gt;</code></td>
+<td>自带线程的执行上下文</td>
+<td><code>run()</code>（内部）, <code>join()</code>, <code>stop()</code>, <code>get_executor()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::signal_set</code>（<code>basic_signal_set</code>）</td>
+<td><code>&lt;boost/asio/signal_set.hpp&gt;</code></td>
+<td>信号处理</td>
+<td><code>add()</code>, <code>remove()</code>, <code>async_wait()</code>, <code>cancel()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::executor_work_guard&lt;Executor&gt;</code></td>
+<td><code>&lt;boost/asio/executor_work_guard.hpp&gt;</code></td>
+<td>让 <code>run()</code> 不因无工作而退出</td>
+<td><code>reset()</code>, <code>get_executor()</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::awaitable&lt;T&gt;</code> &#x2F; <code>co_spawn</code> &#x2F; <code>use_awaitable</code></td>
+<td><code>&lt;boost/asio/co_spawn.hpp&gt;</code> 等</td>
+<td>C++20 协程支持</td>
+<td><code>co_spawn(ex, awaitable, token)</code>, <code>co_await</code></td>
+</tr>
+<tr>
+<td><code>boost::asio::error_code</code>（<code>boost::system::error_code</code>）</td>
+<td><code>&lt;boost/system/error_code.hpp&gt;</code></td>
+<td>错误码</td>
+<td><code>operator bool</code>, <code>value()</code>, <code>message()</code></td>
+</tr>
+</tbody></table>
+<h3 id="4-2-逐个类详解"><a href="#4-2-逐个类详解" class="headerlink" title="4.2 逐个类详解"></a>4.2 逐个类详解</h3><h4 id="boost-asio-io-context"><a href="#boost-asio-io-context" class="headerlink" title="boost::asio::io_context"></a><code>boost::asio::io_context</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/io_context.hpp&gt;</code>（便捷头 <code>&lt;boost/asio.hpp&gt;</code>）</li>
+<li><strong>作用</strong>：提供核心 I&#x2F;O 功能，是异步事件循环的宿主。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>io_context();</code><br><code>explicit io_context(int concurrency_hint);</code></td>
+<td><code>concurrency_hint</code> 提示期望的并发线程数</td>
+</tr>
+<tr>
+<td><code>run</code></td>
+<td><code>count_type run();</code></td>
+<td>运行事件循环，直到无工作可做、被 <code>stop()</code> 或抛出异常；返回已执行的 handler 数</td>
+</tr>
+<tr>
+<td><code>run_one</code></td>
+<td><code>count_type run_one();</code></td>
+<td>至多执行一个 handler 后返回</td>
+</tr>
+<tr>
+<td><code>run_for</code></td>
+<td><code>template&lt;class Rep, class Period&gt; std::size_t run_for(const chrono::duration&lt;Rep, Period&gt;&amp; rel_time);</code></td>
+<td>最多运行指定时长</td>
+</tr>
+<tr>
+<td><code>run_until</code></td>
+<td><code>template&lt;class Clock, class Duration&gt; std::size_t run_until(const chrono::time_point&lt;Clock, Duration&gt;&amp; abs_time);</code></td>
+<td>运行到指定时刻</td>
+</tr>
+<tr>
+<td><code>poll</code></td>
+<td><code>count_type poll();</code></td>
+<td>不阻塞，只执行已就绪的 handler</td>
+</tr>
+<tr>
+<td><code>poll_one</code></td>
+<td><code>count_type poll_one();</code></td>
+<td>不阻塞，至多执行一个已就绪 handler</td>
+</tr>
+<tr>
+<td><code>stop</code></td>
+<td><code>void stop();</code></td>
+<td>尽快让 <code>run()</code> 返回，<strong>放弃</strong>未完成操作、不再分发已就绪 handler</td>
+</tr>
+<tr>
+<td><code>restart</code></td>
+<td><code>void restart();</code></td>
+<td>重置 <code>stop()</code> 状态，允许再次调用 <code>run()</code></td>
+</tr>
+<tr>
+<td><code>stopped</code></td>
+<td><code>bool stopped() const;</code></td>
+<td>是否已停止</td>
+</tr>
+<tr>
+<td><code>get_executor</code></td>
+<td><code>executor_type get_executor();</code></td>
+<td>取得关联 executor</td>
+</tr>
+<tr>
+<td><code>wrap</code></td>
+<td><code>template&lt;class Handler&gt; unspecified wrap(Handler handler);</code></td>
+<td>（已废弃）把 handler 绑定到本上下文</td>
+</tr>
+<tr>
+<td><code>notify_fork</code></td>
+<td><code>void notify_fork(fork_event event);</code></td>
+<td>fork 支持（POSIX）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li>必须在<strong>发起第一个异步操作之后</strong>立刻调用 <code>run()</code>，否则 handler 永远不会被调用。</li>
+<li>若没有任何未完成工作，<code>run()</code> 会立即返回——这是「程序莫名退出」的最常见原因。</li>
+<li><code>restart()</code> 只有在 <code>run()</code>&#x2F;<code>poll()</code> 都已返回后才可调用，否则是未定义行为。</li>
+<li><code>stop()</code> 后如需再次运行，必须先 <code>restart()</code>。</li>
+<li><code>post()</code>&#x2F;<code>dispatch()</code>&#x2F;<code>defer()</code> 是<strong>自由函数</strong>（<code>&lt;boost/asio/post.hpp&gt;</code>），<br><code>boost::asio::post(io_context, task)</code> 用来提交任意任务。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-basic-waitable-timer-steady-timer"><a href="#boost-asio-basic-waitable-timer-steady-timer" class="headerlink" title="boost::asio::basic_waitable_timer &#x2F; steady_timer"></a><code>boost::asio::basic_waitable_timer</code> &#x2F; <code>steady_timer</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/basic_waitable_timer.hpp&gt;</code></li>
+<li><strong>作用</strong>：阻塞或异步等待定时器到期；<code>steady_timer</code>&#x2F;<code>system_timer</code>&#x2F;<code>high_resolution_timer</code> 是其 typedef。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>explicit basic_waitable_timer(const executor_type&amp; ex);</code><br><code>template&lt;class ExecutionContext&gt; explicit basic_waitable_timer(ExecutionContext&amp; context);</code></td>
+<td>绑定 executor 或执行上下文</td>
+</tr>
+<tr>
+<td><code>expires_after</code></td>
+<td><code>std::size_t expires_after(const duration&amp; expiry_time);</code></td>
+<td>设置相对到期时间；返回被取消的等待数</td>
+</tr>
+<tr>
+<td><code>expires_at</code></td>
+<td><code>std::size_t expires_at(const time_point&amp; expiry_time);</code></td>
+<td>设置绝对到期时间；返回被取消的等待数</td>
+</tr>
+<tr>
+<td><code>expiry</code></td>
+<td><code>time_point expiry() const;</code></td>
+<td>取得当前到期时刻（绝对时间）</td>
+</tr>
+<tr>
+<td><code>wait</code></td>
+<td><code>void wait();</code><br><code>void wait(boost::system::error_code&amp; ec);</code></td>
+<td>同步等待到期</td>
+</tr>
+<tr>
+<td><code>async_wait</code></td>
+<td><code>template&lt;class WaitToken = default_completion_token_t&lt;executor_type&gt;&gt; DEDUCED async_wait(WaitToken&amp;&amp; token = default_completion_token_t&lt;executor_type&gt;());</code></td>
+<td>异步等待；handler 签名 <code>void(const boost::system::error_code&amp;)</code></td>
+</tr>
+<tr>
+<td><code>cancel</code></td>
+<td><code>std::size_t cancel();</code></td>
+<td>取消所有未完成等待，返回取消数</td>
+</tr>
+<tr>
+<td><code>cancel_one</code></td>
+<td><code>std::size_t cancel_one();</code></td>
+<td>取消至多一个等待</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li>修改到期时间会<strong>取消</strong>正在等待的操作，其 handler 收到 <code>boost::asio::error::operation_aborted</code>。</li>
+<li>重复定时器应在 handler 里 <code>expires_at(expiry() + interval)</code> 再 <code>async_wait()</code>，<br>以旧到期时间为基准可避免累计漂移。</li>
+<li><code>steady_timer</code> 基于单调时钟，不受系统时间调整影响，优先使用。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-basic-stream-socket（ip-tcp-socket）"><a href="#boost-asio-basic-stream-socket（ip-tcp-socket）" class="headerlink" title="boost::asio::basic_stream_socket（ip::tcp::socket）"></a><code>boost::asio::basic_stream_socket</code>（<code>ip::tcp::socket</code>）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/basic_stream_socket.hpp&gt;</code>（<code>&lt;boost/asio/ip/tcp.hpp&gt;</code>）</li>
+<li><strong>作用</strong>：面向流的套接字（TCP、UNIX 域套接字等）。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>open</code></td>
+<td><code>void open(const protocol_type&amp; protocol = protocol_type());</code><br><code>void open(const protocol_type&amp; protocol, boost::system::error_code&amp; ec);</code></td>
+<td>打开套接字</td>
+</tr>
+<tr>
+<td><code>connect</code></td>
+<td><code>void connect(const endpoint_type&amp; peer_endpoint);</code><br><code>void connect(const endpoint_type&amp; peer_endpoint, boost::system::error_code&amp; ec);</code></td>
+<td>同步连接</td>
+</tr>
+<tr>
+<td><code>async_connect</code></td>
+<td><code>template&lt;class ConnectToken = ...&gt; DEDUCED async_connect(const endpoint_type&amp; peer_endpoint, ConnectToken&amp;&amp; token = ...);</code></td>
+<td>异步连接；handler <code>void(const error_code&amp;, const endpoint_type&amp;)</code></td>
+</tr>
+<tr>
+<td><code>read_some</code></td>
+<td><code>template&lt;class MutableBufferSequence&gt; std::size_t read_some(const MutableBufferSequence&amp; buffers);</code><br><code>... read_some(const MutableBufferSequence&amp; buffers, boost::system::error_code&amp; ec);</code></td>
+<td>同步读，可能短读</td>
+</tr>
+<tr>
+<td><code>async_read_some</code></td>
+<td><code>template&lt;class MutableBufferSequence, class ReadToken = ...&gt; DEDUCED async_read_some(const MutableBufferSequence&amp; buffers, ReadToken&amp;&amp; token = ...);</code></td>
+<td>异步读；handler <code>void(const error_code&amp;, std::size_t)</code></td>
+</tr>
+<tr>
+<td><code>write_some</code></td>
+<td><code>template&lt;class ConstBufferSequence&gt; std::size_t write_some(const ConstBufferSequence&amp; buffers);</code><br><code>... write_some(const ConstBufferSequence&amp; buffers, boost::system::error_code&amp; ec);</code></td>
+<td>同步写，可能短写</td>
+</tr>
+<tr>
+<td><code>async_write_some</code></td>
+<td><code>template&lt;class ConstBufferSequence, class WriteToken = ...&gt; DEDUCED async_write_some(const ConstBufferSequence&amp; buffers, WriteToken&amp;&amp; token = ...);</code></td>
+<td>异步写</td>
+</tr>
+<tr>
+<td><code>send</code></td>
+<td><code>template&lt;class ConstBufferSequence&gt; std::size_t send(const ConstBufferSequence&amp; buffers[, socket_base::message_flags flags[, boost::system::error_code&amp; ec]]);</code></td>
+<td>发送（带标志）</td>
+</tr>
+<tr>
+<td><code>receive</code></td>
+<td><code>template&lt;class MutableBufferSequence&gt; std::size_t receive(const MutableBufferSequence&amp; buffers[, socket_base::message_flags flags]);</code></td>
+<td>接收（带标志）</td>
+</tr>
+<tr>
+<td><code>close</code></td>
+<td><code>void close();</code><br><code>void close(boost::system::error_code&amp; ec);</code></td>
+<td>关闭；<strong>取消</strong>所有未完成异步操作</td>
+</tr>
+<tr>
+<td><code>shutdown</code></td>
+<td><code>void shutdown(shutdown_type what);</code><br><code>void shutdown(shutdown_type what, boost::system::error_code&amp; ec);</code></td>
+<td>半关闭（<code>shutdown_send</code>&#x2F;<code>shutdown_receive</code>&#x2F;<code>shutdown_both</code>）</td>
+</tr>
+<tr>
+<td><code>is_open</code></td>
+<td><code>bool is_open() const;</code></td>
+<td>是否已打开</td>
+</tr>
+<tr>
+<td><code>cancel</code></td>
+<td><code>void cancel();</code><br><code>void cancel(boost::system::error_code&amp; ec);</code></td>
+<td>取消未完成操作</td>
+</tr>
+<tr>
+<td><code>local_endpoint</code> &#x2F; <code>remote_endpoint</code></td>
+<td><code>endpoint_type local_endpoint() const;</code><br><code>endpoint_type remote_endpoint() const;</code></td>
+<td>取本端&#x2F;对端地址</td>
+</tr>
+<tr>
+<td><code>set_option</code></td>
+<td><code>template&lt;class SettableSocketOption&gt; void set_option(const SettableSocketOption&amp; option);</code></td>
+<td>设置选项，如 <code>tcp::no_delay(true)</code></td>
+</tr>
+<tr>
+<td><code>native_handle</code> &#x2F; <code>release</code></td>
+<td><code>native_handle_type native_handle();</code><br><code>native_handle_type release();</code></td>
+<td>取得&#x2F;交出底层句柄</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li><code>close()</code> 会取消未完成操作，其 handler 收到 <code>error::operation_aborted</code>。</li>
+<li>同一个 socket 上<strong>同时只允许一个未完成的异步读和一个未完成的异步写</strong>。</li>
+<li><code>read_some</code>&#x2F;<code>write_some</code> 可能只传部分数据；要「读满&#x2F;写全」用 <code>read</code>&#x2F;<code>async_read</code>、<code>write</code>&#x2F;<code>async_write</code>。</li>
+<li>对端正常关闭时，读操作返回 <code>boost::asio::error::eof</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-basic-socket-acceptor（ip-tcp-acceptor）"><a href="#boost-asio-basic-socket-acceptor（ip-tcp-acceptor）" class="headerlink" title="boost::asio::basic_socket_acceptor（ip::tcp::acceptor）"></a><code>boost::asio::basic_socket_acceptor</code>（<code>ip::tcp::acceptor</code>）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/basic_socket_acceptor.hpp&gt;</code></li>
+<li><strong>作用</strong>：监听端口并接受新连接。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>basic_socket_acceptor(executor_type ex, const endpoint_type&amp; endpoint, bool reuse_addr = true);</code><br><code>basic_socket_acceptor(ExecutionContext&amp; context, const endpoint_type&amp; endpoint, bool reuse_addr = true);</code></td>
+<td>常用便捷构造（自动 open&#x2F;bind&#x2F;listen）</td>
+</tr>
+<tr>
+<td><code>open</code></td>
+<td><code>void open(const protocol_type&amp; protocol = protocol_type());</code><br><code>void open(const protocol_type&amp; protocol, boost::system::error_code&amp; ec);</code></td>
+<td>打开</td>
+</tr>
+<tr>
+<td><code>bind</code></td>
+<td><code>void bind(const endpoint_type&amp; endpoint);</code><br><code>void bind(const endpoint_type&amp; endpoint, boost::system::error_code&amp; ec);</code></td>
+<td>绑定地址端口</td>
+</tr>
+<tr>
+<td><code>listen</code></td>
+<td><code>void listen(int backlog = socket_base::max_listen_connections);</code><br><code>void listen(int backlog, boost::system::error_code&amp; ec);</code></td>
+<td>开始监听</td>
+</tr>
+<tr>
+<td><code>accept</code></td>
+<td><code>template&lt;class Protocol1, class Executor1&gt; void accept(basic_socket&lt;Protocol1, Executor1&gt;&amp; peer);</code><br><code>... accept(basic_socket&lt;Protocol1, Executor1&gt;&amp; peer, boost::system::error_code&amp; ec);</code></td>
+<td>同步接受连接</td>
+</tr>
+<tr>
+<td><code>async_accept</code></td>
+<td><code>template&lt;class Protocol1, class Executor1, class AcceptToken = ...&gt; DEDUCED async_accept(basic_socket&lt;Protocol1, Executor1&gt;&amp; peer, AcceptToken&amp;&amp; token = ...);</code><br><code>template&lt;class MoveAcceptToken = ...&gt; DEDUCED async_accept(MoveAcceptToken&amp;&amp; token = ...);</code></td>
+<td>异步接受；handler <code>void(const error_code&amp;, tcp::socket)</code> 或 <code>void(const error_code&amp;)</code></td>
+</tr>
+<tr>
+<td><code>close</code></td>
+<td><code>void close();</code><br><code>void close(boost::system::error_code&amp; ec);</code></td>
+<td>关闭监听；取消未完成的 <code>async_accept</code></td>
+</tr>
+<tr>
+<td><code>set_option</code></td>
+<td><code>template&lt;class SettableSocketOption&gt; void set_option(const SettableSocketOption&amp; option);</code></td>
+<td>如 <code>tcp::acceptor::reuse_address(true)</code></td>
+</tr>
+<tr>
+<td><code>local_endpoint</code></td>
+<td><code>endpoint_type local_endpoint() const;</code></td>
+<td>本端监听地址</td>
+</tr>
+<tr>
+<td><code>is_open</code> &#x2F; <code>cancel</code></td>
+<td><code>bool is_open() const;</code><br><code>void cancel();</code></td>
+<td>状态与取消</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li>建议开启 <code>reuse_address(true)</code> 以免重启时 <code>Address already in use</code>。</li>
+<li>用「先 accept 一个 socket，再立即发起下一次 <code>async_accept</code>」的方式形成接受循环。</li>
+<li>端口 0 表示由系统分配（连接后可用 <code>local_endpoint()</code> 查询实际端口）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-ip-basic-resolver（ip-tcp-resolver-ip-udp-resolver）"><a href="#boost-asio-ip-basic-resolver（ip-tcp-resolver-ip-udp-resolver）" class="headerlink" title="boost::asio::ip::basic_resolver（ip::tcp::resolver &#x2F; ip::udp::resolver）"></a><code>boost::asio::ip::basic_resolver</code>（<code>ip::tcp::resolver</code> &#x2F; <code>ip::udp::resolver</code>）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/ip/basic_resolver.hpp&gt;</code></li>
+<li><strong>作用</strong>：把主机名 + 服务名解析为端点列表。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>resolve</code></td>
+<td><code>results_type resolve(string_view host, string_view service);</code><br><code>results_type resolve(string_view host, string_view service, boost::system::error_code&amp; ec);</code><br><code>results_type resolve(string_view host, string_view service, resolver_base::flags resolve_flags);</code><br><code>results_type resolve(const protocol_type&amp; protocol, string_view host, string_view service);</code></td>
+<td>同步解析；<code>flags</code> 如 <code>resolver_base::numeric_host</code>、<code>passive</code></td>
+</tr>
+<tr>
+<td><code>async_resolve</code></td>
+<td><code>template&lt;class ResolveToken = ...&gt; DEDUCED async_resolve(string_view host, string_view service, ResolveToken&amp;&amp; token = ...);</code><br><code>... async_resolve(const protocol_type&amp; protocol, string_view host, string_view service, ResolveToken&amp;&amp; token = ...);</code></td>
+<td>异步解析；handler <code>void(const error_code&amp;, results_type)</code></td>
+</tr>
+<tr>
+<td><code>cancel</code></td>
+<td><code>void cancel();</code></td>
+<td>取消未完成解析</td>
+</tr>
+<tr>
+<td><code>results_type</code></td>
+<td><code>const_iterator begin() const;</code>（<code>results_type</code> 是 <code>basic_resolver_results&lt;InternetProtocol&gt;</code>）</td>
+<td>端点范围，可迭代</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li>解析结果可能同时包含 IPv4 与 IPv6，应使用 <code>boost::asio::connect(socket, endpoints)</code> 逐个尝试。</li>
+<li><code>resolve()</code> 成功时保证至少返回一个端点，因此 <code>*resolver.resolve(...).begin()</code> 是安全的。</li>
+<li>解析是同步 DNS 查询时可能阻塞较久；异步版本会使用后台线程（内部实现细节，用户不可见）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-strand-io-context-strand"><a href="#boost-asio-strand-io-context-strand" class="headerlink" title="boost::asio::strand&lt;Executor&gt; &#x2F; io_context::strand"></a><code>boost::asio::strand&lt;Executor&gt;</code> &#x2F; <code>io_context::strand</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/strand.hpp&gt;</code> &#x2F; <code>&lt;boost/asio/io_context.hpp&gt;</code></li>
+<li><strong>作用</strong>：executor 适配器，保证经它分发的 handler 串行执行。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dispatch</code></td>
+<td><code>template&lt;class Function, class Allocator&gt; void dispatch(Function&amp;&amp; f, const Allocator&amp; a) const;</code></td>
+<td>若已在 strand 中则直接执行，否则排队</td>
+</tr>
+<tr>
+<td><code>post</code></td>
+<td><code>template&lt;class Function, class Allocator&gt; void post(Function&amp;&amp; f, const Allocator&amp; a) const;</code></td>
+<td>总是排队执行</td>
+</tr>
+<tr>
+<td><code>defer</code></td>
+<td><code>template&lt;class Function, class Allocator&gt; void defer(Function&amp;&amp; f, const Allocator&amp; a) const;</code></td>
+<td>推迟到当前 handler 完成后执行</td>
+</tr>
+<tr>
+<td><code>running_in_this_thread</code></td>
+<td><code>bool running_in_this_thread() const;</code></td>
+<td>当前线程是否已在该 strand 中</td>
+</tr>
+<tr>
+<td><code>on_work_started</code> &#x2F; <code>on_work_finished</code></td>
+<td><code>void on_work_started() const;</code> &#x2F; <code>void on_work_finished() const;</code></td>
+<td>引用计数，防止 <code>run()</code> 提前返回</td>
+</tr>
+<tr>
+<td><code>wrap</code>（仅 <code>io_context::strand</code>）</td>
+<td><code>template&lt;class Handler&gt; unspecified wrap(Handler handler);</code></td>
+<td>旧式 API；新代码请用 <code>boost::asio::bind_executor()</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li>创建 strand 用 <code>boost::asio::make_strand(io_context)</code>（也可 <code>boost::asio::strand&lt;Executor&gt;(ex)</code>）。</li>
+<li>新版 <code>strand&lt;Executor&gt;</code> <strong>没有 <code>wrap()</code></strong>，请使用 <code>boost::asio::bind_executor(strand, handler)</code>。</li>
+<li>组合操作（<code>async_read</code> 等）如果 handler 经过 strand，则其所有中间 handler 也必须经过同一个 strand，<br>Asio 通过 <code>get_associated_executor()</code> 自动保证这一点。</li>
+<li>strand 只保护「经过它的 handler」，不保护未经过它的 handler。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-buffer-与缓冲区"><a href="#boost-asio-buffer-与缓冲区" class="headerlink" title="boost::asio::buffer 与缓冲区"></a><code>boost::asio::buffer</code> 与缓冲区</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/buffer.hpp&gt;</code></li>
+<li><strong>作用</strong>：从数组、<code>std::vector</code>、<code>std::string</code>、<code>std::array</code> 等构造缓冲区视图，自动推导大小。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>buffer</code></td>
+<td><code>mutable_buffer buffer(const mutable_buffer&amp; b);</code><br><code>mutable_buffer buffer(const mutable_buffer&amp; b, std::size_t max_size_in_bytes);</code><br><code>const_buffer buffer(const const_buffer&amp; b);</code></td>
+<td>重载覆盖 <code>void*</code>、数组、<code>std::vector</code>、<code>std::array</code>、<code>std::string</code>、<code>boost::array</code> 等</td>
+</tr>
+<tr>
+<td><code>buffer_size</code></td>
+<td><code>std::size_t buffer_size(const ConstBufferSequence&amp; b);</code></td>
+<td>序列总字节数</td>
+</tr>
+<tr>
+<td><code>buffer_cast</code></td>
+<td><code>template&lt;class PointerType&gt; PointerType buffer_cast(const mutable_buffer&amp; b);</code></td>
+<td>取得原始指针（一般无需直接使用）</td>
+</tr>
+<tr>
+<td><code>buffers_begin</code> &#x2F; <code>buffers_end</code></td>
+<td><code>buffers_iterator&lt;...&gt; buffers_begin(const BufferSequence&amp; b);</code></td>
+<td>按字节遍历缓冲区序列</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li><code>buffer(std::string)</code> 等返回的是<strong>视图</strong>，不复制数据，因此底层对象必须存活。</li>
+<li>异步操作期间 buffer 绝不能悬空（栈上变量提前析构是最常见崩溃原因）。</li>
+<li>缓冲区字面量（<code>&quot;hello&quot;_buf</code>，需 <code>using namespace boost::asio::buffer_literals;</code>）的内存在整个程序生命周期内有效。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-streambuf（basic-streambuf）"><a href="#boost-asio-streambuf（basic-streambuf）" class="headerlink" title="boost::asio::streambuf（basic_streambuf）"></a><code>boost::asio::streambuf</code>（<code>basic_streambuf</code>）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/streambuf.hpp&gt;</code></li>
+<li><strong>作用</strong>：派生自 <code>std::basic_streambuf</code>，配合 <code>read_until</code> 等按行&#x2F;按分隔符读取。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>data()</code></td>
+<td>返回输入序列（满足 <code>ConstBufferSequence</code>）</td>
+</tr>
+<tr>
+<td><code>prepare(n)</code></td>
+<td>预留 <code>n</code> 字节输出序列（满足 <code>MutableBufferSequence</code>）</td>
+</tr>
+<tr>
+<td><code>commit(n)</code></td>
+<td>把输出序列前 <code>n</code> 字节移入输入序列</td>
+</tr>
+<tr>
+<td><code>consume(n)</code></td>
+<td>从输入序列前部丢弃 <code>n</code> 字节</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<code>read_until</code> 返回的字节数包含分隔符；<strong>分隔符之后的多余数据仍留在 <code>streambuf</code> 中</strong>，<br>必须保留给下一次读取，不能丢弃。</li>
+</ul>
+<h4 id="自由函数：async-read-async-write-read-write-read-until"><a href="#自由函数：async-read-async-write-read-write-read-until" class="headerlink" title="自由函数：async_read &#x2F; async_write &#x2F; read &#x2F; write &#x2F; read_until"></a>自由函数：<code>async_read</code> &#x2F; <code>async_write</code> &#x2F; <code>read</code> &#x2F; <code>write</code> &#x2F; <code>read_until</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/read.hpp&gt;</code>、<code>&lt;boost/asio/write.hpp&gt;</code>、<code>&lt;boost/asio/read_until.hpp&gt;</code></li>
+<li><strong>作用</strong>：组合操作，自动处理短读短写。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>签名（节选）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>async_read</code></td>
+<td><code>template&lt;class AsyncReadStream, class MutableBufferSequence, class ReadToken = ...&gt; DEDUCED async_read(AsyncReadStream&amp; s, const MutableBufferSequence&amp; buffers, ReadToken&amp;&amp; token = ...);</code><br><code>... async_read(AsyncReadStream&amp; s, const MutableBufferSequence&amp; buffers, CompletionCondition completion_condition, ReadToken&amp;&amp; token = ...);</code></td>
+<td>读到缓冲区满或满足条件；handler <code>void(const error_code&amp;, std::size_t)</code></td>
+</tr>
+<tr>
+<td><code>async_write</code></td>
+<td><code>template&lt;class AsyncWriteStream, class ConstBufferSequence, class WriteToken = ...&gt; DEDUCED async_write(AsyncWriteStream&amp; s, const ConstBufferSequence&amp; buffers, WriteToken&amp;&amp; token = ...);</code></td>
+<td>写完所有字节</td>
+</tr>
+<tr>
+<td><code>read</code></td>
+<td><code>template&lt;class SyncReadStream, class MutableBufferSequence&gt; std::size_t read(SyncReadStream&amp; s, const MutableBufferSequence&amp; buffers);</code><br><code>... read(SyncReadStream&amp; s, const MutableBufferSequence&amp; buffers, boost::system::error_code&amp; ec);</code></td>
+<td>同步读满</td>
+</tr>
+<tr>
+<td><code>write</code></td>
+<td><code>template&lt;class SyncWriteStream, class ConstBufferSequence&gt; std::size_t write(SyncWriteStream&amp; s, const ConstBufferSequence&amp; buffers);</code><br><code>... write(SyncWriteStream&amp; s, const ConstBufferSequence&amp; buffers, boost::system::error_code&amp; ec);</code></td>
+<td>同步写全</td>
+</tr>
+<tr>
+<td><code>read_until</code></td>
+<td><code>template&lt;class SyncReadStream, class DynamicBuffer_v1&gt; std::size_t read_until(SyncReadStream&amp; s, DynamicBuffer_v1&amp;&amp; buffers, char delim);</code><br><code>... read_until(SyncReadStream&amp; s, DynamicBuffer_v1&amp;&amp; buffers, string_view delim);</code></td>
+<td>读到分隔符（含分隔符）</td>
+</tr>
+<tr>
+<td><code>async_read_until</code></td>
+<td><code>template&lt;class AsyncReadStream, class DynamicBuffer_v1, class ReadToken = ...&gt; DEDUCED async_read_until(AsyncReadStream&amp; s, DynamicBuffer_v1&amp;&amp; buffers, char delim, ReadToken&amp;&amp; token = ...);</code></td>
+<td>异步版</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li><code>read_until</code> 的分隔符可以是单个 <code>char</code>、<code>std::string</code>&#x2F;<code>string_view</code>，也可以是<br>自定义 match condition（需特化 <code>is_match_condition&lt;&gt;</code>）。</li>
+<li>EOF 被视为错误，因为提前 EOF 会破坏「读满 N 字节」的约定。</li>
+</ul>
+</li>
+</ul>
+<h4 id="boost-asio-connect-async-connect"><a href="#boost-asio-connect-async-connect" class="headerlink" title="boost::asio::connect &#x2F; async_connect"></a><code>boost::asio::connect</code> &#x2F; <code>async_connect</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/connect.hpp&gt;</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>签名（节选）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>connect</code></td>
+<td><code>template&lt;class Protocol, class Executor, class EndpointSequence&gt; Protocol::endpoint connect(basic_socket&lt;Protocol, Executor&gt;&amp; s, const EndpointSequence&amp; endpoints);</code><br><code>... connect(..., const EndpointSequence&amp; endpoints, boost::system::error_code&amp; ec);</code></td>
+<td>依次尝试端点，返回成功的端点</td>
+</tr>
+<tr>
+<td><code>async_connect</code></td>
+<td><code>template&lt;class Protocol, class Executor, class EndpointSequence, class ConnectToken&gt; DEDUCED async_connect(basic_socket&lt;Protocol, Executor&gt;&amp; s, const EndpointSequence&amp; endpoints, ConnectToken&amp;&amp; token);</code></td>
+<td>异步版；handler <code>void(const error_code&amp;, const endpoint_type&amp;)</code></td>
+</tr>
+</tbody></table>
+<h4 id="boost-asio-thread-pool"><a href="#boost-asio-thread-pool" class="headerlink" title="boost::asio::thread_pool"></a><code>boost::asio::thread_pool</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/thread_pool.hpp&gt;</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>explicit thread_pool(std::size_t num_threads);</code></td>
+<td>创建含 <code>num_threads</code> 个线程的池</td>
+</tr>
+<tr>
+<td><code>join</code></td>
+<td><code>void join();</code></td>
+<td>等待所有任务完成并回收线程</td>
+</tr>
+<tr>
+<td><code>stop</code></td>
+<td><code>void stop();</code></td>
+<td>停止并放弃未完成的任务</td>
+</tr>
+<tr>
+<td><code>get_executor</code></td>
+<td><code>executor_type get_executor();</code></td>
+<td>用于 <code>post(pool, task)</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<code>thread_pool</code> 析构前必须调用 <code>join()</code>（或 <code>stop()</code>），否则会 terminate。</li>
+</ul>
+<h4 id="boost-asio-signal-set（basic-signal-set）"><a href="#boost-asio-signal-set（basic-signal-set）" class="headerlink" title="boost::asio::signal_set（basic_signal_set）"></a><code>boost::asio::signal_set</code>（<code>basic_signal_set</code>）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/signal_set.hpp&gt;</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>basic_signal_set(ExecutionContext&amp; context, int signal_number, ...);</code></td>
+<td>可一次注册多个信号</td>
+</tr>
+<tr>
+<td><code>add</code></td>
+<td><code>void add(int signal_number);</code><br><code>void add(int signal_number, boost::system::error_code&amp; ec);</code></td>
+<td>添加信号</td>
+</tr>
+<tr>
+<td><code>remove</code></td>
+<td><code>void remove(int signal_number);</code></td>
+<td>移除信号</td>
+</tr>
+<tr>
+<td><code>async_wait</code></td>
+<td><code>template&lt;class SignalToken = ...&gt; DEDUCED async_wait(SignalToken&amp;&amp; token = ...);</code></td>
+<td>handler <code>void(const error_code&amp;, int signal_number)</code></td>
+</tr>
+<tr>
+<td><code>cancel</code></td>
+<td><code>void cancel();</code><br><code>void cancel(boost::system::error_code&amp; ec);</code></td>
+<td>取消等待</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：同一个信号号只能在 Asio 中注册（不要同时用 <code>signal()</code>&#x2F;<code>sigaction()</code> 处理同一信号）。</li>
+</ul>
+<h4 id="boost-asio-executor-work-guard"><a href="#boost-asio-executor-work-guard" class="headerlink" title="boost::asio::executor_work_guard&lt;Executor&gt;"></a><code>boost::asio::executor_work_guard&lt;Executor&gt;</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/executor_work_guard.hpp&gt;</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>explicit executor_work_guard(const executor_type&amp; e);</code></td>
+<td>也可用 <code>boost::asio::make_work_guard(io_context)</code></td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td><code>void reset();</code></td>
+<td>释放「工作」，允许 <code>run()</code> 在无工作时返回</td>
+</tr>
+<tr>
+<td><code>get_executor</code></td>
+<td><code>executor_type get_executor() const;</code></td>
+<td>取得被守护的 executor</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：用于「先启动后台 <code>run()</code> 线程，再陆续添加工作」的场景；不再需要时 <code>reset()</code> 让 <code>run()</code> 自然退出。</li>
+</ul>
+<h4 id="C-20-协程：co-spawn-awaitable-use-awaitable"><a href="#C-20-协程：co-spawn-awaitable-use-awaitable" class="headerlink" title="C++20 协程：co_spawn &#x2F; awaitable &#x2F; use_awaitable"></a>C++20 协程：<code>co_spawn</code> &#x2F; <code>awaitable</code> &#x2F; <code>use_awaitable</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/co_spawn.hpp&gt;</code>、<code>&lt;boost/asio/awaitable.hpp&gt;</code>、<code>&lt;boost/asio/use_awaitable.hpp&gt;</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（节选）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>co_spawn</code></td>
+<td><code>template&lt;class Executor, class T, class AwaitableExecutor, class CompletionToken = DEFAULT&gt; DEDUCED co_spawn(const Executor&amp; ex, awaitable&lt;T, AwaitableExecutor&gt; a, CompletionToken&amp;&amp; token = DEFAULT);</code><br><code>template&lt;class Executor, class F, class CompletionToken = DEFAULT&gt; DEDUCED co_spawn(const Executor&amp; ex, F&amp;&amp; f, CompletionToken&amp;&amp; token = DEFAULT);</code></td>
+<td>在指定 executor 上启动协程</td>
+</tr>
+<tr>
+<td><code>awaitable</code></td>
+<td><code>template&lt;class T, class Executor = any_io_executor&gt; class awaitable;</code></td>
+<td>协程返回类型</td>
+</tr>
+<tr>
+<td><code>use_awaitable</code></td>
+<td><code>constexpr use_awaitable_t use_awaitable;</code></td>
+<td>让异步操作返回可 <code>co_await</code> 的对象</td>
+</tr>
+<tr>
+<td><code>detached</code></td>
+<td><code>constexpr detached_t detached;</code></td>
+<td>忽略协程结果</td>
+</tr>
+<tr>
+<td><code>as_tuple</code></td>
+<td>完成令牌适配器</td>
+<td>把 <code>(ec, result)</code> 打包成 <code>std::tuple</code>，避免抛异常</td>
+</tr>
+<tr>
+<td><code>redirect_error</code></td>
+<td>完成令牌适配器</td>
+<td>把错误写入 <code>error_code</code> 变量</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ul>
+<li><code>co_spawn</code> 的 handler 签名是 <code>void(std::exception_ptr, R)</code>。</li>
+<li>默认情况下，<code>co_await</code> 遇到错误会抛 <code>boost::system::system_error</code>；<br>想显式处理请用 <code>as_tuple</code> 或 <code>redirect_error</code>。</li>
+<li>协程内不指定 completion token 时默认使用 <code>deferred</code>，同样可以 <code>co_await</code>。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="5-使用流程"><a href="#5-使用流程" class="headerlink" title="5. 使用流程"></a>5. 使用流程</h2><h3 id="5-1-同步-TCP-客户端流程"><a href="#5-1-同步-TCP-客户端流程" class="headerlink" title="5.1 同步 TCP 客户端流程"></a>5.1 同步 TCP 客户端流程</h3><ol>
+<li>创建 <code>boost::asio::io_context io_context;</code>（同步操作也需要它来访问 I&#x2F;O 服务）。</li>
+<li>构造 <code>tcp::resolver resolver(io_context);</code>，调用 <code>resolver.resolve(host, service)</code><br>得到 <code>results_type endpoints</code>（可能含多个 IPv4&#x2F;IPv6 端点）。</li>
+<li>构造 <code>tcp::socket socket(io_context);</code>，调用 <code>boost::asio::connect(socket, endpoints)</code><br>依次尝试各端点，直到连接成功（失败时抛 <code>system_error</code>）。</li>
+<li>发送数据：<code>boost::asio::write(socket, boost::asio::buffer(request, n));</code><br>—— 用组合写保证「写全」；或带 <code>error_code</code> 版本避免异常。</li>
+<li>接收数据：<code>boost::asio::read(socket, boost::asio::buffer(reply, n));</code><br>—— 读满期望字节数。若长度未知，可循环 <code>socket.read_some()</code>，<br>并用 <code>if (ec == boost::asio::error::eof) break;</code> 判断对端正常关闭。</li>
+<li><strong>错误处理</strong>：要么整体 <code>try { ... } catch (std::exception&amp; e) { std::cerr &lt;&lt; e.what(); }</code>，<br>要么对每个调用使用 <code>error_code</code> 重载并逐个检查。</li>
+<li><strong>关闭顺序</strong>：数据收发完毕后，若需通知对端「我不再发送」，先<br><code>socket.shutdown(tcp::socket::shutdown_send);</code>，读尽对端剩余数据后再 <code>socket.close();</code>。<br>socket 析构会自动 <code>close()</code>，但显式关闭更清晰、更早释放资源。</li>
+<li><code>io_context</code> 在同步模式下无需 <code>run()</code>；作用域结束时正常析构即可。</li>
+</ol>
+<h3 id="5-2-同步-TCP-服务端流程"><a href="#5-2-同步-TCP-服务端流程" class="headerlink" title="5.2 同步 TCP 服务端流程"></a>5.2 同步 TCP 服务端流程</h3><ol>
+<li>创建 <code>io_context</code>。</li>
+<li>构造 <code>tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));</code><br>（便捷构造会依次完成 <code>open</code> + <code>bind</code> + <code>listen</code>，并默认开启 <code>reuse_address</code>）。<br>若需更细控制：<code>acceptor.open(protocol); acceptor.set_option(tcp::acceptor::reuse_address(true)); acceptor.bind(endpoint); acceptor.listen();</code></li>
+<li>进入循环：为每个连接创建一个 <code>tcp::socket socket(io_context);</code>。</li>
+<li><code>acceptor.accept(socket);</code> 阻塞直到有新连接到达。</li>
+<li>处理该连接：读取请求 → 构造响应 → <code>boost::asio::write(socket, ...)</code>。</li>
+<li><strong>错误处理</strong>：整个服务逻辑包在 <code>try/catch (std::exception&amp;)</code> 中；<br>单个连接的异常应就地捕获，避免整个服务退出。</li>
+<li>连接处理完后 <code>socket</code> 析构自动关闭；若要并发处理多个客户端，<br>把 <code>session(socket)</code> 交给 <code>std::thread(...).detach()</code> 或改用异步服务端。</li>
+<li><strong>关闭顺序</strong>：先 <code>acceptor.close();</code>（停止接受新连接），<br>再等待&#x2F;结束已建立的连接，最后让 <code>io_context</code> 析构。</li>
+</ol>
+<h3 id="5-3-异步-TCP-服务端流程"><a href="#5-3-异步-TCP-服务端流程" class="headerlink" title="5.3 异步 TCP 服务端流程"></a>5.3 异步 TCP 服务端流程</h3><ol>
+<li>创建 <code>io_context</code>，用 <code>tcp::acceptor</code> 绑定并监听端口（同 5.2 步骤 2）。</li>
+<li>定义「接受循环」<code>do_accept()</code>：调用 <code>acceptor_.async_accept(...)</code>，<br>在 handler 中先 <code>if (!ec) { 创建 session 并 start(); }</code>，<strong>然后立即再次调用 <code>do_accept()</code></strong><br>以接受下一个连接。</li>
+<li>每个连接由 <code>session</code> 对象管理，session 继承<br><code>std::enable_shared_from_this&lt;session&gt;</code>，用 <code>std::make_shared&lt;session&gt;(std::move(socket))</code> 创建。</li>
+<li>在 session 的每次异步调用中捕获 <code>auto self = shared_from_this();</code><br>并放进 lambda，<strong>保证 session 在 handler 执行期间存活</strong>。</li>
+<li>读循环 <code>do_read()</code>：<code>socket_.async_read_some(buffer(data_, max_length), ...)</code>，<br>handler 中若 <code>!ec</code> 则调用 <code>do_write(length)</code>。</li>
+<li>写循环 <code>do_write()</code>：<code>boost::asio::async_write(socket_, buffer(data_, length), ...)</code>，<br>handler 中若 <code>!ec</code> 则回到 <code>do_read()</code>，形成「读-写-读」状态机。</li>
+<li><strong>错误处理</strong>：handler 中检查 <code>ec</code>；正常关闭会产生 <code>error::eof</code>，<br>取消操作会产生 <code>error::operation_aborted</code>，两者通常只需结束该 session，<br>不必上报为致命错误。</li>
+<li>最后调用 <code>io_context.run();</code>（可多线程调用以形成线程池）。</li>
+<li><strong>关闭顺序</strong>：收到退出信号时（配合 <code>signal_set</code>）先 <code>acceptor_.close()</code>，<br>再 <code>close()</code>&#x2F;<code>stop_all()</code> 所有 session 的 socket 以取消未完成操作；<br>当所有 handler 返回且无未完成工作后，<code>run()</code> 自然返回。</li>
+</ol>
+<hr>
+<h2 id="6-代码示例"><a href="#6-代码示例" class="headerlink" title="6. 代码示例"></a>6. 代码示例</h2><blockquote>
+<p>所有示例均取自或最小化改写自 Boost 官方 examples，出处标注在文件头注释中。<br>除特别说明外，编译命令（Boost ≥ 1.69，header-only）为：<br><code>g++ -std=c++17 -O2 -Wall &lt;file&gt;.cpp -o &lt;file&gt; -pthread</code></p>
+</blockquote>
+<h3 id="示例-1：同步定时器（Timer-1）"><a href="#示例-1：同步定时器（Timer-1）" class="headerlink" title="示例 1：同步定时器（Timer.1）"></a>示例 1：同步定时器（Timer.1）</h3><p>出处：<code>doc/html/boost_asio/tutorial/tuttimer1.html</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 timer_sync.cpp -o timer_sync -pthread</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// timer_sync.cpp —— 出处：boost_asio/tutorial/tuttimer1.html</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  boost::asio::io_context io;<br><br>  <span class="hljs-comment">// 第二个参数：从现在起 5 秒后到期</span><br>  boost::<span class="hljs-function">asio::steady_timer <span class="hljs-title">t</span><span class="hljs-params">(io, boost::asio::chrono::seconds(<span class="hljs-number">5</span>))</span></span>;<br><br>  <span class="hljs-comment">// 阻塞等待，直到定时器到期（到期后 wait() 立即返回）</span><br>  t.<span class="hljs-built_in">wait</span>();<br><br>  std::cout &lt;&lt; <span class="hljs-string">&quot;Hello, world!&quot;</span> &lt;&lt; std::endl;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-2：异步定时器与重复定时（Timer-2-Timer-3）"><a href="#示例-2：异步定时器与重复定时（Timer-2-Timer-3）" class="headerlink" title="示例 2：异步定时器与重复定时（Timer.2 &#x2F; Timer.3）"></a>示例 2：异步定时器与重复定时（Timer.2 &#x2F; Timer.3）</h3><p>出处：<code>doc/html/boost_asio/tutorial/tuttimer2.html</code>、<code>tuttimer3.html</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 timer_async.cpp -o timer_async -pthread</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// timer_async.cpp —— 出处：boost_asio/tutorial/tuttimer2.html + tuttimer3.html</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;functional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-type">const</span> boost::system::error_code&amp; <span class="hljs-comment">/*e*/</span>,</span></span><br><span class="hljs-params"><span class="hljs-function">           boost::asio::steady_timer* t, <span class="hljs-type">int</span>* count)</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">if</span> (*count &lt; <span class="hljs-number">5</span>)<br>  &#123;<br>    std::cout &lt;&lt; *count &lt;&lt; std::endl;<br>    ++(*count);<br><br>    <span class="hljs-comment">// 以旧到期时间为基准推进 1 秒，避免累计漂移</span><br>    t-&gt;<span class="hljs-built_in">expires_at</span>(t-&gt;<span class="hljs-built_in">expiry</span>() + boost::asio::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">1</span>));<br><br>    <span class="hljs-comment">// 重新发起异步等待</span><br>    t-&gt;<span class="hljs-built_in">async_wait</span>(std::<span class="hljs-built_in">bind</span>(print, boost::asio::placeholders::error, t, count));<br>  &#125;<br>  <span class="hljs-comment">// count == 5 时不再发起新的等待，io_context 无工作可做，run() 自然返回</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  boost::asio::io_context io;<br><br>  <span class="hljs-type">int</span> count = <span class="hljs-number">0</span>;<br>  boost::<span class="hljs-function">asio::steady_timer <span class="hljs-title">t</span><span class="hljs-params">(io, boost::asio::chrono::seconds(<span class="hljs-number">1</span>))</span></span>;<br><br>  t.<span class="hljs-built_in">async_wait</span>(std::<span class="hljs-built_in">bind</span>(print, boost::asio::placeholders::error, &amp;t, &amp;count));<br><br>  io.<span class="hljs-built_in">run</span>();   <span class="hljs-comment">// 必须有线程调用 run()，handler 才会被调用</span><br><br>  std::cout &lt;&lt; <span class="hljs-string">&quot;Final count is &quot;</span> &lt;&lt; count &lt;&lt; std::endl;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-3：TCP-同步-echo-服务端"><a href="#示例-3：TCP-同步-echo-服务端" class="headerlink" title="示例 3：TCP 同步 echo 服务端"></a>示例 3：TCP 同步 echo 服务端</h3><p>出处：<code>doc/html/boost_asio/example/cpp11/echo/blocking_tcp_echo_server.cpp</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 blocking_tcp_echo_server.cpp -o echo_server -pthread</code><br>运行：<code>./echo_server 12345</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// blocking_tcp_echo_server.cpp —— 出处：boost_asio/example/cpp11/echo/blocking_tcp_echo_server.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;utility&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::tcp;<br><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> max_length = <span class="hljs-number">1024</span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">session</span><span class="hljs-params">(tcp::socket sock)</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">for</span> (;;)<br>    &#123;<br>      <span class="hljs-type">char</span> data[max_length];<br><br>      boost::system::error_code error;<br>      <span class="hljs-type">size_t</span> length = sock.<span class="hljs-built_in">read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(data), error);<br>      <span class="hljs-keyword">if</span> (error == boost::asio::error::eof)<br>        <span class="hljs-keyword">break</span>; <span class="hljs-comment">// 对端正常关闭连接</span><br>      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (error)<br>        <span class="hljs-keyword">throw</span> boost::system::<span class="hljs-built_in">system_error</span>(error); <span class="hljs-comment">// 其它错误</span><br><br>      boost::asio::<span class="hljs-built_in">write</span>(sock, boost::asio::<span class="hljs-built_in">buffer</span>(data, length));<br>    &#125;<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception in thread: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">server</span><span class="hljs-params">(boost::asio::io_context&amp; io_context, <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> port)</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-function">tcp::acceptor <span class="hljs-title">a</span><span class="hljs-params">(io_context, tcp::endpoint(tcp::v4(), port))</span></span>;<br>  <span class="hljs-keyword">for</span> (;;)<br>  &#123;<br>    <span class="hljs-comment">// 每个连接一个线程（演示用；生产环境建议使用异步模型）</span><br>    std::<span class="hljs-built_in">thread</span>(session, a.<span class="hljs-built_in">accept</span>()).<span class="hljs-built_in">detach</span>();<br>  &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)<br>    &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: blocking_tcp_echo_server &lt;port&gt;\n&quot;</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    boost::asio::io_context io_context;<br><br>    <span class="hljs-built_in">server</span>(io_context, std::<span class="hljs-built_in">atoi</span>(argv[<span class="hljs-number">1</span>]));<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-4：TCP-同步-echo-客户端"><a href="#示例-4：TCP-同步-echo-客户端" class="headerlink" title="示例 4：TCP 同步 echo 客户端"></a>示例 4：TCP 同步 echo 客户端</h3><p>出处：<code>doc/html/boost_asio/example/cpp11/echo/blocking_tcp_echo_client.cpp</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 blocking_tcp_echo_client.cpp -o echo_client -pthread</code><br>运行：<code>./echo_client 127.0.0.1 12345</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// blocking_tcp_echo_client.cpp —— 出处：boost_asio/example/cpp11/echo/blocking_tcp_echo_client.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstring&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::tcp;<br><br><span class="hljs-keyword">enum</span> &#123; max_length = <span class="hljs-number">1024</span> &#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">3</span>)<br>    &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: blocking_tcp_echo_client &lt;host&gt; &lt;port&gt;\n&quot;</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    boost::asio::io_context io_context;<br><br>    <span class="hljs-function">tcp::socket <span class="hljs-title">s</span><span class="hljs-params">(io_context)</span></span>;<br>    <span class="hljs-function">tcp::resolver <span class="hljs-title">resolver</span><span class="hljs-params">(io_context)</span></span>;<br>    <span class="hljs-comment">// 解析并依次尝试所有端点</span><br>    boost::asio::<span class="hljs-built_in">connect</span>(s, resolver.<span class="hljs-built_in">resolve</span>(argv[<span class="hljs-number">1</span>], argv[<span class="hljs-number">2</span>]));<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Enter message: &quot;</span>;<br>    <span class="hljs-type">char</span> request[max_length];<br>    std::cin.<span class="hljs-built_in">getline</span>(request, max_length);<br>    <span class="hljs-type">size_t</span> request_length = std::<span class="hljs-built_in">strlen</span>(request);<br>    boost::asio::<span class="hljs-built_in">write</span>(s, boost::asio::<span class="hljs-built_in">buffer</span>(request, request_length));<br><br>    <span class="hljs-type">char</span> reply[max_length];<br>    <span class="hljs-comment">// 读满与请求等长的字节</span><br>    <span class="hljs-type">size_t</span> reply_length = boost::asio::<span class="hljs-built_in">read</span>(s,<br>        boost::asio::<span class="hljs-built_in">buffer</span>(reply, request_length));<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Reply is: &quot;</span>;<br>    std::cout.<span class="hljs-built_in">write</span>(reply, reply_length);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-5：TCP-异步-echo-服务端"><a href="#示例-5：TCP-异步-echo-服务端" class="headerlink" title="示例 5：TCP 异步 echo 服务端"></a>示例 5：TCP 异步 echo 服务端</h3><p>出处：<code>doc/html/boost_asio/example/cpp11/echo/async_tcp_echo_server.cpp</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 async_tcp_echo_server.cpp -o async_echo_server -pthread</code><br>运行：<code>./async_echo_server 12345</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// async_tcp_echo_server.cpp —— 出处：boost_asio/example/cpp11/echo/async_tcp_echo_server.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;utility&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::tcp;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">session</span><br>  : <span class="hljs-keyword">public</span> std::enable_shared_from_this&lt;session&gt;<br>&#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">session</span>(tcp::socket socket)<br>    : <span class="hljs-built_in">socket_</span>(std::<span class="hljs-built_in">move</span>(socket))<br>  &#123;<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">start</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-built_in">do_read</span>();<br>  &#125;<br><br><span class="hljs-keyword">private</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_read</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-comment">// 捕获 self，保证 session 在 handler 执行期间不被销毁</span><br>    <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">self</span><span class="hljs-params">(shared_from_this())</span></span>;<br>    socket_.<span class="hljs-built_in">async_read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(data_, max_length),<br>        [<span class="hljs-keyword">this</span>, self](boost::system::error_code ec, std::<span class="hljs-type">size_t</span> length)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!ec)<br>          &#123;<br>            <span class="hljs-built_in">do_write</span>(length);<br>          &#125;<br>          <span class="hljs-comment">// 出错（eof / operation_aborted）时不再继续，session 随 self 释放</span><br>        &#125;);<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_write</span><span class="hljs-params">(std::<span class="hljs-type">size_t</span> length)</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">self</span><span class="hljs-params">(shared_from_this())</span></span>;<br>    <span class="hljs-comment">// 使用组合操作 async_write 保证整块数据写完</span><br>    boost::asio::<span class="hljs-built_in">async_write</span>(socket_, boost::asio::<span class="hljs-built_in">buffer</span>(data_, length),<br>        [<span class="hljs-keyword">this</span>, self](boost::system::error_code ec, std::<span class="hljs-type">size_t</span> <span class="hljs-comment">/*length*/</span>)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!ec)<br>          &#123;<br>            <span class="hljs-built_in">do_read</span>();<br>          &#125;<br>        &#125;);<br>  &#125;<br><br>  tcp::socket socket_;<br>  <span class="hljs-keyword">enum</span> &#123; max_length = <span class="hljs-number">1024</span> &#125;;<br>  <span class="hljs-type">char</span> data_[max_length];<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">server</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">server</span>(boost::asio::io_context&amp; io_context, <span class="hljs-type">short</span> port)<br>    : <span class="hljs-built_in">acceptor_</span>(io_context, tcp::<span class="hljs-built_in">endpoint</span>(tcp::<span class="hljs-built_in">v4</span>(), port))<br>  &#123;<br>    <span class="hljs-built_in">do_accept</span>();<br>  &#125;<br><br><span class="hljs-keyword">private</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_accept</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    acceptor_.<span class="hljs-built_in">async_accept</span>(<br>        [<span class="hljs-keyword">this</span>](boost::system::error_code ec, tcp::socket socket)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!ec)<br>          &#123;<br>            std::<span class="hljs-built_in">make_shared</span>&lt;session&gt;(std::<span class="hljs-built_in">move</span>(socket))-&gt;<span class="hljs-built_in">start</span>();<br>          &#125;<br><br>          <span class="hljs-built_in">do_accept</span>();   <span class="hljs-comment">// 立刻接受下一个连接</span><br>        &#125;);<br>  &#125;<br><br>  tcp::acceptor acceptor_;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)<br>    &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: async_tcp_echo_server &lt;port&gt;\n&quot;</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    boost::asio::io_context io_context;<br><br>    <span class="hljs-function">server <span class="hljs-title">s</span><span class="hljs-params">(io_context, std::atoi(argv[<span class="hljs-number">1</span>]))</span></span>;<br><br>    io_context.<span class="hljs-built_in">run</span>();<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-6：UDP-异步-echo-服务端"><a href="#示例-6：UDP-异步-echo-服务端" class="headerlink" title="示例 6：UDP 异步 echo 服务端"></a>示例 6：UDP 异步 echo 服务端</h3><p>出处：<code>doc/html/boost_asio/example/cpp11/echo/async_udp_echo_server.cpp</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 async_udp_echo_server.cpp -o udp_echo_server -pthread</code><br>运行：<code>./udp_echo_server 12345</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// async_udp_echo_server.cpp —— 出处：boost_asio/example/cpp11/echo/async_udp_echo_server.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::udp;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">server</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">server</span>(boost::asio::io_context&amp; io_context, <span class="hljs-type">short</span> port)<br>    : <span class="hljs-built_in">socket_</span>(io_context, udp::<span class="hljs-built_in">endpoint</span>(udp::<span class="hljs-built_in">v4</span>(), port))<br>  &#123;<br>    <span class="hljs-built_in">do_receive</span>();<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_receive</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    socket_.<span class="hljs-built_in">async_receive_from</span>(<br>        boost::asio::<span class="hljs-built_in">buffer</span>(data_, max_length), sender_endpoint_,<br>        [<span class="hljs-keyword">this</span>](boost::system::error_code ec, std::<span class="hljs-type">size_t</span> bytes_recvd)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!ec &amp;&amp; bytes_recvd &gt; <span class="hljs-number">0</span>)<br>          &#123;<br>            <span class="hljs-built_in">do_send</span>(bytes_recvd);<br>          &#125;<br>          <span class="hljs-keyword">else</span><br>          &#123;<br>            <span class="hljs-built_in">do_receive</span>();<br>          &#125;<br>        &#125;);<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_send</span><span class="hljs-params">(std::<span class="hljs-type">size_t</span> length)</span></span><br><span class="hljs-function">  </span>&#123;<br>    socket_.<span class="hljs-built_in">async_send_to</span>(<br>        boost::asio::<span class="hljs-built_in">buffer</span>(data_, length), sender_endpoint_,<br>        [<span class="hljs-keyword">this</span>](boost::system::error_code <span class="hljs-comment">/*ec*/</span>, std::<span class="hljs-type">size_t</span> <span class="hljs-comment">/*bytes_sent*/</span>)<br>        &#123;<br>          <span class="hljs-built_in">do_receive</span>();<br>        &#125;);<br>  &#125;<br><br><span class="hljs-keyword">private</span>:<br>  udp::socket socket_;<br>  udp::endpoint sender_endpoint_;<br>  <span class="hljs-keyword">enum</span> &#123; max_length = <span class="hljs-number">1024</span> &#125;;<br>  <span class="hljs-type">char</span> data_[max_length];<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)<br>    &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: async_udp_echo_server &lt;port&gt;\n&quot;</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    boost::asio::io_context io_context;<br><br>    <span class="hljs-comment">// work guard：防止 run() 在 server 构造完成前因“无工作”而提前返回</span><br>    <span class="hljs-keyword">auto</span> work = boost::asio::<span class="hljs-built_in">make_work_guard</span>(io_context);<br>    <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">([&amp;]()&#123; io_context.run(); &#125;)</span></span>;<br><br>    <span class="hljs-function">server <span class="hljs-title">s</span><span class="hljs-params">(io_context, std::atoi(argv[<span class="hljs-number">1</span>]))</span></span>;<br><br>    work.<span class="hljs-built_in">reset</span>();   <span class="hljs-comment">// 允许 run() 在无未完成工作时退出</span><br>    t.<span class="hljs-built_in">join</span>();<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-7：域名解析-TCP-客户端（Daytime-客户端）"><a href="#示例-7：域名解析-TCP-客户端（Daytime-客户端）" class="headerlink" title="示例 7：域名解析 + TCP 客户端（Daytime 客户端）"></a>示例 7：域名解析 + TCP 客户端（Daytime 客户端）</h3><p>出处：<code>doc/html/boost_asio/tutorial/tutdaytime1.html</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 daytime_client.cpp -o daytime_client -pthread</code><br>运行：<code>./daytime_client time.nist.gov</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// daytime_client.cpp —— 出处：boost_asio/tutorial/tutdaytime1.html</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;array&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::tcp;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)<br>    &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: client &lt;host&gt;&quot;</span> &lt;&lt; std::endl;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    boost::asio::io_context io_context;<br><br>    <span class="hljs-comment">// resolver 把主机名 + 服务名解析为端点列表</span><br>    <span class="hljs-function">tcp::resolver <span class="hljs-title">resolver</span><span class="hljs-params">(io_context)</span></span>;<br>    tcp::resolver::results_type endpoints = resolver.<span class="hljs-built_in">resolve</span>(argv[<span class="hljs-number">1</span>], <span class="hljs-string">&quot;daytime&quot;</span>);<br><br>    <span class="hljs-comment">// 结果可能同时含 IPv4/IPv6，逐个尝试直到成功</span><br>    <span class="hljs-function">tcp::socket <span class="hljs-title">socket</span><span class="hljs-params">(io_context)</span></span>;<br>    boost::asio::<span class="hljs-built_in">connect</span>(socket, endpoints);<br><br>    <span class="hljs-keyword">for</span> (;;)<br>    &#123;<br>      std::array&lt;<span class="hljs-type">char</span>, 128&gt; buf;<br>      boost::system::error_code error;<br><br>      <span class="hljs-type">size_t</span> len = socket.<span class="hljs-built_in">read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(buf), error);<br><br>      <span class="hljs-keyword">if</span> (error == boost::asio::error::eof)<br>        <span class="hljs-keyword">break</span>; <span class="hljs-comment">// 对端关闭连接</span><br>      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (error)<br>        <span class="hljs-keyword">throw</span> boost::system::<span class="hljs-built_in">system_error</span>(error);<br><br>      std::cout.<span class="hljs-built_in">write</span>(buf.<span class="hljs-built_in">data</span>(), len);<br>    &#125;<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-8：用-strand-保证多线程下的线程安全（Timer-5）"><a href="#示例-8：用-strand-保证多线程下的线程安全（Timer-5）" class="headerlink" title="示例 8：用 strand 保证多线程下的线程安全（Timer.5）"></a>示例 8：用 strand 保证多线程下的线程安全（Timer.5）</h3><p>出处：<code>doc/html/boost_asio/tutorial/tuttimer5.html</code></p>
+<p>编译：<code>g++ -std=c++17 -O2 strand_timer.cpp -o strand_timer -pthread</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// strand_timer.cpp —— 出处：boost_asio/tutorial/tuttimer5.html</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;functional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">printer</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">printer</span>(boost::asio::io_context&amp; io)<br>    : <span class="hljs-built_in">strand_</span>(boost::asio::<span class="hljs-built_in">make_strand</span>(io)),<br>      <span class="hljs-built_in">timer1_</span>(io, boost::asio::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">1</span>)),<br>      <span class="hljs-built_in">timer2_</span>(io, boost::asio::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">1</span>)),<br>      <span class="hljs-built_in">count_</span>(<span class="hljs-number">0</span>)<br>  &#123;<br>    <span class="hljs-comment">// 把 handler 绑定到同一个 strand：它们不可能并发执行</span><br>    timer1_.<span class="hljs-built_in">async_wait</span>(boost::asio::<span class="hljs-built_in">bind_executor</span>(strand_,<br>          std::<span class="hljs-built_in">bind</span>(&amp;printer::print1, <span class="hljs-keyword">this</span>)));<br>    timer2_.<span class="hljs-built_in">async_wait</span>(boost::asio::<span class="hljs-built_in">bind_executor</span>(strand_,<br>          std::<span class="hljs-built_in">bind</span>(&amp;printer::print2, <span class="hljs-keyword">this</span>)));<br>  &#125;<br><br>  ~<span class="hljs-built_in">printer</span>()<br>  &#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Final count is &quot;</span> &lt;&lt; count_ &lt;&lt; std::endl;<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">print1</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-keyword">if</span> (count_ &lt; <span class="hljs-number">10</span>)<br>    &#123;<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;Timer 1: &quot;</span> &lt;&lt; count_ &lt;&lt; std::endl;<br>      ++count_;<br>      timer1_.<span class="hljs-built_in">expires_at</span>(timer1_.<span class="hljs-built_in">expiry</span>() + boost::asio::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">1</span>));<br>      timer1_.<span class="hljs-built_in">async_wait</span>(boost::asio::<span class="hljs-built_in">bind_executor</span>(strand_,<br>            std::<span class="hljs-built_in">bind</span>(&amp;printer::print1, <span class="hljs-keyword">this</span>)));<br>    &#125;<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">print2</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-keyword">if</span> (count_ &lt; <span class="hljs-number">10</span>)<br>    &#123;<br>      std::cout &lt;&lt; <span class="hljs-string">&quot;Timer 2: &quot;</span> &lt;&lt; count_ &lt;&lt; std::endl;<br>      ++count_;<br>      timer2_.<span class="hljs-built_in">expires_at</span>(timer2_.<span class="hljs-built_in">expiry</span>() + boost::asio::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">1</span>));<br>      timer2_.<span class="hljs-built_in">async_wait</span>(boost::asio::<span class="hljs-built_in">bind_executor</span>(strand_,<br>            std::<span class="hljs-built_in">bind</span>(&amp;printer::print2, <span class="hljs-keyword">this</span>)));<br>    &#125;<br>  &#125;<br><br><span class="hljs-keyword">private</span>:<br>  boost::asio::strand&lt;boost::asio::io_context::executor_type&gt; strand_;<br>  boost::asio::steady_timer timer1_;<br>  boost::asio::steady_timer timer2_;<br>  <span class="hljs-type">int</span> count_;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  boost::asio::io_context io;<br>  <span class="hljs-function">printer <span class="hljs-title">p</span><span class="hljs-params">(io)</span></span>;<br><br>  <span class="hljs-comment">// 两个线程同时调用 run()：handler 可能并发，靠 strand 串行化</span><br>  <span class="hljs-function">std::thread <span class="hljs-title">t</span><span class="hljs-params">([&amp;]&#123; io.run(); &#125;)</span></span>;<br>  io.<span class="hljs-built_in">run</span>();<br>  t.<span class="hljs-built_in">join</span>();<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-9：超时控制（steady-timer-与-socket-竞争）"><a href="#示例-9：超时控制（steady-timer-与-socket-竞争）" class="headerlink" title="示例 9：超时控制（steady_timer 与 socket 竞争）"></a>示例 9：超时控制（<code>steady_timer</code> 与 socket 竞争）</h3><p>思路与官方 <code>timeouts</code> 系列示例一致：用 <code>async_wait</code> 触发「取消读操作」，<br>使读 handler 收到 <code>operation_aborted</code>，从而判定超时。</p>
+<p>编译：<code>g++ -std=c++17 -O2 timeout_server.cpp -o timeout_server -pthread</code><br>运行：<code>./timeout_server 12345</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// timeout_server.cpp —— 思路参考 boost_asio/example/cpp11/timeouts/ 与 overview/timers.html</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;memory&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;utility&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::tcp;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">session</span> : <span class="hljs-keyword">public</span> std::enable_shared_from_this&lt;session&gt;<br>&#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">session</span>(tcp::socket socket)<br>    : <span class="hljs-built_in">socket_</span>(std::<span class="hljs-built_in">move</span>(socket)),<br>      <span class="hljs-built_in">timer_</span>(socket_.<span class="hljs-built_in">get_executor</span>())<br>  &#123;<br>    <span class="hljs-comment">// 初始把定时器设到“极远”，相当于不超时</span><br>    timer_.<span class="hljs-built_in">expires_at</span>(boost::asio::steady_timer::time_point::<span class="hljs-built_in">max</span>());<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">start</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-keyword">auto</span> self = <span class="hljs-built_in">shared_from_this</span>();<br>    <span class="hljs-comment">// 定时器到期即关闭 socket，从而取消挂起的读操作</span><br>    timer_.<span class="hljs-built_in">async_wait</span>([self](boost::system::error_code ec)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!ec)<br>            self-&gt;socket_.<span class="hljs-built_in">close</span>();<br>        &#125;);<br>    <span class="hljs-built_in">do_read</span>();<br>  &#125;<br><br><span class="hljs-keyword">private</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_read</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-keyword">auto</span> self = <span class="hljs-built_in">shared_from_this</span>();<br>    socket_.<span class="hljs-built_in">async_read_some</span>(boost::asio::<span class="hljs-built_in">buffer</span>(data_, max_length),<br>        [<span class="hljs-keyword">this</span>, self](boost::system::error_code ec, std::<span class="hljs-type">size_t</span> length)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (ec == boost::asio::error::operation_aborted)<br>          &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;read timed out, closing session\n&quot;</span>;<br>            <span class="hljs-keyword">return</span>;<br>          &#125;<br>          <span class="hljs-keyword">if</span> (!ec)<br>          &#123;<br>            <span class="hljs-comment">// 每成功读一次，就重置超时时间（5 秒无数据则超时）</span><br>            timer_.<span class="hljs-built_in">expires_after</span>(boost::asio::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">5</span>));<br>            boost::asio::<span class="hljs-built_in">async_write</span>(socket_, boost::asio::<span class="hljs-built_in">buffer</span>(data_, length),<br>                [<span class="hljs-keyword">this</span>, self](boost::system::error_code, std::<span class="hljs-type">size_t</span>)<br>                &#123;<br>                  <span class="hljs-built_in">do_read</span>();<br>                &#125;);<br>          &#125;<br>        &#125;);<br>  &#125;<br><br>  tcp::socket socket_;<br>  boost::asio::steady_timer timer_;<br>  <span class="hljs-keyword">enum</span> &#123; max_length = <span class="hljs-number">1024</span> &#125;;<br>  <span class="hljs-type">char</span> data_[max_length];<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">server</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">server</span>(boost::asio::io_context&amp; io_context, <span class="hljs-type">short</span> port)<br>    : <span class="hljs-built_in">acceptor_</span>(io_context, tcp::<span class="hljs-built_in">endpoint</span>(tcp::<span class="hljs-built_in">v4</span>(), port))<br>  &#123;<br>    <span class="hljs-built_in">do_accept</span>();<br>  &#125;<br><br><span class="hljs-keyword">private</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">do_accept</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    acceptor_.<span class="hljs-built_in">async_accept</span>(<br>        [<span class="hljs-keyword">this</span>](boost::system::error_code ec, tcp::socket socket)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!ec)<br>            std::<span class="hljs-built_in">make_shared</span>&lt;session&gt;(std::<span class="hljs-built_in">move</span>(socket))-&gt;<span class="hljs-built_in">start</span>();<br>          <span class="hljs-built_in">do_accept</span>();<br>        &#125;);<br>  &#125;<br><br>  tcp::acceptor acceptor_;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)<br>    &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: timeout_server &lt;port&gt;\n&quot;</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    boost::asio::io_context io_context;<br>    <span class="hljs-function">server <span class="hljs-title">s</span><span class="hljs-params">(io_context, std::atoi(argv[<span class="hljs-number">1</span>]))</span></span>;<br>    io_context.<span class="hljs-built_in">run</span>();<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-10：C-20-协程-echo-服务端（co-spawn-awaitable）"><a href="#示例-10：C-20-协程-echo-服务端（co-spawn-awaitable）" class="headerlink" title="示例 10：C++20 协程 echo 服务端（co_spawn + awaitable）"></a>示例 10：C++20 协程 echo 服务端（<code>co_spawn</code> + <code>awaitable</code>）</h3><p>出处：<code>doc/html/boost_asio/example/cpp17/coroutines_ts/echo_server.cpp</code></p>
+<p>编译（需要 C++20）：<br><code>g++ -std=c++20 -O2 -fcoroutines coro_echo_server.cpp -o coro_echo_server -pthread</code><br>（Clang 需 <code>-fcoroutines-ts</code> 或较新版本；MSVC 用 <code>/std:c++20</code>）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// coro_echo_server.cpp —— 出处：boost_asio/example/cpp17/coroutines_ts/echo_server.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/ip/tcp.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/signal_set.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/write.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdio&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::tcp;<br><span class="hljs-keyword">using</span> boost::asio::awaitable;<br><span class="hljs-keyword">using</span> boost::asio::co_spawn;<br><span class="hljs-keyword">using</span> boost::asio::detached;<br><span class="hljs-keyword">using</span> boost::asio::use_awaitable;<br><span class="hljs-keyword">namespace</span> this_coro = boost::asio::this_coro;<br><br><span class="hljs-function">awaitable&lt;<span class="hljs-type">void</span>&gt; <span class="hljs-title">echo</span><span class="hljs-params">(tcp::socket socket)</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-type">char</span> data[<span class="hljs-number">1024</span>];<br>    <span class="hljs-keyword">for</span> (;;)<br>    &#123;<br>      std::<span class="hljs-type">size_t</span> n = <span class="hljs-keyword">co_await</span> socket.<span class="hljs-built_in">async_read_some</span>(<br>          boost::asio::<span class="hljs-built_in">buffer</span>(data), use_awaitable);<br>      <span class="hljs-function"><span class="hljs-keyword">co_await</span> <span class="hljs-title">async_write</span><span class="hljs-params">(socket, boost::asio::buffer(data, n), use_awaitable)</span></span>;<br>    &#125;<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;echo Exception: %s\n&quot;</span>, e.<span class="hljs-built_in">what</span>());<br>  &#125;<br>&#125;<br><br><span class="hljs-function">awaitable&lt;<span class="hljs-type">void</span>&gt; <span class="hljs-title">listener</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-comment">// 取当前协程关联的 executor（strand/io_context）</span><br>  <span class="hljs-keyword">auto</span> executor = <span class="hljs-keyword">co_await</span> this_coro::executor;<br>  <span class="hljs-function">tcp::acceptor <span class="hljs-title">acceptor</span><span class="hljs-params">(executor, &#123;tcp::v4(), <span class="hljs-number">55555</span>&#125;)</span></span>;<br>  <span class="hljs-keyword">for</span> (;;)<br>  &#123;<br>    tcp::socket socket = <span class="hljs-keyword">co_await</span> acceptor.<span class="hljs-built_in">async_accept</span>(use_awaitable);<br>    <span class="hljs-comment">// 每个连接启动一个新的协程；detached 表示忽略其最终结果</span><br>    <span class="hljs-built_in">co_spawn</span>(executor, <span class="hljs-built_in">echo</span>(std::<span class="hljs-built_in">move</span>(socket)), detached);<br>  &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    boost::<span class="hljs-function">asio::io_context <span class="hljs-title">io_context</span><span class="hljs-params">(<span class="hljs-number">1</span>)</span></span>;<br><br>    <span class="hljs-comment">// 优雅退出：收到信号后停止 io_context</span><br>    boost::<span class="hljs-function">asio::signal_set <span class="hljs-title">signals</span><span class="hljs-params">(io_context, SIGINT, SIGTERM)</span></span>;<br>    signals.<span class="hljs-built_in">async_wait</span>([&amp;](<span class="hljs-keyword">auto</span>, <span class="hljs-keyword">auto</span>)&#123; io_context.<span class="hljs-built_in">stop</span>(); &#125;);<br><br>    <span class="hljs-built_in">co_spawn</span>(io_context, <span class="hljs-built_in">listener</span>(), detached);<br><br>    io_context.<span class="hljs-built_in">run</span>();<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Exception: %s\n&quot;</span>, e.<span class="hljs-built_in">what</span>());<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-11：SSL-TLS-客户端"><a href="#示例-11：SSL-TLS-客户端" class="headerlink" title="示例 11：SSL&#x2F;TLS 客户端"></a>示例 11：SSL&#x2F;TLS 客户端</h3><p>出处：<code>doc/html/boost_asio/example/cpp11/ssl/client.cpp</code>（最小化改写）</p>
+<p>编译：<code>g++ -std=c++17 -O2 ssl_client.cpp -o ssl_client -lssl -lcrypto -pthread</code><br>运行：<code>./ssl_client www.example.com 443</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// ssl_client.cpp —— 出处：boost_asio/example/cpp11/ssl/client.cpp（最小化改写）</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstring&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;functional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/ssl.hpp&gt;</span></span><br><br><span class="hljs-keyword">using</span> boost::asio::ip::tcp;<br><span class="hljs-keyword">using</span> std::placeholders::_1;<br><span class="hljs-keyword">using</span> std::placeholders::_2;<br><br><span class="hljs-keyword">enum</span> &#123; max_length = <span class="hljs-number">1024</span> &#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">client</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">client</span>(boost::asio::io_context&amp; io_context,<br>      boost::asio::ssl::context&amp; context,<br>      <span class="hljs-type">const</span> tcp::resolver::results_type&amp; endpoints)<br>    : <span class="hljs-built_in">socket_</span>(io_context, context)<br>  &#123;<br>    socket_.<span class="hljs-built_in">set_verify_mode</span>(boost::asio::ssl::verify_peer);<br>    socket_.<span class="hljs-built_in">set_verify_callback</span>(<br>        std::<span class="hljs-built_in">bind</span>(&amp;client::verify_certificate, <span class="hljs-keyword">this</span>, _1, _2));<br><br>    <span class="hljs-built_in">connect</span>(endpoints);<br>  &#125;<br><br><span class="hljs-keyword">private</span>:<br>  <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">verify_certificate</span><span class="hljs-params">(<span class="hljs-type">bool</span> preverified, boost::asio::ssl::verify_context&amp; ctx)</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-comment">// 回调会为证书链中的每张证书调用一次</span><br>    <span class="hljs-type">char</span> subject_name[<span class="hljs-number">256</span>];<br>    <span class="hljs-keyword">auto</span> cert = <span class="hljs-built_in">X509_STORE_CTX_get_current_cert</span>(ctx.<span class="hljs-built_in">native_handle</span>());<br>    <span class="hljs-built_in">X509_NAME_oneline</span>(<span class="hljs-built_in">X509_get_subject_name</span>(cert), subject_name, <span class="hljs-number">256</span>);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Verifying &quot;</span> &lt;&lt; subject_name &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>    <span class="hljs-keyword">return</span> preverified;<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">connect</span><span class="hljs-params">(<span class="hljs-type">const</span> tcp::resolver::results_type&amp; endpoints)</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-comment">// 连接的是 SSL 流下面的 TCP 层</span><br>    boost::asio::<span class="hljs-built_in">async_connect</span>(socket_.<span class="hljs-built_in">lowest_layer</span>(), endpoints,<br>        [<span class="hljs-keyword">this</span>](<span class="hljs-type">const</span> boost::system::error_code&amp; error, <span class="hljs-type">const</span> tcp::endpoint&amp;)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!error)<br>            <span class="hljs-built_in">handshake</span>();<br>          <span class="hljs-keyword">else</span><br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Connect failed: &quot;</span> &lt;&lt; error.<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        &#125;);<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">handshake</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    <span class="hljs-comment">// 传输数据前必须先握手</span><br>    socket_.<span class="hljs-built_in">async_handshake</span>(boost::asio::ssl::stream_base::client,<br>        [<span class="hljs-keyword">this</span>](<span class="hljs-type">const</span> boost::system::error_code&amp; error)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!error)<br>            <span class="hljs-built_in">send_request</span>();<br>          <span class="hljs-keyword">else</span><br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Handshake failed: &quot;</span> &lt;&lt; error.<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        &#125;);<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">send_request</span><span class="hljs-params">()</span></span><br><span class="hljs-function">  </span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Enter message: &quot;</span>;<br>    std::cin.<span class="hljs-built_in">getline</span>(request_, max_length);<br>    <span class="hljs-type">size_t</span> request_length = std::<span class="hljs-built_in">strlen</span>(request_);<br><br>    boost::asio::<span class="hljs-built_in">async_write</span>(socket_,<br>        boost::asio::<span class="hljs-built_in">buffer</span>(request_, request_length),<br>        [<span class="hljs-keyword">this</span>](<span class="hljs-type">const</span> boost::system::error_code&amp; error, std::<span class="hljs-type">size_t</span> length)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!error)<br>            <span class="hljs-built_in">receive_response</span>(length);<br>          <span class="hljs-keyword">else</span><br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Write failed: &quot;</span> &lt;&lt; error.<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        &#125;);<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">receive_response</span><span class="hljs-params">(std::<span class="hljs-type">size_t</span> length)</span></span><br><span class="hljs-function">  </span>&#123;<br>    boost::asio::<span class="hljs-built_in">async_read</span>(socket_,<br>        boost::asio::<span class="hljs-built_in">buffer</span>(reply_, length),<br>        [<span class="hljs-keyword">this</span>](<span class="hljs-type">const</span> boost::system::error_code&amp; error, std::<span class="hljs-type">size_t</span> length)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!error)<br>          &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Reply: &quot;</span>;<br>            std::cout.<span class="hljs-built_in">write</span>(reply_, length);<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>          &#125;<br>          <span class="hljs-keyword">else</span><br>          &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;Read failed: &quot;</span> &lt;&lt; error.<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>          &#125;<br>        &#125;);<br>  &#125;<br><br>  boost::asio::ssl::stream&lt;tcp::socket&gt; socket_;<br>  <span class="hljs-type">char</span> request_[max_length];<br>  <span class="hljs-type">char</span> reply_[max_length];<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">3</span>)<br>    &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: client &lt;host&gt; &lt;port&gt;\n&quot;</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    boost::asio::io_context io_context;<br><br>    <span class="hljs-function">tcp::resolver <span class="hljs-title">resolver</span><span class="hljs-params">(io_context)</span></span>;<br>    <span class="hljs-keyword">auto</span> endpoints = resolver.<span class="hljs-built_in">resolve</span>(argv[<span class="hljs-number">1</span>], argv[<span class="hljs-number">2</span>]);<br><br>    boost::asio::<span class="hljs-function">ssl::context <span class="hljs-title">ctx</span><span class="hljs-params">(boost::asio::ssl::context::sslv23)</span></span>;<br>    ctx.<span class="hljs-built_in">load_verify_file</span>(<span class="hljs-string">&quot;ca.pem&quot;</span>);   <span class="hljs-comment">// 加载 CA 证书</span><br><br>    <span class="hljs-function">client <span class="hljs-title">c</span><span class="hljs-params">(io_context, ctx, endpoints)</span></span>;<br><br>    io_context.<span class="hljs-built_in">run</span>();<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-12：信号驱动的优雅退出-线程池"><a href="#示例-12：信号驱动的优雅退出-线程池" class="headerlink" title="示例 12：信号驱动的优雅退出 + 线程池"></a>示例 12：信号驱动的优雅退出 + 线程池</h3><p>出处：思路取自 <code>doc/html/boost_asio/example/cpp11/http/server/server.cpp</code>（<code>signal_set</code> 部分）</p>
+<p>编译：<code>g++ -std=c++17 -O2 signal_shutdown.cpp -o signal_shutdown -pthread</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// signal_shutdown.cpp —— 参考 boost_asio/example/cpp11/http/server/server.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;csignal&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/signal_set.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/thread_pool.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-keyword">try</span><br>  &#123;<br>    boost::asio::io_context io;<br><br>    <span class="hljs-comment">// 注册 SIGINT / SIGTERM，触发时停止事件循环</span><br>    boost::<span class="hljs-function">asio::signal_set <span class="hljs-title">signals</span><span class="hljs-params">(io, SIGINT, SIGTERM)</span></span>;<br>    signals.<span class="hljs-built_in">async_wait</span>(<br>        [&amp;](<span class="hljs-type">const</span> boost::system::error_code&amp; ec, <span class="hljs-type">int</span> signo)<br>        &#123;<br>          <span class="hljs-keyword">if</span> (!ec)<br>          &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;received signal &quot;</span> &lt;&lt; signo &lt;&lt; <span class="hljs-string">&quot;, shutting down\n&quot;</span>;<br>            io.<span class="hljs-built_in">stop</span>();<br>          &#125;<br>        &#125;);<br><br>    <span class="hljs-comment">// 提交一个普通任务到 io_context</span><br>    boost::asio::<span class="hljs-built_in">post</span>(io, []&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;task running on io_context\n&quot;</span>; &#125;);<br><br>    <span class="hljs-comment">// 用线程池并发跑事件循环</span><br>    std::vector&lt;std::thread&gt; pool;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">4</span>; ++i)<br>      pool.<span class="hljs-built_in">emplace_back</span>([&amp;]&#123; io.<span class="hljs-built_in">run</span>(); &#125;);<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; t : pool)<br>      t.<span class="hljs-built_in">join</span>();<br>  &#125;<br>  <span class="hljs-built_in">catch</span> (std::exception&amp; e)<br>  &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Exception: &quot;</span> &lt;&lt; e.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-13（附加）：thread-pool-提交计算任务"><a href="#示例-13（附加）：thread-pool-提交计算任务" class="headerlink" title="示例 13（附加）：thread_pool 提交计算任务"></a>示例 13（附加）：<code>thread_pool</code> 提交计算任务</h3><p>编译：<code>g++ -std=c++17 -O2 thread_pool_demo.cpp -o thread_pool_demo -pthread</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// thread_pool_demo.cpp —— 出处：boost_asio/overview/core/threads.html</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/post.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/thread_pool.hpp&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-comment">// 4 个线程的工作池</span><br>  boost::<span class="hljs-function">asio::thread_pool <span class="hljs-title">pool</span><span class="hljs-params">(<span class="hljs-number">4</span>)</span></span>;<br><br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">8</span>; ++i)<br>  &#123;<br>    boost::asio::<span class="hljs-built_in">post</span>(pool, [i]<br>        &#123;<br>          std::cout &lt;&lt; <span class="hljs-string">&quot;task &quot;</span> &lt;&lt; i &lt;&lt; <span class="hljs-string">&quot; on thread &quot;</span><br>                    &lt;&lt; std::this_thread::<span class="hljs-built_in">get_id</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        &#125;);<br>  &#125;<br><br>  pool.<span class="hljs-built_in">join</span>();   <span class="hljs-comment">// 阻塞直到所有任务完成并回收线程</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-常见问题与陷阱"><a href="#7-常见问题与陷阱" class="headerlink" title="7. 常见问题与陷阱"></a>7. 常见问题与陷阱</h2><ol>
+<li><p><strong>问题</strong>：<code>io_context.run()</code> 立刻返回，程序什么都没做就结束了。<br><strong>原因</strong>：调用 <code>run()</code> 时没有任何未完成的异步操作，<code>io_context</code> 无「工作」可做。<br><strong>解决</strong>：确保在 <code>run()</code> 之前已经发起了至少一个异步操作（如 <code>async_wait</code>&#x2F;<code>async_accept</code>）；<br>若必须先启动 <code>run()</code> 线程再添加工作，用 <code>auto work = boost::asio::make_work_guard(io);</code> 守住。</p>
+</li>
+<li><p><strong>问题</strong>：<code>run()</code> 一直不返回，程序退不出来。<br><strong>原因</strong>：仍有未完成操作或存在 work guard；或 <code>acceptor</code> 一直在等待新连接。<br><strong>解决</strong>：收到退出条件时调用 <code>io.stop()</code>（放弃剩余工作），<br>或先 <code>acceptor.close()</code> + 关闭所有 socket 取消未完成操作，<br>再 <code>work.reset()</code> 让 <code>run()</code> 自然结束。用 <code>stop()</code> 后若要再次运行，必须先 <code>io.restart()</code>。</p>
+</li>
+<li><p><strong>问题</strong>：异步操作回调时崩溃（野指针&#x2F;已析构对象）。<br><strong>原因</strong>：对象生命周期短于异步操作。典型写法：<br><code>void f(){ std::string msg = &quot;hi&quot;; async_write(sock, buffer(msg), h); }</code> —— <code>msg</code> 在函数返回即析构。<br><strong>解决</strong>：让被引用对象活到 handler 完成：使用 <code>std::enable_shared_from_this</code> +<br><code>auto self = shared_from_this();</code> 并在 lambda 中按值捕获 <code>self</code>；<br>或把数据放进成员变量 &#x2F; <code>std::shared_ptr&lt;std::string&gt;</code> 并在 handler 中按值捕获。</p>
+</li>
+<li><p><strong>问题</strong>：handler 执行很慢时整个服务「卡住」。<br><strong>原因</strong>：handler 在 <code>run()</code> 线程中执行，阻塞式操作（<code>sleep</code>、同步 DNS、同步文件 I&#x2F;O、<br>长时间计算、同步 <code>read</code>&#x2F;<code>write</code>）会阻塞事件循环，导致其它连接得不到处理。<br><strong>解决</strong>：handler 必须尽快返回。耗时工作交给 <code>boost::asio::thread_pool</code> 或<br>独立线程池执行，完成后用 <code>boost::asio::post(io, ...)</code> 把结果投回事件循环。</p>
+</li>
+<li><p><strong>问题</strong>：多线程下 <code>io_context.run()</code> 导致数据竞争（如共享的 <code>count_</code>、<code>std::cout</code>）。<br><strong>原因</strong>：多个线程调用 <code>run()</code> 时，handler 可能真正并发执行。<br><strong>解决</strong>：用 <code>strand</code>：<code>auto strand = boost::asio::make_strand(io);</code>，<br>把 handler 通过 <code>boost::asio::bind_executor(strand, handler)</code> 绑定；<br>或直接在创建 I&#x2F;O 对象时使用 strand executor。仅使用单线程 <code>run()</code> 时是隐式 strand，无需加锁。</p>
+</li>
+<li><p><strong>问题</strong>：同一个 socket 上同时发起两个异步读（或两个异步写），行为异常。<br><strong>原因</strong>：流式 socket 上同一时刻只允许一个未完成的异步读和一个未完成的异步写。<br><strong>解决</strong>：用「一次读&#x2F;写完成后在 handler 中再发起下一次」的状态机模式（见示例 5 的<br><code>do_read</code>&#x2F;<code>do_write</code>）；需要并发读写不同数据时，用队列串行化写操作。</p>
+</li>
+<li><p><strong>问题</strong>：<code>async_read_some</code> 只读到一部分数据就返回了。<br><strong>原因</strong>：这是「短读」，流式 I&#x2F;O 的正常行为，<code>read_some</code> 不保证读满。<br><strong>解决</strong>：需要读满固定字节数时使用组合操作 <code>boost::asio::async_read(sock, buffer(data, n), h)</code><br>或 <code>boost::asio::read(sock, buffer(data, n))</code>；需要按行读取时使用<br><code>async_read_until(sock, sb, &quot;\r\n&quot;, h)</code>。</p>
+</li>
+<li><p><strong>问题</strong>：<code>async_read_until</code> 之后的数据「丢了」。<br><strong>原因</strong>：<code>read_until</code> 返回的字节数包含分隔符，<strong>分隔符之后可能还有已读入的多余数据</strong>。<br><strong>解决</strong>：多余数据仍留在 <code>streambuf</code> 中，不要清空它；用 <code>streambuf</code> 的<br><code>data()</code>&#x2F;<code>consume(n)</code> 精确消费已处理的部分，把剩余数据留给下一次读取。</p>
+</li>
+<li><p><strong>问题</strong>：定时器 handler 被调用时 <code>ec == boost::asio::error::operation_aborted</code>。<br><strong>原因</strong>：<code>expires_after()</code>&#x2F;<code>expires_at()</code> 会取消正在进行的等待，或调用了 <code>cancel()</code>。<br><strong>解决</strong>：这是预期行为。检查 <code>expires_after()</code> 的返回值（被取消的等待数）来判断<br>「设置新超时」是否成功；在 handler 中显式忽略 <code>operation_aborted</code>。</p>
+</li>
+<li><p><strong>问题</strong>：服务端重启时报 <code>Address already in use</code>。<br><strong>原因</strong>：端口处于 <code>TIME_WAIT</code> 状态且未开启地址复用。<br><strong>解决</strong>：<code>acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));</code><br>（用便捷构造 <code>tcp::acceptor a(io, endpoint)</code> 时默认已开启）。</p>
+</li>
+<li><p><strong>问题</strong>：<code>boost::asio::buffer(msg)</code> 在异步操作期间悬空，程序随机崩溃或断言失败。<br><strong>原因</strong>：<code>buffer()</code> 只创建视图，不复制数据；底层内存必须存活到 handler 调用。<br><strong>解决</strong>：把数据放进 <code>shared_ptr</code> 或成员变量；开启缓冲区调试<br>（MSVC 默认，GCC 定义 <code>_GLIBCXX_DEBUG</code>）可让越界&#x2F;失效在调试版中触发断言。</p>
+</li>
+<li><p><strong>问题</strong>：<code>thread_pool</code> 析构时程序 <code>std::terminate</code>。<br><strong>原因</strong>：<code>thread_pool</code> 析构要求所有任务已完成，未调用 <code>join()</code>（或 <code>stop()</code>）。<br><strong>解决</strong>：作用域结束前显式调用 <code>pool.join();</code>（等待完成）或 <code>pool.stop();</code>（放弃剩余任务）。</p>
+</li>
+<li><p><strong>问题</strong>：协程里 <code>co_await</code> 直接抛异常，导致协程终止。<br><strong>原因</strong>：默认 <code>use_awaitable</code> 会把 <code>error_code</code> 转成 <code>system_error</code> 异常；<br><code>co_spawn</code> 的 handler 收到 <code>std::exception_ptr</code>，若用 <code>detached</code> 则异常被忽略。<br><strong>解决</strong>：在协程内部 <code>try/catch</code>；或使用 <code>as_tuple</code> &#x2F; <code>redirect_error</code><br>显式接收 <code>error_code</code>（见官方 <code>overview/composition/cpp20_coroutines.html</code>）。</p>
+</li>
+<li><p><strong>问题</strong>：<code>boost::asio::ip::tcp::resolver::resolve</code> 阻塞很久。<br><strong>原因</strong>：<code>resolve</code> 是同步调用，可能触发阻塞式 DNS 查询。<br><strong>解决</strong>：在服务器&#x2F;高并发场景使用 <code>async_resolve()</code>；或把同步解析放到独立线程执行。</p>
+</li>
+<li><p><strong>问题</strong>：SSL 流上的异步操作在多线程下数据错乱。<br><strong>原因</strong>：<code>ssl::stream</code> 自身不做任何加锁。<br><strong>解决</strong>：所有 SSL 异步操作必须在隐式或显式 <code>strand</code> 上执行<br>（见官方 <code>overview/ssl.html</code> 的 “SSL and Threads”）。</p>
+</li>
+</ol>
+<hr>
+<h2 id="8-参考资料"><a href="#8-参考资料" class="headerlink" title="8. 参考资料"></a>8. 参考资料</h2><h3 id="官方文档（章节级）"><a href="#官方文档（章节级）" class="headerlink" title="官方文档（章节级）"></a>官方文档（章节级）</h3><ul>
+<li>Boost.Asio 总目录：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html</a></li>
+<li>Overview（总览）：<ul>
+<li>基础结构：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/basics.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/basics.html</a></li>
+<li>Proactor 异步模型：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/async.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/async.html</a></li>
+<li>线程与 Asio：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/threads.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/threads.html</a></li>
+<li>Strands：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/strands.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/strands.html</a></li>
+<li>Buffers：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/buffers.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/buffers.html</a></li>
+<li>Streams &#x2F; 短读短写：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/streams.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/streams.html</a></li>
+<li>基于行的操作：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/line_based.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/core/line_based.html</a></li>
+<li>定时器：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/timers.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/timers.html</a></li>
+<li>信号处理：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/signals.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/signals.html</a></li>
+<li>SSL：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/ssl.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/ssl.html</a></li>
+<li>C++20 协程：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/composition/cpp20_coroutines.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/composition/cpp20_coroutines.html</a></li>
+</ul>
+</li>
+<li>Tutorial（教程）：<ul>
+<li>教程索引：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/tutorial.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/tutorial.html</a></li>
+<li>Timer.1 ~ Timer.5：<code>tutorial/tuttimer1.html</code> … <code>tutorial/tuttimer5.html</code></li>
+<li>Daytime.1 ~ Daytime.7：<code>tutorial/tutdaytime1.html</code> … <code>tutorial/tutdaytime7.html</code></li>
+</ul>
+</li>
+<li>Reference（参考手册）：<ul>
+<li><code>io_context</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/io_context.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/io_context.html</a></li>
+<li><code>basic_waitable_timer</code> &#x2F; <code>steady_timer</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/basic_waitable_timer.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/basic_waitable_timer.html</a></li>
+<li><code>basic_stream_socket</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/basic_stream_socket.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/basic_stream_socket.html</a></li>
+<li><code>basic_socket_acceptor</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/basic_socket_acceptor.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/basic_socket_acceptor.html</a></li>
+<li><code>ip::basic_resolver</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/ip__basic_resolver.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/ip__basic_resolver.html</a></li>
+<li><code>strand</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/strand.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/strand.html</a></li>
+<li><code>buffer</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/buffer.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/buffer.html</a></li>
+<li><code>co_spawn</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/co_spawn.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/co_spawn.html</a></li>
+<li><code>thread_pool</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/thread_pool.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/thread_pool.html</a></li>
+<li><code>signal_set</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/signal_set.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/signal_set.html</a></li>
+<li><code>error_code</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/error_code.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/reference/error_code.html</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="官方-examples"><a href="#官方-examples" class="headerlink" title="官方 examples"></a>官方 examples</h3><ul>
+<li>C++11 示例总览：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/examples/cpp11_examples.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio/examples/cpp11_examples.html</a></li>
+<li>TCP echo（同步服务端&#x2F;客户端、异步服务端）：<ul>
+<li><code>example/cpp11/echo/blocking_tcp_echo_server.cpp</code></li>
+<li><code>example/cpp11/echo/blocking_tcp_echo_client.cpp</code></li>
+<li><code>example/cpp11/echo/async_tcp_echo_server.cpp</code></li>
+</ul>
+</li>
+<li>UDP echo（同步&#x2F;异步）：<ul>
+<li><code>example/cpp11/echo/blocking_udp_echo_server.cpp</code></li>
+<li><code>example/cpp11/echo/blocking_udp_echo_client.cpp</code></li>
+<li><code>example/cpp11/echo/async_udp_echo_server.cpp</code></li>
+</ul>
+</li>
+<li>定时器：<code>example/cpp11/timers/time_t_timer.cpp</code></li>
+<li>Chat（多线程 + 消息队列）：<code>example/cpp11/chat/chat_client.cpp</code></li>
+<li>HTTP server（<code>signal_set</code> + 连接管理）：<code>example/cpp11/http/server/*.cpp</code></li>
+<li>SSL：<code>example/cpp11/ssl/client.cpp</code>、<code>example/cpp11/ssl/server.cpp</code></li>
+<li>C++20 协程：<code>example/cpp17/coroutines_ts/echo_server.cpp</code></li>
+<li>完整源码包也可直接下载 Boost 发行版，位于 <code>boost/asio/example/</code> 与 <code>libs/asio/example/</code>。</li>
+</ul>
+<h3 id="其他可靠资料"><a href="#其他可靠资料" class="headerlink" title="其他可靠资料"></a>其他可靠资料</h3><ul>
+<li>Boost.Asio 中文镜像：<a target="_blank" rel="noopener" href="https://boost.ac.cn/doc/libs/latest/doc/html/boost_asio.html">https://boost.ac.cn/doc/libs/latest/doc/html/boost_asio.html</a></li>
+<li>C++ 标准提案&#x2F;参考实现 <code>boostorg/asio</code>（GitHub）：<a target="_blank" rel="noopener" href="https://github.com/boostorg/asio">https://github.com/boostorg/asio</a></li>
+<li>Christopher M. Kohlhoff, <em>Boost.Asio C++ Network Programming</em>（Packt）</li>
+<li>D. Schmidt et al., <em>Pattern-Oriented Software Architecture, Volume 2</em>（Proactor 模式的出处）</li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/boost-asio/" class="tag-item">
+                    boost.asio
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/18/01-asio/">https://narciostyx.github.io/2025/11/18/01-asio/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++多线程编程</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/18/04-redis/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">boost.redis</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>

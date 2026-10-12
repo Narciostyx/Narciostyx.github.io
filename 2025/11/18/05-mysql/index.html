@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | boost.mysql</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            <aside class="toc-container">
+    <!-- sticky toc -->
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Boost-MySQL-%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3"><span class="toc-number">1.</span> <span class="toc-text">Boost.MySQL 使用文档</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.</span> <span class="toc-text">1. 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91"><span class="toc-number">1.3.</span> <span class="toc-text">2. 依赖与编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%94%A8-Docker-%E8%B5%B7%E4%B8%80%E4%B8%AA%E6%B5%8B%E8%AF%95%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">1.3.1.</span> <span class="toc-text">2.1 用 Docker 起一个测试服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-CMake%EF%BC%88%E5%AE%98%E6%96%B9%E6%8E%A8%E8%8D%90%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.2 CMake（官方推荐方式）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-g-clang-%E6%9C%80%E5%B0%8F%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.3.</span> <span class="toc-text">2.3 g++ &#x2F; clang++ 最小命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-MSVC-%E6%9C%80%E5%B0%8F%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.4.</span> <span class="toc-text">2.4 MSVC 最小命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E5%88%86%E7%A6%BB%E7%BC%96%E8%AF%91%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%8C%E5%8A%A0%E5%BF%AB%E6%9E%84%E5%BB%BA%EF%BC%89"><span class="toc-number">1.3.5.</span> <span class="toc-text">2.5 分离编译模式（可选，加快构建）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.4.</span> <span class="toc-text">3. 核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87-io-context-%E9%A9%B1%E5%8A%A8%E4%B8%80%E5%88%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">3.1 执行上下文 io_context 驱动一切</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E8%BF%9E%E6%8E%A5%EF%BC%88connection%EF%BC%89%E4%B8%8E%E6%8F%A1%E6%89%8B"><span class="toc-number">1.4.2.</span> <span class="toc-text">3.2 连接（connection）与握手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%9F%A5%E8%AF%A2%E4%B8%8E%E9%A2%84%E5%A4%84%E7%90%86%E8%AF%AD%E5%8F%A5%EF%BC%9B%E6%96%87%E6%9C%AC%E5%8D%8F%E8%AE%AE-vs-%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.3 查询与预处理语句；文本协议 vs 二进制协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E7%BB%93%E6%9E%9C%E9%9B%86%E4%B8%8E%E5%85%83%E6%95%B0%E6%8D%AE"><span class="toc-number">1.4.4.</span> <span class="toc-text">3.4 结果集与元数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8D%8F%E7%A8%8B"><span class="toc-number">1.4.5.</span> <span class="toc-text">3.5 异步模型与协程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-SSL-TLS"><span class="toc-number">1.4.6.</span> <span class="toc-text">3.6 SSL&#x2F;TLS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%EF%BC%88error-code-diagnostics%EF%BC%89"><span class="toc-number">1.4.7.</span> <span class="toc-text">3.7 错误处理（error_code + diagnostics）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-%E8%BF%9E%E6%8E%A5%E6%B1%A0"><span class="toc-number">1.4.8.</span> <span class="toc-text">3.8 连接池</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98"><span class="toc-number">1.5.</span> <span class="toc-text">4. 常用类与成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%B1%BB%E6%80%BB%E8%A7%88"><span class="toc-number">1.5.1.</span> <span class="toc-text">4.1 类总览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%80%90%E4%B8%AA%E7%B1%BB%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.5.2.</span> <span class="toc-text">4.2 逐个类详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-mysql-any-connection"><span class="toc-number">1.5.2.1.</span> <span class="toc-text">boost::mysql::any_connection</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-mysql-connection%EF%BC%88%E6%97%A7-API%EF%BC%8C1-82-1-84%EF%BC%89"><span class="toc-number">1.5.2.2.</span> <span class="toc-text">boost::mysql::connection&lt;Stream&gt;（旧 API，1.82~1.84）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-mysql-connect-params-handshake-params"><span class="toc-number">1.5.2.3.</span> <span class="toc-text">boost::mysql::connect_params &#x2F; handshake_params</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boost-mysql-query-with-params-statement"><span class="toc-number">1.5.2.4.</span> <span class="toc-text">boost::mysql::query &#x2F; with_params &#x2F; statement</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%E9%9B%86%EF%BC%9Aresults-row-row-view-rows-view-resultset-view"><span class="toc-number">1.5.2.5.</span> <span class="toc-text">结果集：results &#x2F; row &#x2F; row_view &#x2F; rows_view &#x2F; resultset_view</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%97%E6%AE%B5%E4%B8%8E%E5%85%83%E6%95%B0%E6%8D%AE%EF%BC%9Afield-field-view-field-kind-column-type-metadata"><span class="toc-number">1.5.2.6.</span> <span class="toc-text">字段与元数据：field &#x2F; field_view &#x2F; field_kind &#x2F; column_type &#x2F; metadata</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%EF%BC%9Adate-datetime-time-days"><span class="toc-number">1.5.2.7.</span> <span class="toc-text">类型：date &#x2F; datetime &#x2F; time &#x2F; days</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%EF%BC%9Aerror-code-client-errc-diagnostics-error-with-diagnostics-with-diagnostics"><span class="toc-number">1.5.2.8.</span> <span class="toc-text">错误：error_code &#x2F; client_errc &#x2F; diagnostics &#x2F; error_with_diagnostics &#x2F; with_diagnostics</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SSL%EF%BC%9Assl-mode-%E4%B8%8E-asio-ssl-context"><span class="toc-number">1.5.2.9.</span> <span class="toc-text">SSL：ssl_mode 与 asio::ssl::context</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%B1%A0%EF%BC%9Aconnection-pool-pool-params-pooled-connection-pool-charset-strategy"><span class="toc-number">1.5.2.10.</span> <span class="toc-text">连接池：connection_pool &#x2F; pool_params &#x2F; pooled_connection &#x2F; pool_charset_strategy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E5%AE%8C%E6%88%90%E4%BB%A4%E7%89%8C%EF%BC%9Ause-awaitable-deferred-with-diagnostics"><span class="toc-number">1.5.2.11.</span> <span class="toc-text">异步完成令牌：use_awaitable &#x2F; deferred &#x2F; with_diagnostics</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.</span> <span class="toc-text">5. 使用流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%90%8C%E6%AD%A5%EF%BC%9A%E8%BF%9E%E6%8E%A5-%E2%86%92-%E6%9F%A5%E8%AF%A2-%E2%86%92-%E5%85%B3%E9%97%AD"><span class="toc-number">1.6.1.</span> <span class="toc-text">5.1 同步：连接 → 查询 → 关闭</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%BC%82%E6%AD%A5%EF%BC%88C-20-%E5%8D%8F%E7%A8%8B%EF%BC%89%EF%BC%9A%E8%BF%9E%E6%8E%A5-%E2%86%92-%E6%9F%A5%E8%AF%A2-%E2%86%92-%E5%85%B3%E9%97%AD"><span class="toc-number">1.6.2.</span> <span class="toc-text">5.2 异步（C++20 协程）：连接 → 查询 → 关闭</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E9%A2%84%E5%A4%84%E7%90%86%E8%AF%AD%E5%8F%A5%EF%BC%9Aprepare-%E2%86%92-execute-%E2%86%92-%E8%AF%BB%E7%BB%93%E6%9E%9C"><span class="toc-number">1.6.3.</span> <span class="toc-text">5.3 预处理语句：prepare → execute → 读结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E8%BF%9E%E6%8E%A5%E6%B1%A0%EF%BC%9Arun-%E2%86%92-get-connection-%E2%86%92-%E4%BD%BF%E7%94%A8-%E2%86%92-%E5%BD%92%E8%BF%98"><span class="toc-number">1.6.4.</span> <span class="toc-text">5.4 连接池：run → get_connection → 使用 → 归还</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E5%A4%9A%E5%87%BD%E6%95%B0%E6%93%8D%E4%BD%9C%EF%BC%88%E5%88%86%E6%89%B9%E8%AF%BB%E5%A4%A7%E7%BB%93%E6%9E%9C%E9%9B%86%EF%BC%89"><span class="toc-number">1.6.5.</span> <span class="toc-text">5.5 多函数操作（分批读大结果集）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.7.</span> <span class="toc-text">6. 代码示例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1%EF%BC%9A%E5%90%8C%E6%AD%A5%E6%9C%80%E5%B0%8F%E7%A4%BA%E4%BE%8B%EF%BC%88%E8%BF%9E%E6%8E%A5-SELECT-Hello-MySQL-%EF%BC%89"><span class="toc-number">1.7.1.</span> <span class="toc-text">示例 1：同步最小示例（连接 + SELECT &#39;Hello MySQL&#39;）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2%EF%BC%9A%E5%90%8C%E6%AD%A5%E6%9F%A5%E8%AF%A2%E5%A4%9A%E8%A1%8C%E7%BB%93%E6%9E%9C%E5%B9%B6%E9%81%8D%E5%8E%86-results-rows-row"><span class="toc-number">1.7.2.</span> <span class="toc-text">示例 2：同步查询多行结果并遍历 results.rows() &#x2F; row</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-3%EF%BC%9A%E9%A2%84%E5%A4%84%E7%90%86%E8%AF%AD%E5%8F%A5-%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="toc-number">1.7.3.</span> <span class="toc-text">示例 3：预处理语句 + 参数绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-4%EF%BC%9AC-20-%E5%8D%8F%E7%A8%8B%E5%BC%82%E6%AD%A5%EF%BC%88co-await-conn-async-execute-with-params%EF%BC%89"><span class="toc-number">1.7.4.</span> <span class="toc-text">示例 4：C++20 协程异步（co_await conn-&gt;async_execute(...) + with_params）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-5%EF%BC%9A%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%EF%BC%88error-code-diagnostics%EF%BC%8C%E5%90%AB%E8%87%B4%E5%91%BD%E9%94%99%E8%AF%AF%E5%88%A4%E6%96%AD%EF%BC%89"><span class="toc-number">1.7.5.</span> <span class="toc-text">示例 5：错误处理（error_code + diagnostics，含致命错误判断）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-6%EF%BC%9ASSL-%E8%BF%9E%E6%8E%A5%EF%BC%88ssl-context-%E8%AF%81%E4%B9%A6%E6%A0%A1%E9%AA%8C%EF%BC%89"><span class="toc-number">1.7.6.</span> <span class="toc-text">示例 6：SSL 连接（ssl::context + 证书校验）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-7%EF%BC%9A%E8%BF%9E%E6%8E%A5%E6%B1%A0%EF%BC%88connection-pool-pooled-connection%EF%BC%8CC-20%EF%BC%89"><span class="toc-number">1.7.7.</span> <span class="toc-text">示例 7：连接池（connection_pool + pooled_connection，C++20）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-8%EF%BC%9A%E6%97%A7-API%EF%BC%88tcp-ssl-connection%EF%BC%8CBoost-1-82-1-84%EF%BC%89"><span class="toc-number">1.7.8.</span> <span class="toc-text">示例 8：旧 API（tcp_ssl_connection，Boost 1.82 ~ 1.84）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-9%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89%EF%BC%9A%E5%88%86%E6%89%B9%E8%AF%BB%E8%A1%8C%EF%BC%88%E5%A4%9A%E5%87%BD%E6%95%B0%E6%93%8D%E4%BD%9C%EF%BC%89-%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="toc-number">1.7.9.</span> <span class="toc-text">示例 9（可选）：分批读行（多函数操作）+ 流水线</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1"><span class="toc-number">1.8.</span> <span class="toc-text">7. 常见问题与陷阱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.9.</span> <span class="toc-text">8. 参考资料</span></a></li></ol></li></ol>
+</aside>
+
+<article class="markdown-container">
+    <section>
+        <h1>boost.mysql</h1>
+    </section>
+    <section class="article">
+        <p>Boost.MYSQL MYSQL库的核心概念与基本使用方法</p>
+<span id="more"></span>
+<h1 id="Boost-MySQL-使用文档"><a href="#Boost-MySQL-使用文档" class="headerlink" title="Boost.MySQL 使用文档"></a>Boost.MySQL 使用文档</h1><blockquote>
+<p>本文基于 Boost 官方文档（Boost 1.82+ &#x2F; 最新版）与官方 examples 整理。<br>官方文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/index.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/index.html</a><br>适用标准：C++17（协程示例需要 C++20，会单独标注）<br>编译示例：g++ &#x2F; clang++ &#x2F; MSVC 均可，链接库要求见「依赖与编译」。</p>
+</blockquote>
+<hr>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#1-%E6%A6%82%E8%BF%B0">概述</a></li>
+<li><a href="#2-%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91">依赖与编译</a></li>
+<li><a href="#3-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5">核心概念</a></li>
+<li><a href="#4-%E5%B8%B8%E7%94%A8%E7%B1%BB%E4%B8%8E%E6%88%90%E5%91%98">常用类与成员</a></li>
+<li><a href="#5-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B">使用流程</a></li>
+<li><a href="#6-%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B">代码示例</a></li>
+<li><a href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E9%99%B7%E9%98%B1">常见问题与陷阱</a></li>
+<li><a href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a></li>
+</ol>
+<hr>
+<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p><strong>Boost.MySQL</strong>（命名空间 <code>boost::mysql</code>）是 Boost 官方提供的 MySQL 客户端库，让你用现代 C++ 直接访问 MySQL &#x2F; MariaDB 服务器，而不需要依赖 <code>libmysqlclient</code>。</p>
+<ul>
+<li><strong>定位</strong>：一个基于 Boost.Asio 的、header-only 的 MySQL 客户端协议实现。它自己实现了 MySQL 的客户端-服务器协议（握手、认证、文本查询、预处理语句、结果集、连接池），只需要 OpenSSL 作为外部依赖。</li>
+<li><strong>编程模型</strong>：所有网络操作都提供 <strong>同步</strong>（抛异常 &#x2F; <code>error_code</code>）与 <strong>异步</strong>（回调 &#x2F; <code>yield_context</code> &#x2F; C++20 协程）两套版本，异步版本可无缝接入任何 Asio 执行器（<code>io_context</code>、<code>thread_pool</code> 等）。</li>
+<li><strong>类型安全</strong>：提供「动态接口」（<code>results</code> &#x2F; <code>field</code>，运行时类型）和「静态接口」（<code>static_results</code> + C++ 结构体，编译期类型检查）两种取值方式。</li>
+</ul>
+<p>典型使用场景：</p>
+<ol>
+<li>需要嵌入 MySQL 访问能力、又不想引入 C 客户端库依赖的服务端程序（HTTP 服务、聊天服务、游戏后端）。</li>
+<li>已经使用 Boost.Asio 的异步程序，希望数据库访问与网络 I&#x2F;O 共用同一个事件循环，避免线程池 + 阻塞式客户端。</li>
+<li>需要大量并发连接（连接池 + 协程）的高吞吐场景。</li>
+<li>需要预处理语句、二进制协议以高效读写大量数值数据。</li>
+<li>需要精细控制 TLS（自签 CA、证书校验、双向认证）的企业内网环境。</li>
+</ol>
+<p>与替代方案的对比：相比 <code>libmysqlclient</code>（C API，阻塞、需手动管理连接与结果集），Boost.MySQL 是 header-only 的 C++ 库，天然支持异步与协程；相比 <code>mysql-connector-c++</code>，它更轻量、与 Asio 集成更自然，但<strong>不支持</strong> MySQL 的全部高级特性（如 MFA、多因素认证、<code>LOAD DATA LOCAL INFILE</code> 等）。</p>
+<blockquote>
+<p><strong>版本与 API 演进</strong>（很重要，写代码前先确认自己的 Boost 版本）：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>新增能力</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.82 ~ 1.84</td>
+<td>初版 API：<code>connection&lt;Stream&gt;</code> &#x2F; <code>tcp_ssl_connection</code>、<code>handshake_params</code>、<code>results</code>、<code>statement</code>、<code>throw_on_error</code></td>
+</tr>
+<tr>
+<td>1.85</td>
+<td>新 API：<code>any_connection</code>、<code>connect_params</code>、<code>connection_pool</code>、客户端 SQL 格式化 <code>format_sql</code></td>
+</tr>
+<tr>
+<td>1.86</td>
+<td><code>pipeline</code>（实验性）、<code>is_fatal_error</code></td>
+</tr>
+<tr>
+<td>1.87+</td>
+<td><code>with_params</code>、<code>with_diagnostics</code> 完成令牌、默认令牌改为 <code>with_diagnostics(deferred)</code></td>
+</tr>
+</tbody></table>
+<p>本文以 <strong>1.85+ 的新 API（<code>any_connection</code>）为主</strong>，同时给出旧 API（<code>connection&lt;Stream&gt;</code>）的等价用法。</p>
+</blockquote>
+<hr>
+<h2 id="2-依赖与编译"><a href="#2-依赖与编译" class="headerlink" title="2. 依赖与编译"></a>2. 依赖与编译</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>头文件</td>
+<td><code>&lt;boost/mysql.hpp&gt;</code>（便利头文件），或按需包含 <code>&lt;boost/mysql/any_connection.hpp&gt;</code>、<code>&lt;boost/mysql/results.hpp&gt;</code> 等</td>
+</tr>
+<tr>
+<td>需要链接的库</td>
+<td>库本身 <strong>header-only，不需要 <code>-lboost_mysql</code></strong>（Boost 未提供该预编译库）；必须链接 <code>-lssl -lcrypto</code> 与线程库 <code>-lpthread</code></td>
+</tr>
+<tr>
+<td>最低 Boost 版本</td>
+<td><strong>1.82</strong>（<code>any_connection</code> &#x2F; 连接池需要 <strong>1.85+</strong>，<code>with_params</code> 需要 <strong>1.87+</strong>）</td>
+</tr>
+<tr>
+<td>依赖的其他 Boost 库</td>
+<td><strong>Boost.Asio</strong>（<strong>不能</strong>使用 standalone Asio）、Boost.System、Boost.Endian、Boost.Utility；静态接口还需要 Boost.Pfr（C++20）或 Boost.Describe</td>
+</tr>
+<tr>
+<td>C++ 标准</td>
+<td><strong>C++17</strong>（协程示例需要 <strong>C++20</strong>；库内部最低支持 C++11）</td>
+</tr>
+<tr>
+<td>外部服务</td>
+<td>MySQL <strong>8.0+</strong> 或 MariaDB（示例假设本机 3306 端口、数据库 <code>boost_mysql_examples</code>）</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>OpenSSL 头文件与库、CMake（可选）</td>
+</tr>
+</tbody></table>
+<h3 id="2-1-用-Docker-起一个测试服务器"><a href="#2-1-用-Docker-起一个测试服务器" class="headerlink" title="2.1 用 Docker 起一个测试服务器"></a>2.1 用 Docker 起一个测试服务器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 官方 examples 的启动方式（root 空密码）</span><br>docker run --name some-mysql -p 3306:3306 \<br>  -e MYSQL_ROOT_PASSWORD= -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -d mysql:8.0<br><br><span class="hljs-comment"># 若需要 UNIX socket 连接，额外挂载 socket 目录</span><br><span class="hljs-comment"># docker run --name some-mysql -p 3306:3306 -v /var/run/mysqld:/var/run/mysqld -d \</span><br><span class="hljs-comment">#   -e MYSQL_ROOT_PASSWORD= -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -d mysql:8.0</span><br><br><span class="hljs-comment"># 导入官方示例数据（仓库中 example/db_setup.sql）</span><br>mysql -u root &lt; example/db_setup.sql<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：MySQL 8.0 的默认认证插件是 <code>caching_sha2_password</code>，Boost 1.88 及更早版本要求该插件<strong>必须走 TLS</strong>（1.89+ 支持明文连接）。若连接时报认证错误，请参考第 7 节。</p>
+</blockquote>
+<h3 id="2-2-CMake（官方推荐方式）"><a href="#2-2-CMake（官方推荐方式）" class="headerlink" title="2.2 CMake（官方推荐方式）"></a>2.2 CMake（官方推荐方式）</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">project</span>(boost_mysql_example LANGUAGES CXX)<br><span class="hljs-keyword">set</span>(CMAKE_CXX_STANDARD <span class="hljs-number">17</span>)          <span class="hljs-comment"># 协程示例改为 20</span><br><br><span class="hljs-keyword">find_package</span>(Boost REQUIRED COMPONENTS headers)<br><span class="hljs-keyword">find_package</span>(Threads REQUIRED)<br><span class="hljs-keyword">find_package</span>(OpenSSL REQUIRED)<br><br><span class="hljs-keyword">add_executable</span>(main main.cpp)<br><span class="hljs-keyword">target_link_libraries</span>(main PRIVATE<br>    Boost::headers<br>    Threads::Threads<br>    OpenSSL::Crypto<br>    OpenSSL::SSL)<br></code></pre></td></tr></table></figure>
+
+<p>若 Boost 版本 ≥1.87，也可以直接使用 Boost 提供的接口目标：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">find_package</span>(Boost REQUIRED COMPONENTS mysql)   <span class="hljs-comment"># Boost::mysql 是 INTERFACE 库</span><br><span class="hljs-keyword">target_link_libraries</span>(main PRIVATE Boost::mysql)<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-3-g-clang-最小命令"><a href="#2-3-g-clang-最小命令" class="headerlink" title="2.3 g++ &#x2F; clang++ 最小命令"></a>2.3 g++ &#x2F; clang++ 最小命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># header-only 模式（默认），只需 OpenSSL 与线程库</span><br>g++ -std=c++17 -O2 -I/path/to/boost main.cpp -o main -lssl -lcrypto -lpthread<br><span class="hljs-comment"># 协程示例（C++20）</span><br>g++ -std=c++20 -O2 -I/path/to/boost main.cpp -o main -lssl -lcrypto -lpthread<br><span class="hljs-comment"># Windows(MinGW)</span><br>g++ -std=c++17 -O2 -IC:/boost main.cpp -o main.exe -lssl -lcrypto -lws2_32 -lmswsock -lpthread<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-4-MSVC-最小命令"><a href="#2-4-MSVC-最小命令" class="headerlink" title="2.4 MSVC 最小命令"></a>2.4 MSVC 最小命令</h3><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bat">cl /std:c++<span class="hljs-number">17</span> /EHsc /O2 /I C:\boost main.cpp /link libssl.lib libcrypto.lib ws2_32.lib crypt32.lib<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-5-分离编译模式（可选，加快构建）"><a href="#2-5-分离编译模式（可选，加快构建）" class="headerlink" title="2.5 分离编译模式（可选，加快构建）"></a>2.5 分离编译模式（可选，加快构建）</h3><p>在<strong>恰好一个</strong> <code>.cpp</code> 中包含实现，并且所有使用该库的翻译单元都定义宏：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// boost_mysql.cpp</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BOOST_MYSQL_SEPARATE_COMPILATION</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/src.hpp&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">add_executable</span>(main boost_mysql.cpp main.cpp)<br><span class="hljs-keyword">target_compile_definitions</span>(main PRIVATE BOOST_MYSQL_SEPARATE_COMPILATION)<br><span class="hljs-keyword">target_link_libraries</span>(main PRIVATE Boost::headers Threads::Threads OpenSSL::Crypto OpenSSL::SSL)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>提示：分离编译只影响构建方式，<strong>仍然不需要</strong>链接任何 <code>libboost_mysql</code>。官方文档里的 <code>-lboost_mysql -lssl -lcrypto</code> 写法中，真正需要的是 <code>-lssl -lcrypto</code>（外加线程库）。</p>
+</blockquote>
+<hr>
+<h2 id="3-核心概念"><a href="#3-核心概念" class="headerlink" title="3. 核心概念"></a>3. 核心概念</h2><h3 id="3-1-执行上下文-io-context-驱动一切"><a href="#3-1-执行上下文-io-context-驱动一切" class="headerlink" title="3.1 执行上下文 io_context 驱动一切"></a>3.1 执行上下文 <code>io_context</code> 驱动一切</h3><p>和所有 Asio 程序一样，先创建 <code>asio::io_context</code>（执行上下文），它承载事件循环、定时器与 socket 状态。所有 I&#x2F;O 对象（连接、连接池）都绑定到它上面；<strong>只有调用 <code>run()</code> &#x2F; <code>poll()</code>，异步操作才会真正推进</strong>。大多数程序只需要一个 <code>io_context</code>，即使同时管理成百上千个 MySQL 连接。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br>asio::io_context ctx;                 <span class="hljs-comment">// 执行上下文</span><br><span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx)</span></span>;      <span class="hljs-comment">// 连接对象绑定到 ctx</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-连接（connection）与握手"><a href="#3-2-连接（connection）与握手" class="headerlink" title="3.2 连接（connection）与握手"></a>3.2 连接（<code>connection</code>）与握手</h3><p><code>any_connection</code> 表示一个到 MySQL 服务器的会话（session state + 内部 stream）。建立连接分两层：</p>
+<ul>
+<li><code>connect(params)</code> &#x2F; <code>async_connect(params)</code>：高层 API。它负责<strong>域名解析、TCP&#x2F;UNIX socket 连接、TLS 握手、MySQL 协议握手、认证</strong>，一次搞定。</li>
+<li><code>handshake(params)</code> &#x2F; <code>async_handshake(params)</code>：低层 API。只做 <strong>MySQL 协议层的握手与认证</strong>，要求底层 stream 已经连接好（例如你自己用 <code>asio::ip::tcp::socket</code> 连好，或使用 <code>connection&lt;Stream&gt;</code> 自定义 stream）。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp">mysql::connect_params params;<br>params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(<span class="hljs-string">&quot;localhost&quot;</span>);   <span class="hljs-comment">// 或 emplace_unix_path(&quot;/var/run/mysqld/mysqld.sock&quot;)</span><br>params.username = <span class="hljs-string">&quot;root&quot;</span>;<br>params.password = <span class="hljs-string">&quot;&quot;</span>;<br>params.database = <span class="hljs-string">&quot;boost_mysql_examples&quot;</span>;                    <span class="hljs-comment">// 可选，相当于 USE &lt;db&gt;</span><br>conn.<span class="hljs-built_in">connect</span>(params);                                        <span class="hljs-comment">// 解析 + TCP + TLS + 握手</span><br></code></pre></td></tr></table></figure>
+
+<p>握手阶段双方还会协商：字符集&#x2F;排序规则（<code>connect_params::connection_collation</code>，默认 <code>utf8mb4_general_ci</code>）、是否启用多语句（<code>connect_params::multi_queries</code>）、是否使用 TLS（<code>connect_params::ssl</code>）。</p>
+<h3 id="3-3-查询与预处理语句；文本协议-vs-二进制协议"><a href="#3-3-查询与预处理语句；文本协议-vs-二进制协议" class="headerlink" title="3.3 查询与预处理语句；文本协议 vs 二进制协议"></a>3.3 查询与预处理语句；文本协议 vs 二进制协议</h3><p>库提供两条执行 SQL 的路径：</p>
+<ul>
+<li><strong>文本查询</strong>（text protocol）：<code>execute(&quot;SELECT ...&quot;, result)</code>。SQL 以字符串形式发送给服务器，结果集里的所有值都按<strong>字符串</strong>返回，再由客户端解析成整数&#x2F;浮点&#x2F;日期等类型。简单、灵活，但解析开销大。</li>
+<li><strong>预处理语句</strong>（prepared statement &#x2F; binary protocol）：<code>prepare_statement(sql)</code> 得到 <code>statement</code> 句柄，再用 <code>execute(stmt.bind(args...), result)</code> 执行。SQL 模板只在服务器端解析一次，参数以<strong>二进制</strong>格式传输，结果也以二进制返回。适合：① 反复执行同一语句；② 传输大量数值数据；③ 需要彻底避免 SQL 注入。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 文本协议：SQL 字符串直接发送，返回值按字符串解析</span><br>mysql::results r1;<br>conn.<span class="hljs-built_in">execute</span>(<span class="hljs-string">&quot;SELECT 1 + 1 AS sum&quot;</span>, r1);<br><br><span class="hljs-comment">// 二进制协议：服务器端准备 + 参数绑定</span><br>mysql::statement stmt = conn.<span class="hljs-built_in">prepare_statement</span>(<span class="hljs-string">&quot;SELECT ? AS name, ? AS salary&quot;</span>);<br>mysql::results r2;<br>conn.<span class="hljs-built_in">execute</span>(stmt.<span class="hljs-built_in">bind</span>(<span class="hljs-string">&quot;Juan&quot;</span>, <span class="hljs-number">35000.0</span>), r2);<br></code></pre></td></tr></table></figure>
+
+<p>第三种方式是<strong>客户端 SQL 格式化</strong>（<code>with_params</code> &#x2F; <code>format_sql</code>，Boost 1.85+&#x2F;1.87+）：客户端把 <code>{}</code> 占位符安全地展开成完整 SQL 字符串，然后走文本协议。它比预处理语句更简单，但每次都会产生不同的 SQL 文本（服务器无法复用执行计划）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">mysql::results r3;<br>conn.<span class="hljs-built_in">execute</span>(mysql::<span class="hljs-built_in">with_params</span>(<span class="hljs-string">&quot;SELECT first_name FROM employee WHERE id = &#123;&#125;&quot;</span>, <span class="hljs-number">42</span>), r3);<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-4-结果集与元数据"><a href="#3-4-结果集与元数据" class="headerlink" title="3.4 结果集与元数据"></a>3.4 结果集与元数据</h3><p><code>results</code> 是结果集的宿主对象（拥有内存），它同时是<strong>多结果集</strong>的随机访问容器（<code>size()</code> &#x2F; <code>at(i)</code> &#x2F; <code>operator[]</code>，每个元素是 <code>resultset</code>）。单结果集场景直接用便捷成员：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp">mysql::results result;<br>conn.<span class="hljs-built_in">execute</span>(<span class="hljs-string">&quot;SELECT 1 AS a, &#x27;x&#x27; AS b&quot;</span>, result);<br><br>mysql::rows_view rows = result.<span class="hljs-built_in">rows</span>();       <span class="hljs-comment">// 二维视图：行 × 列</span><br>std::cout &lt;&lt; rows.<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;       <span class="hljs-comment">// 第 0 行第 1 列（field_view）</span><br>std::cout &lt;&lt; result.<span class="hljs-built_in">affected_rows</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-comment">// UPDATE/DELETE 影响的行数</span><br>std::cout &lt;&lt; result.<span class="hljs-built_in">last_insert_id</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>std::cout &lt;&lt; result.<span class="hljs-built_in">warning_count</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br></code></pre></td></tr></table></figure>
+
+<p><strong>元数据</strong>（<code>metadata</code>）描述每一列：列名、所属库&#x2F;表、<code>column_type</code>、长度、是否主键&#x2F;自增等。默认 <code>metadata_mode::minimal</code> 为了省内存<strong>不保留列名</strong>等字符串信息，需要列名时先切换：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp">conn.<span class="hljs-built_in">set_meta_mode</span>(mysql::metadata_mode::full);<br>mysql::results result;<br>conn.<span class="hljs-built_in">execute</span>(<span class="hljs-string">&quot;SELECT 1 AS my_field&quot;</span>, result);<br>std::cout &lt;&lt; result.<span class="hljs-built_in">meta</span>()[<span class="hljs-number">0</span>].<span class="hljs-built_in">column_name</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;   <span class="hljs-comment">// &quot;my_field&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-5-异步模型与协程"><a href="#3-5-异步模型与协程" class="headerlink" title="3.5 异步模型与协程"></a>3.5 异步模型与协程</h3><p>每个网络操作都有 <code>async_*</code> 版本，接受 Asio 完成令牌（completion token）。<code>any_connection</code> 与 <code>connection_pool</code> 的<strong>默认令牌是 <code>with_diagnostics(asio::deferred)</code></strong>，因此可以直接 <code>co_await</code>，并且失败时抛出带诊断信息的 <code>error_with_diagnostics</code>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// C++20 协程</span><br><span class="hljs-function">asio::awaitable&lt;<span class="hljs-type">void</span>&gt; <span class="hljs-title">f</span><span class="hljs-params">(mysql::any_connection&amp; conn)</span></span><br><span class="hljs-function"></span>&#123;<br>    mysql::results result;<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_execute</span>(<span class="hljs-string">&quot;SELECT &#x27;Hello MySQL&#x27;&quot;</span>, result);  <span class="hljs-comment">// 失败会抛异常</span><br>    <span class="hljs-keyword">co_return</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>同一时刻<strong>每个连接只能有一个未完成的异步操作</strong>：并发发起第二个会以 <code>client_errc::operation_in_progress</code> 失败。连接对象<strong>非线程安全</strong>（不同对象可跨线程，共享同一对象不行）；需要跨线程共享时请使用连接池 + <code>pool_params::thread_safe</code>，或在 strand 上运行。</p>
+<h3 id="3-6-SSL-TLS"><a href="#3-6-SSL-TLS" class="headerlink" title="3.6 SSL&#x2F;TLS"></a>3.6 SSL&#x2F;TLS</h3><p>TCP 连接默认使用 TLS（<code>ssl_mode::enable</code>：服务器支持就用，不支持则回退明文）。TLS 握手由 <code>async_connect</code> 内部完成，TLS 关闭由 <code>async_close</code> 完成。默认的 SSL 上下文<strong>不做证书校验</strong>，要校验必须自己传 <code>asio::ssl::context</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp">asio::<span class="hljs-function">ssl::context <span class="hljs-title">ssl_ctx</span><span class="hljs-params">(asio::ssl::context::tls_client)</span></span>;<br>ssl_ctx.<span class="hljs-built_in">set_verify_mode</span>(asio::ssl::verify_peer);<br>ssl_ctx.<span class="hljs-built_in">load_verify_file</span>(<span class="hljs-string">&quot;/etc/ssl/certs/ca.pem&quot;</span>);                    <span class="hljs-comment">// 或 set_default_verify_paths()</span><br>ssl_ctx.<span class="hljs-built_in">set_verify_callback</span>(asio::ssl::<span class="hljs-built_in">host_name_verification</span>(<span class="hljs-string">&quot;mysql&quot;</span>)); <span class="hljs-comment">// 校验 CN/SAN</span><br><span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx, mysql::any_connection_params&#123;&amp;ssl_ctx&#125;)</span></span>;<br></code></pre></td></tr></table></figure>
+
+<p>UNIX socket 被视为安全通道，<strong>永远不使用 TLS</strong>（<code>connect_params::ssl</code> 被忽略）。连接建立后可用 <code>uses_ssl()</code> 查询是否加密。</p>
+<h3 id="3-7-错误处理（error-code-diagnostics）"><a href="#3-7-错误处理（error-code-diagnostics）" class="headerlink" title="3.7 错误处理（error_code + diagnostics）"></a>3.7 错误处理（<code>error_code</code> + <code>diagnostics</code>）</h3><p>库基于 <code>boost::system::error_code</code>。每个网络操作提供四种重载：① 同步抛异常（抛 <code>error_with_diagnostics</code>）；② 同步输出 <code>error_code&amp;</code> + <code>diagnostics&amp;</code>；③ 异步回调；④ 异步回调 + <code>diagnostics&amp;</code>。</p>
+<p>错误分为四类：客户端错误（<code>client_errc</code>）、MySQL&#x2F;MariaDB 共有服务器错误（<code>common_server_errc</code>）、MySQL 专有（<code>&lt;boost/mysql/mysql_server_errc.hpp&gt;</code> 中的整数码）、MariaDB 专有（<code>&lt;boost/mysql/mariadb_server_errc.hpp&gt;</code>）。另外用 <code>is_fatal_error(ec)</code> 区分<strong>致命错误</strong>（连接状态未知，必须重连）与<strong>非致命错误</strong>（如 <code>er_no_such_table</code>，连接仍可继续使用）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp">boost::mysql::diagnostics diag;<br>boost::system::error_code ec;<br>conn.<span class="hljs-built_in">execute</span>(<span class="hljs-string">&quot;SELECT * FROM no_such_table&quot;</span>, result, ec, diag);<br><span class="hljs-keyword">if</span> (ec)<br>&#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;code=&quot;</span> &lt;&lt; ec &lt;&lt; <span class="hljs-string">&quot; server_msg=&quot;</span> &lt;&lt; diag.<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>    <span class="hljs-keyword">if</span> (boost::mysql::<span class="hljs-built_in">is_fatal_error</span>(ec)) &#123; <span class="hljs-comment">/* 需要重连 */</span> &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安全提示：<code>diagnostics::server_message()</code> 可能包含用户输入（例如导致出错的字段值），且使用连接的字符集编码，必须当作<strong>不可信输入</strong>处理。</p>
+</blockquote>
+<h3 id="3-8-连接池"><a href="#3-8-连接池" class="headerlink" title="3.8 连接池"></a>3.8 连接池</h3><p><code>connection_pool</code>（Boost 1.85+，仅支持 <code>any_connection</code>）复用长连接：省去反复建立会话的开销，并内建重连、健康检查、超时与状态重置。使用三步：</p>
+<ol>
+<li>构造 <code>pool_params</code>（地址、账号、库、池大小、TLS 等）并创建 <code>connection_pool</code>；</li>
+<li>调用一次 <code>async_run(asio::detached)</code> 启动池任务；</li>
+<li>用 <code>async_get_connection()</code> 取到 <code>pooled_connection</code>（独占所有权，<code>operator-&gt;</code> 返回底层 <code>any_connection</code>），对象析构时连接自动归还池。</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp">mysql::pool_params params;<br>params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(<span class="hljs-string">&quot;localhost&quot;</span>);<br>params.username = <span class="hljs-string">&quot;root&quot;</span>;<br>params.password = <span class="hljs-string">&quot;&quot;</span>;<br>params.database = <span class="hljs-string">&quot;boost_mysql_examples&quot;</span>;<br>params.initial_size = <span class="hljs-number">2</span>;      <span class="hljs-comment">// 启动时创建 2 条连接</span><br>params.max_size = <span class="hljs-number">10</span>;         <span class="hljs-comment">// 上限（默认 151，与 MySQL max_connections 默认值一致）</span><br><br><span class="hljs-function">mysql::connection_pool <span class="hljs-title">pool</span><span class="hljs-params">(ctx, std::move(params))</span></span>;<br>pool.<span class="hljs-built_in">async_run</span>(asio::detached);   <span class="hljs-comment">// 只能调用一次</span><br><br>mysql::pooled_connection conn = <span class="hljs-keyword">co_await</span> pool.<span class="hljs-built_in">async_get_connection</span>(<br>    asio::<span class="hljs-built_in">cancel_after</span>(std::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">5</span>)));   <span class="hljs-comment">// 超时保护</span><br>mysql::results result;<br><span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_execute</span>(<span class="hljs-string">&quot;SELECT COUNT(*) FROM employee&quot;</span>, result);<br><span class="hljs-comment">// conn 析构 → 连接归还池，并自动 async_reset_connection + 恢复 utf8mb4</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-常用类与成员"><a href="#4-常用类与成员" class="headerlink" title="4. 常用类与成员"></a>4. 常用类与成员</h2><h3 id="4-1-类总览"><a href="#4-1-类总览" class="headerlink" title="4.1 类总览"></a>4.1 类总览</h3><table>
+<thead>
+<tr>
+<th>类 &#x2F; 模板</th>
+<th>头文件</th>
+<th>作用</th>
+<th>关键成员</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>any_connection</code></td>
+<td><code>&lt;boost/mysql/any_connection.hpp&gt;</code></td>
+<td>类型擦除的连接（推荐，1.85+）</td>
+<td><code>connect()</code>, <code>execute()</code>, <code>prepare_statement()</code>, <code>async_*</code>, <code>close()</code></td>
+</tr>
+<tr>
+<td><code>connection&lt;Stream&gt;</code></td>
+<td><code>&lt;boost/mysql/connection.hpp&gt;</code></td>
+<td>模板化连接（旧 API，1.82~1.84 唯一选择）</td>
+<td>同 <code>any_connection</code>，另加 <code>handshake()</code>, <code>stream()</code></td>
+</tr>
+<tr>
+<td><code>tcp_ssl_connection</code></td>
+<td><code>&lt;boost/mysql/tcp_ssl.hpp&gt;</code></td>
+<td><code>connection&lt;ssl::stream&lt;tcp::socket&gt;&gt;</code> 的别名</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>connect_params</code></td>
+<td><code>&lt;boost/mysql/connect_params.hpp&gt;</code></td>
+<td>新 API 的连接参数（含服务器地址）</td>
+<td><code>server_address</code>, <code>username</code>, <code>password</code>, <code>database</code>, <code>ssl</code></td>
+</tr>
+<tr>
+<td><code>handshake_params</code></td>
+<td><code>&lt;boost/mysql/handshake_params.hpp&gt;</code></td>
+<td>旧 API 的握手参数</td>
+<td><code>username()</code>, <code>password()</code>, <code>database()</code>, <code>connection_collation()</code></td>
+</tr>
+<tr>
+<td><code>any_connection_params</code></td>
+<td><code>&lt;boost/mysql/any_connection.hpp&gt;</code></td>
+<td>连接对象构造参数</td>
+<td><code>ssl_context</code>, <code>initial_buffer_size</code>, <code>max_buffer_size</code></td>
+</tr>
+<tr>
+<td><code>any_address</code></td>
+<td><code>&lt;boost/mysql/any_address.hpp&gt;</code></td>
+<td>服务器地址（host+port 或 unix path）</td>
+<td><code>emplace_host_and_port()</code>, <code>emplace_unix_path()</code></td>
+</tr>
+<tr>
+<td><code>with_params</code> &#x2F; <code>with_params_t</code></td>
+<td><code>&lt;boost/mysql/with_params.hpp&gt;</code></td>
+<td>带参数的查询请求（客户端格式化，1.87+）</td>
+<td><code>query</code>, <code>args</code></td>
+</tr>
+<tr>
+<td><code>statement</code></td>
+<td><code>&lt;boost/mysql/statement.hpp&gt;</code></td>
+<td>服务器端预处理语句句柄</td>
+<td><code>bind()</code>, <code>num_params()</code>, <code>id()</code>, <code>valid()</code></td>
+</tr>
+<tr>
+<td><code>results</code></td>
+<td><code>&lt;boost/mysql/results.hpp&gt;</code></td>
+<td>动态接口的结果集宿主</td>
+<td><code>rows()</code>, <code>meta()</code>, <code>affected_rows()</code>, <code>last_insert_id()</code></td>
+</tr>
+<tr>
+<td><code>row</code> &#x2F; <code>row_view</code></td>
+<td><code>&lt;boost/mysql/row.hpp&gt;</code>, <code>&lt;boost/mysql/row_view.hpp&gt;</code></td>
+<td>一行（拥有 &#x2F; 视图）</td>
+<td><code>size()</code>, <code>at()</code>, <code>operator[]</code>, <code>as_vector()</code></td>
+</tr>
+<tr>
+<td><code>rows</code> &#x2F; <code>rows_view</code></td>
+<td><code>&lt;boost/mysql/rows.hpp&gt;</code>, <code>&lt;boost/mysql/rows_view.hpp&gt;</code></td>
+<td>多行（拥有 &#x2F; 视图）</td>
+<td><code>size()</code>, <code>at()</code>, <code>num_columns()</code></td>
+</tr>
+<tr>
+<td><code>resultset</code> &#x2F; <code>resultset_view</code></td>
+<td><code>&lt;boost/mysql/resultset.hpp&gt;</code>, <code>&lt;boost/mysql/resultset_view.hpp&gt;</code></td>
+<td>单个结果集（拥有 &#x2F; 视图）</td>
+<td><code>rows()</code>, <code>meta()</code>, <code>affected_rows()</code></td>
+</tr>
+<tr>
+<td><code>field</code> &#x2F; <code>field_view</code></td>
+<td><code>&lt;boost/mysql/field.hpp&gt;</code>, <code>&lt;boost/mysql/field_view.hpp&gt;</code></td>
+<td>一个字段（拥有 &#x2F; 视图）</td>
+<td><code>is_*()</code>, <code>as_*()</code>, <code>get_*()</code>, <code>kind()</code></td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td><code>&lt;boost/mysql/metadata.hpp&gt;</code></td>
+<td>列元数据</td>
+<td><code>column_name()</code>, <code>table()</code>, <code>is_primary_key()</code>, <code>type()</code></td>
+</tr>
+<tr>
+<td><code>execution_state</code></td>
+<td><code>&lt;boost/mysql/execution_state.hpp&gt;</code></td>
+<td>多函数（分批读行）操作状态</td>
+<td><code>should_read_rows()</code>, <code>meta()</code>, <code>complete()</code></td>
+</tr>
+<tr>
+<td><code>date</code> &#x2F; <code>datetime</code> &#x2F; <code>time</code> &#x2F; <code>days</code></td>
+<td><code>&lt;boost/mysql/date.hpp&gt;</code> 等</td>
+<td>MySQL 日期时间类型</td>
+<td><code>year()</code>, <code>month()</code>, <code>day()</code>, <code>microsecond()</code></td>
+</tr>
+<tr>
+<td><code>error_code</code> &#x2F; <code>client_errc</code> &#x2F; <code>diagnostics</code></td>
+<td><code>&lt;boost/mysql/error_code.hpp&gt;</code> 等</td>
+<td>错误码与诊断信息</td>
+<td><code>server_message()</code>, <code>client_message()</code></td>
+</tr>
+<tr>
+<td><code>error_with_diagnostics</code></td>
+<td><code>&lt;boost/mysql/error_with_diagnostics.hpp&gt;</code></td>
+<td>带诊断信息的异常</td>
+<td><code>code()</code>, <code>get_diagnostics()</code></td>
+</tr>
+<tr>
+<td><code>ssl_mode</code></td>
+<td><code>&lt;boost/mysql/ssl_mode.hpp&gt;</code></td>
+<td>TLS 协商策略</td>
+<td><code>disable</code>, <code>enable</code>, <code>require</code></td>
+</tr>
+<tr>
+<td><code>connection_pool</code></td>
+<td><code>&lt;boost/mysql/connection_pool.hpp&gt;</code></td>
+<td>连接池（1.85+）</td>
+<td><code>async_run()</code>, <code>async_get_connection()</code>, <code>cancel()</code></td>
+</tr>
+<tr>
+<td><code>pool_params</code></td>
+<td><code>&lt;boost/mysql/pool_params.hpp&gt;</code></td>
+<td>池配置</td>
+<td><code>initial_size</code>, <code>max_size</code>, <code>thread_safe</code>, <code>ssl_ctx</code></td>
+</tr>
+<tr>
+<td><code>pooled_connection</code></td>
+<td><code>&lt;boost/mysql/connection_pool.hpp&gt;</code></td>
+<td>池中连接的独占代理</td>
+<td><code>operator-&gt;</code>, <code>get()</code>, <code>return_without_reset()</code></td>
+</tr>
+</tbody></table>
+<h3 id="4-2-逐个类详解"><a href="#4-2-逐个类详解" class="headerlink" title="4.2 逐个类详解"></a>4.2 逐个类详解</h3><h4 id="boost-mysql-any-connection"><a href="#boost-mysql-any-connection" class="headerlink" title="boost::mysql::any_connection"></a><code>boost::mysql::any_connection</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/any_connection.hpp&gt;</code>（便利头文件 <code>&lt;boost/mysql.hpp&gt;</code>）</li>
+<li><strong>作用</strong>：类型擦除的 MySQL 连接，不依赖 <code>Stream</code> 模板参数；支持 TCP、TCP over TLS、UNIX socket，可重复重连。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>any_connection(ExecutionContext&amp;)</code>；<code>any_connection(Executor, const any_connection_params&amp;)</code></td>
+<td>从执行上下文&#x2F;执行器构造，可附带 SSL 上下文、缓冲区大小</td>
+</tr>
+<tr>
+<td><code>connect</code></td>
+<td><code>void connect(const connect_params&amp;)</code></td>
+<td>解析地址 + 建立传输 + TLS + 握手 + 认证</td>
+</tr>
+<tr>
+<td><code>async_connect</code></td>
+<td><code>auto async_connect(const connect_params&amp;, CompletionToken)</code></td>
+<td>异步版本；<strong>任何状态下都可再次调用以重连</strong></td>
+</tr>
+<tr>
+<td><code>handshake</code> &#x2F; <code>async_handshake</code></td>
+<td><code>void handshake(const handshake_params&amp;)</code></td>
+<td>仅执行 MySQL 层握手（需底层流已连接）</td>
+</tr>
+<tr>
+<td><code>execute</code> &#x2F; <code>async_execute</code></td>
+<td><code>void execute(ExecutionRequest, results&amp;)</code></td>
+<td>执行文本查询、<code>with_params</code> 或 <code>statement.bind(...)</code></td>
+</tr>
+<tr>
+<td><code>prepare_statement</code> &#x2F; <code>async_prepare_statement</code></td>
+<td><code>statement prepare_statement(string_view sql)</code></td>
+<td>服务器端准备语句，返回句柄</td>
+</tr>
+<tr>
+<td><code>close_statement</code> &#x2F; <code>async_close_statement</code></td>
+<td><code>void close_statement(const statement&amp;)</code></td>
+<td>释放服务器端语句资源</td>
+</tr>
+<tr>
+<td><code>start_execution</code> &#x2F; <code>async_start_execution</code></td>
+<td><code>void start_execution(ExecutionRequest, execution_state&amp;)</code></td>
+<td>启动「多函数」执行，用于分批读行</td>
+</tr>
+<tr>
+<td><code>read_resultset_head</code> &#x2F; <code>async_read_resultset_head</code></td>
+<td><code>void read_resultset_head(execution_state&amp;)</code></td>
+<td>读取后续结果集的元数据</td>
+</tr>
+<tr>
+<td><code>read_some_rows</code> &#x2F; <code>async_read_some_rows</code></td>
+<td><code>rows_view read_some_rows(execution_state&amp;)</code></td>
+<td>读一批行（返回视图，下次网络操作前有效）</td>
+</tr>
+<tr>
+<td><code>set_meta_mode</code> &#x2F; <code>meta_mode</code></td>
+<td><code>void set_meta_mode(metadata_mode)</code> &#x2F; <code>metadata_mode meta_mode() const</code></td>
+<td>是否保留列名等元数据</td>
+</tr>
+<tr>
+<td><code>current_character_set</code> &#x2F; <code>set_character_set</code></td>
+<td><code>character_set current_character_set() const</code></td>
+<td>查询&#x2F;设置连接字符集</td>
+</tr>
+<tr>
+<td><code>format_opts</code></td>
+<td><code>boost::system::result&lt;format_options&gt; format_opts() const</code></td>
+<td>取得客户端 SQL 格式化所需的选项</td>
+</tr>
+<tr>
+<td><code>backslash_escapes</code></td>
+<td><code>bool backslash_escapes() const</code></td>
+<td>反斜杠是否作为转义字符（受 <code>NO_BACKSLASH_ESCAPES</code> 影响）</td>
+</tr>
+<tr>
+<td><code>reset_connection</code> &#x2F; <code>async_reset_connection</code></td>
+<td><code>void reset_connection()</code></td>
+<td>清空会话状态（变量、临时表、预处理语句、回滚事务）</td>
+</tr>
+<tr>
+<td><code>ping</code> &#x2F; <code>async_ping</code></td>
+<td><code>void ping()</code></td>
+<td>健康检查</td>
+</tr>
+<tr>
+<td><code>run_pipeline</code> &#x2F; <code>async_run_pipeline</code></td>
+<td><code>void run_pipeline(const pipeline_request&amp;, std::vector&lt;stage_response&gt;&amp;)</code></td>
+<td>实验性流水线 API（1.86+）</td>
+</tr>
+<tr>
+<td><code>uses_ssl</code></td>
+<td><code>bool uses_ssl() const</code></td>
+<td>当前连接是否加密</td>
+</tr>
+<tr>
+<td><code>connection_id</code></td>
+<td><code>std::uint64_t connection_id() const</code></td>
+<td>服务器端的连接 ID</td>
+</tr>
+<tr>
+<td><code>get_executor</code></td>
+<td><code>executor_type get_executor() const</code></td>
+<td>取得执行器</td>
+</tr>
+<tr>
+<td><code>close</code> &#x2F; <code>async_close</code></td>
+<td><code>void close()</code></td>
+<td>发送 QUIT、TLS 关闭、关闭传输（干净关闭）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>只移动（move-only），不可拷贝；<code>~any_connection()</code> <strong>不会</strong>干净关闭连接（不发 QUIT），要优雅关闭请显式调用 <code>close()</code>。</li>
+<li>同一连接同一时刻只允许一个未完成的异步操作，否则报 <code>client_errc::operation_in_progress</code>。</li>
+<li>对象非线程安全；<code>async_connect</code> 可在出错&#x2F;取消后重复调用实现重连。</li>
+<li>连接不提供直接的 <code>next_layer()</code>（底层 stream 被封装）；旧 API 的 <code>connection&lt;Stream&gt;</code> 才有 <code>stream()</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-mysql-connection（旧-API，1-82-1-84）"><a href="#boost-mysql-connection（旧-API，1-82-1-84）" class="headerlink" title="boost::mysql::connection&lt;Stream&gt;（旧 API，1.82~1.84）"></a><code>boost::mysql::connection&lt;Stream&gt;</code>（旧 API，1.82~1.84）</h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/connection.hpp&gt;</code>；常用别名在 <code>&lt;boost/mysql/tcp.hpp&gt;</code> &#x2F; <code>&lt;boost/mysql/tcp_ssl.hpp&gt;</code> &#x2F; <code>&lt;boost/mysql/unix.hpp&gt;</code> &#x2F; <code>&lt;boost/mysql/unix_ssl.hpp&gt;</code></li>
+<li><strong>作用</strong>：以 <code>Stream</code> 为模板参数的连接；<code>tcp_ssl_connection</code> 即 <code>connection&lt;boost::asio::ssl::stream&lt;boost::asio::ip::tcp::socket&gt;&gt;</code>。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造</td>
+<td><code>connection(Stream)</code>；<code>template&lt;class... Args&gt; connection(Args&amp;&amp;...)</code></td>
+<td>后者把参数转发给 <code>Stream</code> 的构造函数，于是可写 <code>connection(io_context&amp;)</code>、<code>connection(executor, ssl::context&amp;)</code></td>
+</tr>
+<tr>
+<td><code>connect</code> &#x2F; <code>async_connect</code></td>
+<td><code>void connect(const asio::ip::tcp::endpoint&amp;, const handshake_params&amp;)</code></td>
+<td>连接<strong>已解析的端点</strong>（不做域名解析）并握手</td>
+</tr>
+<tr>
+<td><code>handshake</code> &#x2F; <code>async_handshake</code></td>
+<td><code>void handshake(const handshake_params&amp;)</code></td>
+<td>只做 MySQL 层握手</td>
+</tr>
+<tr>
+<td><code>execute</code> &#x2F; <code>async_execute</code></td>
+<td><code>void execute(ExecutionRequest, results&amp;)</code></td>
+<td>文本查询或语句执行</td>
+</tr>
+<tr>
+<td><code>prepare_statement</code> &#x2F; <code>async_prepare_statement</code></td>
+<td><code>statement prepare_statement(string_view)</code></td>
+<td>准备语句</td>
+</tr>
+<tr>
+<td><code>start_execution</code> &#x2F; <code>read_resultset_head</code> &#x2F; <code>read_some_rows</code>（含 <code>async_*</code>）</td>
+<td>见 <code>any_connection</code></td>
+<td>多函数操作</td>
+</tr>
+<tr>
+<td><code>set_meta_mode</code> &#x2F; <code>meta_mode</code></td>
+<td></td>
+<td>元数据模式</td>
+</tr>
+<tr>
+<td><code>stream</code></td>
+<td><code>Stream&amp; stream()</code></td>
+<td>访问底层 stream（旧 API 特有的逃生舱）</td>
+</tr>
+<tr>
+<td><code>get_executor</code> &#x2F; <code>uses_ssl</code></td>
+<td></td>
+<td>执行器 &#x2F; 是否加密</td>
+</tr>
+<tr>
+<td><code>quit</code> &#x2F; <code>async_quit</code></td>
+<td><code>void quit()</code></td>
+<td>发送 QUIT 并关闭 SSL（<strong>不</strong>关闭底层传输）</td>
+</tr>
+<tr>
+<td><code>close</code> &#x2F; <code>async_close</code></td>
+<td><code>void close()</code></td>
+<td><code>quit()</code> + 关闭底层 socket</td>
+</tr>
+<tr>
+<td><code>reset_connection</code> &#x2F; <code>ping</code> &#x2F; <code>close_statement</code></td>
+<td></td>
+<td>与 <code>any_connection</code> 同名同义</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>旧 API 不解析域名，需要自己用 <code>asio::ip::tcp::resolver</code> 解析后把 endpoint 传给 <code>connect</code>。</li>
+<li><code>connect()</code> 会先做握手再建立 TCP？——不会：<strong>必须先连好传输</strong>，<code>connect</code> 负责的是「连接端点 + 握手」的组合；直接使用 <code>handshake()</code> 时底层 stream 必须已连接（例如 UNIX socket）。</li>
+<li><code>quit()</code> 与 <code>close()</code> 的区别：前者只结束会话（发 QUIT、关 TLS），后者还关闭 socket。</li>
+<li>新代码请优先使用 <code>any_connection</code>（官方明确建议）。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-mysql-connect-params-handshake-params"><a href="#boost-mysql-connect-params-handshake-params" class="headerlink" title="boost::mysql::connect_params &#x2F; handshake_params"></a><code>boost::mysql::connect_params</code> &#x2F; <code>handshake_params</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/connect_params.hpp&gt;</code>（新）&#x2F; <code>&lt;boost/mysql/handshake_params.hpp&gt;</code>（旧）</li>
+<li><strong>作用</strong>：<code>connect_params</code> 同时包含<strong>服务器地址</strong>与握手参数；<code>handshake_params</code> 只有握手部分。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>server_address</code></td>
+<td><code>any_address</code></td>
+<td><code>emplace_host_and_port(host, port = default_port)</code> 或 <code>emplace_unix_path(path)</code></td>
+</tr>
+<tr>
+<td><code>username</code></td>
+<td><code>std::string</code></td>
+<td>用户名</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td><code>std::string</code></td>
+<td>密码（可为空）</td>
+</tr>
+<tr>
+<td><code>database</code></td>
+<td><code>std::string</code></td>
+<td>连接后默认使用的库，等价于 <code>USE &lt;db&gt;</code>；空表示不选库</td>
+</tr>
+<tr>
+<td><code>connection_collation</code></td>
+<td><code>std::uint16_t</code></td>
+<td>排序规则 ID，默认 <code>utf8mb4_general_ci</code>（<code>handshake_params::default_collation</code>）</td>
+</tr>
+<tr>
+<td><code>server_default_charset</code></td>
+<td><code>character_set</code></td>
+<td>服务器默认字符集（影响 <code>use_server_default</code> 字符集策略）</td>
+</tr>
+<tr>
+<td><code>ssl</code></td>
+<td><code>ssl_mode</code></td>
+<td>TLS 协商策略</td>
+</tr>
+<tr>
+<td><code>multi_queries</code></td>
+<td><code>bool</code></td>
+<td>是否允许用分号分隔的多条语句（默认 <code>false</code>）</td>
+</tr>
+</tbody></table>
+<p><code>handshake_params</code> 提供等价的访问器：<code>username()</code> &#x2F; <code>set_username()</code>、<code>password()</code> &#x2F; <code>set_password()</code>、<code>database()</code> &#x2F; <code>set_database()</code>、<code>connection_collation()</code> &#x2F; <code>set_connection_collation()</code>、<code>ssl()</code> &#x2F; <code>set_ssl()</code>、<code>multi_queries()</code> &#x2F; <code>set_multi_queries()</code>，构造形式 <code>handshake_params(username, password, database)</code>。</p>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>connect_params</code> 是拥有型（owning）对象，内部字符串被拷贝。</li>
+<li>该库<strong>没有</strong> <code>connection_attributes</code> 成员，无法在握手时发送自定义连接属性。</li>
+<li><code>multi_queries</code> 默认关闭是安全加固措施，只有确实需要（例如执行 <code>.sql</code> 脚本、事务中的多条语句）才打开。</li>
+</ol>
+</li>
+</ul>
+<h4 id="boost-mysql-query-with-params-statement"><a href="#boost-mysql-query-with-params-statement" class="headerlink" title="boost::mysql::query &#x2F; with_params &#x2F; statement"></a><code>boost::mysql::query</code> &#x2F; <code>with_params</code> &#x2F; <code>statement</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/query.hpp&gt;</code>、<code>&lt;boost/mysql/with_params.hpp&gt;</code>、<code>&lt;boost/mysql/statement.hpp&gt;</code></li>
+<li><strong>作用</strong>：描述「要执行什么」。<code>execute()</code> 的第一个参数是 <code>ExecutionRequest</code> 概念，可由<strong>字符串</strong>、<code>with_params(...)</code> 或 <code>statement.bind(...)</code> 满足。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>with_params</code></td>
+<td><code>with_params(constant_string_view query, Formattable... args)</code></td>
+<td>用 <code>{}</code> 占位符 + 参数构造请求（1.87+），参数按 <code>std::make_tuple</code> 衰减拷贝</td>
+</tr>
+<tr>
+<td><code>with_params_t::query</code> &#x2F; <code>args</code></td>
+<td>成员</td>
+<td>格式串（视图）与参数元组</td>
+</tr>
+<tr>
+<td><code>statement::bind</code></td>
+<td><code>bound_statement_tuple bind(Params...) const</code>；<code>bind(It first, It last) const</code></td>
+<td>绑定参数，参数个数必须等于 <code>?</code> 的个数</td>
+</tr>
+<tr>
+<td><code>statement::num_params</code></td>
+<td><code>unsigned num_params() const</code></td>
+<td>语句需要的参数个数</td>
+</tr>
+<tr>
+<td><code>statement::id</code></td>
+<td><code>unsigned id() const</code></td>
+<td>服务器端语句 ID（连接内唯一）</td>
+</tr>
+<tr>
+<td><code>statement::valid</code></td>
+<td><code>bool valid() const</code></td>
+<td>是否持有真实语句</td>
+</tr>
+<tr>
+<td><code>format_sql</code></td>
+<td><code>std::string format_sql(format_options, constant_string_view, Args...)</code></td>
+<td>直接生成 SQL 字符串</td>
+</tr>
+<tr>
+<td><code>format_sql_to</code></td>
+<td><code>void format_sql_to(format_context_base&amp;, constant_string_view, Args...)</code></td>
+<td>追加到格式化上下文</td>
+</tr>
+<tr>
+<td><code>runtime</code></td>
+<td><code>constant_string_view runtime(string_view)</code></td>
+<td>绕过 <code>consteval</code> 检查，用运行时字符串做格式串（慎用）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>statement</code> 是轻量句柄；<strong>析构不会</strong>释放服务器端语句，需要 <code>close_statement()</code> 或关闭连接。</li>
+<li><code>with_params</code> 的参数默认按值拷贝，想传引用用 <code>std::ref</code> &#x2F; <code>std::cref</code>（<code>std::reference_wrapper</code> 会被转换成引用）。</li>
+<li>格式化错误（占位符数量不匹配、类型不可格式化等）在<strong>执行时</strong>才报出，错误码形如 <code>client_errc::format_arg_not_found</code>、<code>format_string_invalid_specifier</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="结果集：results-row-row-view-rows-view-resultset-view"><a href="#结果集：results-row-row-view-rows-view-resultset-view" class="headerlink" title="结果集：results &#x2F; row &#x2F; row_view &#x2F; rows_view &#x2F; resultset_view"></a>结果集：<code>results</code> &#x2F; <code>row</code> &#x2F; <code>row_view</code> &#x2F; <code>rows_view</code> &#x2F; <code>resultset_view</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/results.hpp&gt;</code>、<code>&lt;boost/mysql/row.hpp&gt;</code>、<code>&lt;boost/mysql/row_view.hpp&gt;</code>、<code>&lt;boost/mysql/rows.hpp&gt;</code>、<code>&lt;boost/mysql/rows_view.hpp&gt;</code>、<code>&lt;boost/mysql/resultset.hpp&gt;</code>、<code>&lt;boost/mysql/resultset_view.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>results</code> 拥有结果内存；<code>*_view</code> 是非拥有视图，零拷贝访问。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>results::rows</code></td>
+<td><code>rows_view rows() const</code></td>
+<td>单结果集的所有行</td>
+</tr>
+<tr>
+<td><code>results::meta</code></td>
+<td><code>metadata_collection_view meta() const</code></td>
+<td>列元数据集合</td>
+</tr>
+<tr>
+<td><code>results::affected_rows</code></td>
+<td><code>std::uint64_t affected_rows() const</code></td>
+<td>受影响行数（不是匹配行数）</td>
+</tr>
+<tr>
+<td><code>results::last_insert_id</code></td>
+<td><code>std::uint64_t last_insert_id() const</code></td>
+<td>自增 ID</td>
+</tr>
+<tr>
+<td><code>results::warning_count</code></td>
+<td><code>unsigned warning_count() const</code></td>
+<td>警告数量（<strong>没有</strong> <code>warnings()</code> 成员）</td>
+</tr>
+<tr>
+<td><code>results::info</code></td>
+<td><code>string_view info() const</code></td>
+<td>服务器附加文本信息</td>
+</tr>
+<tr>
+<td><code>results::size</code> &#x2F; <code>at</code> &#x2F; <code>operator[]</code> &#x2F; <code>front</code> &#x2F; <code>back</code> &#x2F; <code>empty</code></td>
+<td></td>
+<td>多结果集容器接口，元素为 <code>resultset</code></td>
+</tr>
+<tr>
+<td><code>results::out_params</code></td>
+<td><code>rows_view out_params() const</code></td>
+<td>存储过程 OUT 参数</td>
+</tr>
+<tr>
+<td><code>results::has_value</code></td>
+<td><code>bool has_value() const</code></td>
+<td>是否持有有效结果（被移动后为 false）</td>
+</tr>
+<tr>
+<td><code>row::size</code> &#x2F; <code>empty</code></td>
+<td><code>std::size_t size() const</code></td>
+<td>字段个数</td>
+</tr>
+<tr>
+<td><code>row::at</code> &#x2F; <code>operator[]</code> &#x2F; <code>front</code> &#x2F; <code>back</code></td>
+<td>返回 <code>field_view</code></td>
+<td>元素访问（<code>at</code> 越界抛异常）</td>
+</tr>
+<tr>
+<td><code>row::as_vector</code></td>
+<td><code>std::vector&lt;field&gt; as_vector() const</code></td>
+<td>拷贝成拥有型 vector（脱离生命周期约束）</td>
+</tr>
+<tr>
+<td><code>row::operator row_view</code></td>
+<td></td>
+<td>转为视图</td>
+</tr>
+<tr>
+<td><code>rows_view::size</code> &#x2F; <code>at</code> &#x2F; <code>num_columns</code> &#x2F; <code>operator[]</code></td>
+<td></td>
+<td>二维视图访问</td>
+</tr>
+<tr>
+<td><code>resultset_view::rows</code> &#x2F; <code>meta</code> &#x2F; <code>affected_rows</code> &#x2F; <code>last_insert_id</code> &#x2F; <code>warning_count</code> &#x2F; <code>info</code></td>
+<td></td>
+<td>单个结果集的视图接口</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>视图指向 <code>results</code> 的内部缓冲区：<strong>只要 <code>results</code> 还活着且没有被复用</strong>，视图就有效。</li>
+<li>需要长期保存数据时用 <code>row{view}</code>、<code>field{view}</code>、<code>rows{view}</code> 或 <code>as_vector()</code> 做拷贝。</li>
+<li><code>results</code> 可以重复使用（复用内存），每次 <code>execute()</code> 会覆盖之前的内容；<code>clear()</code> 并不是公开成员，重用时直接再次传入即可。</li>
+</ol>
+</li>
+</ul>
+<h4 id="字段与元数据：field-field-view-field-kind-column-type-metadata"><a href="#字段与元数据：field-field-view-field-kind-column-type-metadata" class="headerlink" title="字段与元数据：field &#x2F; field_view &#x2F; field_kind &#x2F; column_type &#x2F; metadata"></a>字段与元数据：<code>field</code> &#x2F; <code>field_view</code> &#x2F; <code>field_kind</code> &#x2F; <code>column_type</code> &#x2F; <code>metadata</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/field.hpp&gt;</code>、<code>&lt;boost/mysql/field_view.hpp&gt;</code>、<code>&lt;boost/mysql/field_kind.hpp&gt;</code>、<code>&lt;boost/mysql/column_type.hpp&gt;</code>、<code>&lt;boost/mysql/metadata.hpp&gt;</code></li>
+<li><strong>作用</strong>：<code>field</code> &#x2F; <code>field_view</code> 是「variant」式的值容器；<code>metadata</code> 描述列。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>field::is_null</code> &#x2F; <code>is_int64</code> &#x2F; <code>is_uint64</code> &#x2F; <code>is_string</code> &#x2F; <code>is_blob</code> &#x2F; <code>is_float</code> &#x2F; <code>is_double</code> &#x2F; <code>is_date</code> &#x2F; <code>is_datetime</code> &#x2F; <code>is_time</code></td>
+<td><code>bool is_xxx() const</code></td>
+<td>类型判断；值为 NULL 时全部返回 <code>false</code>（用 <code>is_null()</code> 判断）</td>
+</tr>
+<tr>
+<td><code>field::as_int64</code> &#x2F; <code>as_uint64</code> &#x2F; <code>as_string</code> &#x2F; <code>as_blob</code> &#x2F; <code>as_float</code> &#x2F; <code>as_double</code> &#x2F; <code>as_date</code> &#x2F; <code>as_datetime</code> &#x2F; <code>as_time</code></td>
+<td>返回对应引用</td>
+<td><strong>checked</strong> 访问：类型不匹配时抛 <code>bad_field_access</code></td>
+</tr>
+<tr>
+<td><code>field::get_int64</code> &#x2F; <code>get_uint64</code> &#x2F; <code>get_string</code> &#x2F; <code>get_blob</code> &#x2F; <code>get_float</code> &#x2F; <code>get_double</code> &#x2F; <code>get_date</code> &#x2F; <code>get_datetime</code> &#x2F; <code>get_time</code></td>
+<td>返回对应引用</td>
+<td><strong>unchecked</strong> 访问：不做检查，类型不符是未定义行为</td>
+</tr>
+<tr>
+<td><code>field::kind</code></td>
+<td><code>field_kind kind() const</code></td>
+<td>运行期类型标签</td>
+</tr>
+<tr>
+<td><code>field</code> 构造</td>
+<td><code>field(int64_t)</code>, <code>field(std::string)</code>, <code>field(blob)</code>, <code>field(date)</code>, … 及 <code>field(field_view)</code></td>
+<td>构造拥有型字段（不提供字符指针构造，避免误当整数）</td>
+</tr>
+<tr>
+<td><code>field_kind</code> 枚举</td>
+<td><code>null</code>, <code>int64</code>, <code>uint64</code>, <code>string</code>, <code>blob</code>, <code>float_</code>, <code>double_</code>, <code>date</code>, <code>datetime</code>, <code>time</code></td>
+<td>值的可能种类</td>
+</tr>
+<tr>
+<td><code>column_type</code> 枚举</td>
+<td><code>tinyint</code>, <code>smallint</code>, <code>mediumint</code>, <code>int_</code>, <code>bigint</code>, <code>float_</code>, <code>double_</code>, <code>decimal</code>, <code>bit</code>, <code>year</code>, <code>time</code>, <code>date</code>, <code>datetime</code>, <code>timestamp</code>, <code>char_</code>, <code>varchar</code>, <code>binary</code>, <code>varbinary</code>, <code>blob</code>, <code>text</code>, <code>enum_</code>, <code>set</code>, <code>json</code>, <code>geometry</code>, …</td>
+<td>服务器端列类型</td>
+</tr>
+<tr>
+<td><code>metadata::column_name</code> &#x2F; <code>original_column_name</code></td>
+<td><code>string_view column_name() const</code></td>
+<td>列名 &#x2F; 原始列名（受 <code>metadata_mode</code> 影响）</td>
+</tr>
+<tr>
+<td><code>metadata::database</code> &#x2F; <code>table</code> &#x2F; <code>original_table</code></td>
+<td><code>string_view</code></td>
+<td>所属库&#x2F;表（受 <code>metadata_mode</code> 影响）</td>
+</tr>
+<tr>
+<td><code>metadata::type</code></td>
+<td><code>column_type type() const</code></td>
+<td>列类型</td>
+</tr>
+<tr>
+<td><code>metadata::column_length</code></td>
+<td><code>unsigned column_length() const</code></td>
+<td>列最大长度</td>
+</tr>
+<tr>
+<td><code>metadata::column_collation</code> &#x2F; <code>decimals</code></td>
+<td><code>unsigned</code></td>
+<td>排序规则 ID &#x2F; 小数位数</td>
+</tr>
+<tr>
+<td><code>metadata::is_primary_key</code> &#x2F; <code>is_auto_increment</code> &#x2F; <code>is_unique_key</code> &#x2F; <code>is_multiple_key</code> &#x2F; <code>is_not_null</code> &#x2F; <code>is_unsigned</code> &#x2F; <code>is_zerofill</code> &#x2F; <code>has_no_default_value</code> &#x2F; <code>is_set_to_now_on_update</code></td>
+<td><code>bool</code></td>
+<td>各种列标志</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>field</code> 拥有数据（<code>std::string</code> &#x2F; <code>blob</code>），可读写；<code>field_view</code> 非拥有且不可变。</li>
+<li>推荐先 <code>is_*()</code> 判断再 <code>as_*()</code>（安全），只有在性能敏感且能保证类型时用 <code>get_*()</code>。</li>
+<li><code>field</code> <strong>没有</strong> <code>type()</code> 成员；列类型请从 <code>metadata::type()</code> 获取（<code>field::kind()</code> 是 C++ 侧类型标签）。</li>
+<li>整型列映射到 <code>int64</code>&#x2F;<code>uint64</code>；<code>DECIMAL</code>、<code>JSON</code>、<code>ENUM</code>、<code>SET</code> 映射到 <code>string</code>；<code>BINARY</code>&#x2F;<code>BLOB</code>&#x2F;<code>GEOMETRY</code> 映射到 <code>blob</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="类型：date-datetime-time-days"><a href="#类型：date-datetime-time-days" class="headerlink" title="类型：date &#x2F; datetime &#x2F; time &#x2F; days"></a>类型：<code>date</code> &#x2F; <code>datetime</code> &#x2F; <code>time</code> &#x2F; <code>days</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/date.hpp&gt;</code>、<code>&lt;boost/mysql/datetime.hpp&gt;</code>、<code>&lt;boost/mysql/time.hpp&gt;</code>、<code>&lt;boost/mysql/days.hpp&gt;</code></li>
+<li><strong>作用</strong>：映射 MySQL 的 <code>DATE</code> &#x2F; <code>DATETIME</code>、<code>TIMESTAMP</code> &#x2F; <code>TIME</code> 类型。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>date</code> 构造 &#x2F; <code>year()</code> &#x2F; <code>month()</code> &#x2F; <code>day()</code></td>
+<td><code>date(int y, int m, int d)</code>；<code>int day() const</code></td>
+<td>1-based 月&#x2F;日；默认构造为零日期</td>
+</tr>
+<tr>
+<td><code>date::valid</code></td>
+<td><code>bool valid() const</code></td>
+<td>是否为有效日期</td>
+</tr>
+<tr>
+<td><code>date::as_time_point</code> &#x2F; <code>get_time_point</code></td>
+<td><code>time_point</code>（checked &#x2F; unchecked）</td>
+<td>转成 <code>std::chrono::time_point</code></td>
+</tr>
+<tr>
+<td><code>date::as_local_time_point</code> &#x2F; <code>get_local_time_point</code></td>
+<td><code>std::chrono::local_days</code></td>
+<td>转成本地日历类型（C++20）</td>
+</tr>
+<tr>
+<td><code>datetime</code> 构造 &#x2F; <code>year()</code> &#x2F; <code>month()</code> &#x2F; <code>day()</code> &#x2F; <code>hour()</code> &#x2F; <code>minute()</code> &#x2F; <code>second()</code> &#x2F; <code>microsecond()</code></td>
+<td><code>datetime(int y, int m, int d, int h, int min, int s, int us)</code></td>
+<td>微秒精度</td>
+</tr>
+<tr>
+<td><code>datetime::as_time_point</code> &#x2F; <code>get_time_point</code></td>
+<td><code>time_point</code></td>
+<td><code>datetime</code> 基于 UTC（<code>system_clock</code>）</td>
+</tr>
+<tr>
+<td><code>datetime::as_local_time_point</code> &#x2F; <code>get_local_time_point</code></td>
+<td><code>local_time_point</code></td>
+<td>按「无时区的墙上时间」解释</td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td><code>std::chrono::duration&lt;..., std::micro&gt;</code> 的别名</td>
+<td><code>TIME</code> 类型：微秒精度的有符号时长</td>
+</tr>
+<tr>
+<td><code>days</code></td>
+<td><code>using days = std::chrono::duration&lt;int, std::ratio&lt;3600*24&gt;&gt;</code></td>
+<td>一天（24 小时），可表示 MySQL 日期范围</td>
+</tr>
+<tr>
+<td><code>max_date</code> &#x2F; <code>min_date</code> &#x2F; <code>max_datetime</code> &#x2F; <code>min_datetime</code> &#x2F; <code>max_time</code> &#x2F; <code>min_time</code></td>
+<td>常量</td>
+<td>各类型取值范围</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li><code>datetime</code> 的 <code>time_point</code> 是 <strong>UTC</strong>（<code>std::chrono::system_clock</code>）；<code>local_time_point</code> 是「没有时区的墙上时间」。</li>
+<li><code>TIMESTAMP</code> 的读写受服务器会话变量 <code>time_zone</code> 影响，建议显式 <code>SET time_zone = &#39;+00:00&#39;</code> 保证可移植。</li>
+<li>库<strong>没有</strong>名为 <code>time_zone</code> 或 <code>microseconds</code> 的公开类型：时区由服务器变量 <code>time_zone</code> 控制；微秒精度由 <code>datetime::microsecond()</code> 与 <code>time</code>（<code>std::chrono::duration</code> 的微秒特化）体现。</li>
+<li><code>date</code> &#x2F; <code>datetime</code> 的 <code>as_*()</code> 为 checked 版本，<code>get_*()</code> 为 unchecked 版本，语义同 <code>field</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="错误：error-code-client-errc-diagnostics-error-with-diagnostics-with-diagnostics"><a href="#错误：error-code-client-errc-diagnostics-error-with-diagnostics-with-diagnostics" class="headerlink" title="错误：error_code &#x2F; client_errc &#x2F; diagnostics &#x2F; error_with_diagnostics &#x2F; with_diagnostics"></a>错误：<code>error_code</code> &#x2F; <code>client_errc</code> &#x2F; <code>diagnostics</code> &#x2F; <code>error_with_diagnostics</code> &#x2F; <code>with_diagnostics</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/error_code.hpp&gt;</code>、<code>&lt;boost/mysql/client_errc.hpp&gt;</code>、<code>&lt;boost/mysql/common_server_errc.hpp&gt;</code>、<code>&lt;boost/mysql/diagnostics.hpp&gt;</code>、<code>&lt;boost/mysql/error_with_diagnostics.hpp&gt;</code>、<code>&lt;boost/mysql/with_diagnostics.hpp&gt;</code></li>
+<li><strong>作用</strong>：统一的错误上报与诊断信息携带。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>error_code</code></td>
+<td><code>using error_code = boost::system::error_code</code></td>
+<td>与 Asio 完全兼容</td>
+</tr>
+<tr>
+<td><code>client_errc</code></td>
+<td><code>enum class client_errc : int</code></td>
+<td>客户端错误：<code>incomplete_message</code>、<code>protocol_value_error</code>、<code>unknown_auth_plugin</code>、<code>wrong_num_params</code>、<code>server_doesnt_support_ssl</code>、<code>max_buffer_size_exceeded</code>、<code>operation_in_progress</code>、<code>pool_not_running</code>、<code>pool_cancelled</code>、<code>no_connection_available</code>、<code>unformattable_value</code>、<code>format_arg_not_found</code>、<code>format_string_invalid_specifier</code> 等</td>
+</tr>
+<tr>
+<td><code>diagnostics::server_message</code></td>
+<td><code>string_view server_message() const</code></td>
+<td>服务器生成的错误文本（<strong>不可信</strong>，按连接字符集编码）</td>
+</tr>
+<tr>
+<td><code>diagnostics::client_message</code></td>
+<td><code>string_view client_message() const</code></td>
+<td>客户端生成的补充信息（例如列名列表）</td>
+</tr>
+<tr>
+<td><code>diagnostics::clear</code></td>
+<td><code>void clear()</code></td>
+<td>清空消息</td>
+</tr>
+<tr>
+<td><code>error_with_diagnostics::get_diagnostics</code></td>
+<td><code>const diagnostics&amp; get_diagnostics() const</code></td>
+<td>取出内嵌诊断</td>
+</tr>
+<tr>
+<td><code>error_with_diagnostics::code</code></td>
+<td><code>error_code code() const</code></td>
+<td>继承自 <code>boost::system::system_error</code></td>
+</tr>
+<tr>
+<td><code>with_diagnostics</code></td>
+<td><code>with_diagnostics(CompletionToken)</code></td>
+<td>包装完成令牌，让异步失败时抛出带诊断的异常（1.87+）</td>
+</tr>
+<tr>
+<td><code>is_fatal_error</code></td>
+<td><code>bool is_fatal_error(error_code) noexcept</code></td>
+<td>判断错误是否致命（需要重连）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>同步抛异常重载抛出的就是 <code>error_with_diagnostics</code>；<code>catch (const boost::mysql::error_with_diagnostics&amp;)</code> 即可拿到 <code>server_message()</code>。</li>
+<li><code>any_connection</code> &#x2F; <code>connection_pool</code> 的异步操作默认令牌是 <code>with_diagnostics(deferred)</code>，所以 <code>co_await</code> 出错时同样抛 <code>error_with_diagnostics</code>。</li>
+<li>想用 <code>error_code</code> 风格而不抛异常，请使用「带 <code>error_code&amp;</code>（以及可选 <code>diagnostics&amp;</code>）」的重载。</li>
+</ol>
+</li>
+</ul>
+<h4 id="SSL：ssl-mode-与-asio-ssl-context"><a href="#SSL：ssl-mode-与-asio-ssl-context" class="headerlink" title="SSL：ssl_mode 与 asio::ssl::context"></a>SSL：<code>ssl_mode</code> 与 <code>asio::ssl::context</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/ssl_mode.hpp&gt;</code>；SSL 上下文来自 Boost.Asio 的 <code>&lt;boost/asio/ssl/context.hpp&gt;</code></li>
+<li><strong>作用</strong>：控制是否&#x2F;如何加密连接。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ssl_mode::disable</code></td>
+<td>从不使用 TLS</td>
+</tr>
+<tr>
+<td><code>ssl_mode::enable</code></td>
+<td>服务器支持则用 TLS，否则回退明文（<strong>TCP 连接的默认值</strong>）</td>
+</tr>
+<tr>
+<td><code>ssl_mode::require</code></td>
+<td>必须使用 TLS，否则连接失败</td>
+</tr>
+<tr>
+<td><code>asio::ssl::context::set_verify_mode</code></td>
+<td>例如 <code>asio::ssl::verify_peer</code> 开启证书校验</td>
+</tr>
+<tr>
+<td><code>asio::ssl::context::load_verify_file</code> &#x2F; <code>set_default_verify_paths</code></td>
+<td>指定受信任 CA（文件 &#x2F; 系统默认路径）</td>
+</tr>
+<tr>
+<td><code>asio::ssl::context::set_verify_callback(asio::ssl::host_name_verification(&quot;cn&quot;))</code></td>
+<td>校验证书 CN&#x2F;SAN 与期望主机名一致</td>
+</tr>
+<tr>
+<td><code>any_connection_params::ssl_context</code></td>
+<td>把 <code>asio::ssl::context*</code> 传给 <code>any_connection</code>（连接不拥有它，必须保证生命周期）</td>
+</tr>
+<tr>
+<td><code>pool_params::ssl_ctx</code></td>
+<td>传给连接池（池<strong>取得所有权</strong>）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>库的 <code>ssl_mode</code> 只有 <code>disable</code> &#x2F; <code>enable</code> &#x2F; <code>require</code> 三个值；<strong>没有</strong> <code>verify_ca</code> &#x2F; <code>verify_identity</code> 枚举值。MySQL 命令行客户端的 <code>--ssl-mode=VERIFY_CA|VERIFY_IDENTITY</code> 语义，在 Boost.MySQL 中通过 <code>asio::ssl::context</code> 的 <code>set_verify_mode</code> + <code>load_verify_file</code>（VERIFY_CA）和 <code>host_name_verification</code>（VERIFY_IDENTITY）组合实现。</li>
+<li>不传 <code>ssl::context</code> 时库会内部创建一个<strong>不做证书校验</strong>的上下文。</li>
+<li>UNIX socket 连接永不使用 TLS。</li>
+</ol>
+</li>
+</ul>
+<h4 id="连接池：connection-pool-pool-params-pooled-connection-pool-charset-strategy"><a href="#连接池：connection-pool-pool-params-pooled-connection-pool-charset-strategy" class="headerlink" title="连接池：connection_pool &#x2F; pool_params &#x2F; pooled_connection &#x2F; pool_charset_strategy"></a>连接池：<code>connection_pool</code> &#x2F; <code>pool_params</code> &#x2F; <code>pooled_connection</code> &#x2F; <code>pool_charset_strategy</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/mysql/connection_pool.hpp&gt;</code>、<code>&lt;boost/mysql/pool_params.hpp&gt;</code></li>
+<li><strong>作用</strong>：复用长连接、内建重连与状态重置（Boost 1.85+，<strong>只支持 <code>any_connection</code></strong>）。</li>
+<li><strong>关键成员</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>签名（简化）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>connection_pool</code> 构造</td>
+<td><code>connection_pool(ExecutionContext&amp;, pool_params)</code></td>
+<td>池本身不是线程安全的（除非 <code>thread_safe=true</code>）</td>
+</tr>
+<tr>
+<td><code>async_run</code></td>
+<td><code>void async_run(CompletionToken)</code></td>
+<td>启动池任务，<strong>每个池只能调用一次</strong>；默认永久运行</td>
+</tr>
+<tr>
+<td><code>async_get_connection</code></td>
+<td><code>pooled_connection async_get_connection(CompletionToken)</code></td>
+<td>取连接；可用 <code>asio::cancel_after</code> 设置超时</td>
+</tr>
+<tr>
+<td><code>cancel</code></td>
+<td><code>void cancel()</code></td>
+<td>停止池（清理关闭时使用）</td>
+</tr>
+<tr>
+<td><code>valid</code> &#x2F; <code>get_executor</code></td>
+<td></td>
+<td>是否处于 moved-from 状态 &#x2F; 取执行器</td>
+</tr>
+<tr>
+<td><code>pool_params::server_address</code> &#x2F; <code>username</code> &#x2F; <code>password</code> &#x2F; <code>database</code></td>
+<td></td>
+<td>与 <code>connect_params</code> 同义</td>
+</tr>
+<tr>
+<td><code>pool_params::initial_size</code> &#x2F; <code>max_size</code></td>
+<td><code>std::size_t</code></td>
+<td>初始连接数（默认 1）&#x2F; 上限（默认 151）</td>
+</tr>
+<tr>
+<td><code>pool_params::thread_safe</code></td>
+<td><code>bool</code></td>
+<td>为 <code>true</code> 时用 strand 保护池状态</td>
+</tr>
+<tr>
+<td><code>pool_params::retry_interval</code> &#x2F; <code>ping_interval</code> &#x2F; <code>ping_timeout</code> &#x2F; <code>connect_timeout</code></td>
+<td>时间间隔</td>
+<td>重连间隔 &#x2F; 健康检查间隔（0 关闭 ping）&#x2F; ping 与 reset 超时 &#x2F; 连接超时</td>
+</tr>
+<tr>
+<td><code>pool_params::ssl</code> &#x2F; <code>ssl_ctx</code></td>
+<td></td>
+<td>TLS 策略与上下文（池取得 <code>ssl_ctx</code> 所有权）</td>
+</tr>
+<tr>
+<td><code>pool_params::charset_strategy</code></td>
+<td><code>pool_charset_strategy</code></td>
+<td><code>set_to_utf8mb4()</code>（默认）或 <code>use_server_default(charset)</code></td>
+</tr>
+<tr>
+<td><code>pool_params::multi_queries</code> &#x2F; <code>initial_buffer_size</code> &#x2F; <code>connection_executor</code></td>
+<td></td>
+<td>多语句 &#x2F; 连接缓冲初值 &#x2F; 连接所用执行器</td>
+</tr>
+<tr>
+<td><code>pooled_connection::operator-&gt;</code> &#x2F; <code>get</code></td>
+<td>返回 <code>any_connection&amp;</code></td>
+<td>访问底层连接</td>
+</tr>
+<tr>
+<td><code>pooled_connection::return_without_reset</code></td>
+<td><code>void return_without_reset()</code></td>
+<td>归还连接并<strong>跳过</strong>状态重置</td>
+</tr>
+<tr>
+<td><code>pooled_connection::valid</code></td>
+<td><code>bool valid() const</code></td>
+<td>是否持有连接</td>
+</tr>
+<tr>
+<td><code>pool_charset_strategy::set_to_utf8mb4</code> &#x2F; <code>use_server_default</code></td>
+<td>静态工厂</td>
+<td>归还连接时发 <code>SET NAMES utf8mb4</code> &#x2F; 依赖服务器默认字符集</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>归还连接时会执行 <code>async_reset_connection</code> + 恢复字符集 <code>utf8mb4</code>（在后台进行，不影响取连接的延迟）；重置会回滚未提交事务、释放预处理语句、清空变量。</li>
+<li>池的连接<strong>生命周期状态机</strong>：<code>pending_connect → idle → in_use → pending_reset → idle</code>，空闲超过 <code>ping_interval</code> 会进入 <code>pending_ping</code> 做健康检查，失败则回到 <code>pending_connect</code>。</li>
+<li><code>pooled_connection</code> 析构即归还；<code>pooled_connection</code> 与它指向的连接即使池是 <code>thread_safe</code> 也<strong>不可跨线程共享</strong>。</li>
+<li>池只暴露异步接口；同步代码可以用 <code>asio::use_future</code> 转换（见官方文档对应小节）。</li>
+</ol>
+</li>
+</ul>
+<h4 id="异步完成令牌：use-awaitable-deferred-with-diagnostics"><a href="#异步完成令牌：use-awaitable-deferred-with-diagnostics" class="headerlink" title="异步完成令牌：use_awaitable &#x2F; deferred &#x2F; with_diagnostics"></a>异步完成令牌：<code>use_awaitable</code> &#x2F; <code>deferred</code> &#x2F; <code>with_diagnostics</code></h4><ul>
+<li><strong>头文件</strong>：<code>&lt;boost/asio/use_awaitable.hpp&gt;</code>、<code>&lt;boost/asio/deferred.hpp&gt;</code>、<code>&lt;boost/mysql/with_diagnostics.hpp&gt;</code></li>
+<li><strong>作用</strong>：决定 <code>async_*</code> 函数如何返回结果。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>令牌</th>
+<th>用法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>asio::use_awaitable</code></td>
+<td><code>co_await conn.async_execute(sql, result, asio::use_awaitable)</code></td>
+<td>协程风格，出错抛 <code>boost::system::system_error</code>（<strong>不带</strong>诊断信息）</td>
+</tr>
+<tr>
+<td><code>with_diagnostics(asio::use_awaitable)</code></td>
+<td><code>co_await conn.async_execute(sql, result, mysql::with_diagnostics(asio::use_awaitable))</code></td>
+<td>协程风格且抛出 <code>error_with_diagnostics</code></td>
+</tr>
+<tr>
+<td><code>asio::deferred</code></td>
+<td><code>auto op = conn.async_execute(sql, result, asio::deferred);</code></td>
+<td>延迟执行，稍后用 <code>op(token)</code> 启动</td>
+</tr>
+<tr>
+<td><code>with_diagnostics(asio::deferred)</code></td>
+<td>默认令牌</td>
+<td><code>any_connection</code> &#x2F; <code>connection_pool</code> 的异步操作默认使用它，直接 <code>co_await</code> 即可获得诊断信息</td>
+</tr>
+<tr>
+<td>回调</td>
+<td><code>conn.async_execute(sql, result, [](error_code ec, results&amp; r){...})</code></td>
+<td>传统回调风格</td>
+</tr>
+<tr>
+<td><code>asio::as_tuple(asio::use_awaitable)</code></td>
+<td><code>auto [ec] = co_await conn.async_execute(sql, result, asio::as_tuple(asio::use_awaitable));</code></td>
+<td>返回 <code>std::tuple</code>，不抛异常</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>要点</strong>：<ol>
+<li>省略令牌时 <code>any_connection</code> 使用 <code>with_diagnostics(deferred)</code>；因此 <code>co_await conn.async_xxx(...)</code> 会抛出 <code>error_with_diagnostics</code>。</li>
+<li>使用 <code>asio::use_awaitable</code> 时不要忘了它要求协程的返回类型是 <code>asio::awaitable&lt;T&gt;</code>。</li>
+<li>想同时拿到 <code>error_code</code> 与诊断信息，可用带 <code>diagnostics&amp;</code> 参数的重载：<code>co_await conn.async_execute(sql, result, diag)</code>。</li>
+</ol>
+</li>
+</ul>
+<hr>
+<h2 id="5-使用流程"><a href="#5-使用流程" class="headerlink" title="5. 使用流程"></a>5. 使用流程</h2><h3 id="5-1-同步：连接-→-查询-→-关闭"><a href="#5-1-同步：连接-→-查询-→-关闭" class="headerlink" title="5.1 同步：连接 → 查询 → 关闭"></a>5.1 同步：连接 → 查询 → 关闭</h3><ol>
+<li>创建 <code>asio::io_context ctx</code>（所有 I&#x2F;O 对象的宿主）。</li>
+<li>构造 <code>mysql::any_connection conn(ctx)</code>（若要校验证书，构造时传入 <code>mysql::any_connection_params{&amp;ssl_ctx}</code>）。</li>
+<li>填充 <code>mysql::connect_params params</code>：<code>server_address</code>（host+port 或 unix path）、<code>username</code>、<code>password</code>、<code>database</code>、可选 <code>ssl</code>。</li>
+<li><code>conn.connect(params);</code> —— 解析、TCP、TLS、握手、认证一步完成；失败抛 <code>error_with_diagnostics</code>。</li>
+<li>准备一个 <code>mysql::results result;</code>，调用 <code>conn.execute(sql, result);</code>（或 <code>conn.execute(stmt.bind(args...), result);</code>）。</li>
+<li>从 <code>result.rows()</code> &#x2F; <code>result.meta()</code> &#x2F; <code>result.affected_rows()</code> 读取数据；需要保留的数据用 <code>as_vector()</code> 或 <code>row{view}</code> 拷贝。</li>
+<li>结束前 <code>conn.close();</code>（发 QUIT + TLS shutdown + 关闭 socket）。若 <code>close()</code> 抛异常，可以忽略并直接析构（析构会关闭底层传输，不会泄漏资源）。</li>
+<li>同步模式下 <code>io_context::run()</code> 不是必须的（同步函数内部会驱动必要的 I&#x2F;O）。</li>
+</ol>
+<h3 id="5-2-异步（C-20-协程）：连接-→-查询-→-关闭"><a href="#5-2-异步（C-20-协程）：连接-→-查询-→-关闭" class="headerlink" title="5.2 异步（C++20 协程）：连接 → 查询 → 关闭"></a>5.2 异步（C++20 协程）：连接 → 查询 → 关闭</h3><ol>
+<li>写一个 <code>asio::awaitable&lt;void&gt;</code> 协程，参数里传入 <code>mysql::any_connection&amp;</code>。</li>
+<li>用 <code>co_await conn.async_connect(params);</code> 建立连接（出错抛 <code>error_with_diagnostics</code>）。</li>
+<li>用 <code>co_await conn.async_execute(sql, result);</code> 执行查询。</li>
+<li>在 <code>main</code> 中用 <code>asio::co_spawn(ctx, coro(), [](std::exception_ptr e){ if (e) std::rethrow_exception(e); });</code> 启动协程。</li>
+<li>调用 <code>ctx.run();</code> <strong>驱动事件循环</strong>——忘记它协程永远不会推进。</li>
+<li><code>co_await conn.async_close();</code> 干净关闭；随后 <code>ctx.run()</code> 返回。</li>
+</ol>
+<blockquote>
+<p>变体：C++11 可用回调（<code>conn.async_execute(sql, result, [](error_code, results&amp;){...})</code>）或栈式协程（<code>asio::spawn</code> + <code>yield_context</code>）。</p>
+</blockquote>
+<h3 id="5-3-预处理语句：prepare-→-execute-→-读结果"><a href="#5-3-预处理语句：prepare-→-execute-→-读结果" class="headerlink" title="5.3 预处理语句：prepare → execute → 读结果"></a>5.3 预处理语句：prepare → execute → 读结果</h3><ol>
+<li><code>mysql::statement stmt = conn.prepare_statement(&quot;SELECT a, b FROM t WHERE id = ?&quot;);</code>（异步：<code>co_await conn.async_prepare_statement(sql)</code>）。</li>
+<li>检查 <code>stmt.valid()</code> 与 <code>stmt.num_params()</code>（应等于 SQL 中 <code>?</code> 的个数）。</li>
+<li><code>mysql::results result; conn.execute(stmt.bind(id), result);</code>（异步：<code>co_await conn.async_execute(stmt.bind(id), result)</code>）。</li>
+<li>遍历 <code>result.rows()</code>，用 <code>row_view::at(i)</code> &#x2F; <code>field_view::as_*()</code> 取值。</li>
+<li>需要时重复第 3 步（同一语句可复用，参数可不同）。</li>
+<li>用 <code>conn.close_statement(stmt);</code>（异步 <code>co_await conn.async_close_statement(stmt)</code>）释放服务器端资源；连接关闭时也会自动释放。</li>
+</ol>
+<h3 id="5-4-连接池：run-→-get-connection-→-使用-→-归还"><a href="#5-4-连接池：run-→-get-connection-→-使用-→-归还" class="headerlink" title="5.4 连接池：run → get_connection → 使用 → 归还"></a>5.4 连接池：run → get_connection → 使用 → 归还</h3><ol>
+<li>构造 <code>mysql::pool_params params</code>（地址、账号、库、<code>initial_size</code>、<code>max_size</code>、TLS、字符集策略、线程安全等）。</li>
+<li><code>mysql::connection_pool pool(ctx, std::move(params));</code>。</li>
+<li><code>pool.async_run(asio::detached);</code> —— <strong>每个池只能调用一次</strong>，它负责建连与保活。</li>
+<li>处理中：<code>mysql::pooled_connection conn = co_await pool.async_get_connection(asio::cancel_after(std::chrono::seconds(5)));</code>。</li>
+<li>用 <code>conn-&gt;async_execute(...)</code> 正常使用（<code>operator-&gt;</code> 得到 <code>any_connection&amp;</code>）。</li>
+<li>归还：让 <code>conn</code> 析构（会自动 reset），或 <code>conn.return_without_reset();</code> 明确跳过 reset（确定没有修改会话状态时）。</li>
+<li>关闭：<code>pool.cancel();</code>（通常在 <code>signal_set</code> 的回调里），然后 <code>ctx.run()</code> 返回、池析构。</li>
+</ol>
+<h3 id="5-5-多函数操作（分批读大结果集）"><a href="#5-5-多函数操作（分批读大结果集）" class="headerlink" title="5.5 多函数操作（分批读大结果集）"></a>5.5 多函数操作（分批读大结果集）</h3><ol>
+<li><code>mysql::execution_state st; co_await conn.async_start_execution(sql, st);</code></li>
+<li>循环：<code>while (!st.complete()) { if (st.should_read_rows()) { mysql::rows_view batch = co_await conn.async_read_some_rows(st); /* 处理这一批 */ } else if (st.should_read_head()) { co_await conn.async_read_resultset_head(st); } }</code></li>
+<li>每批行只在下一次网络操作前有效，需要保留请立即拷贝。</li>
+<li>多结果集场景同样用该循环，<code>st.meta()</code> 给出当前结果集的列元数据。</li>
+</ol>
+<hr>
+<h2 id="6-代码示例"><a href="#6-代码示例" class="headerlink" title="6. 代码示例"></a>6. 代码示例</h2><blockquote>
+<p>所有示例都假设你有一个可连接的 MySQL 服务器。示例 1~5、8 使用 <code>SELECT</code> 字面量或 <code>boost_mysql_examples</code> 库，不需要额外建表。<br>编译命令统一为（<code>/path/to/boost</code> 换成你的 Boost 头文件目录）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ -std=c++17 -O2 -I/path/to/boost &lt;file&gt;.cpp -o &lt;file&gt; -lssl -lcrypto -lpthread<br><span class="hljs-comment"># 示例 4、7 需要 C++20：把 -std=c++17 换成 -std=c++20</span><br></code></pre></td></tr></table></figure></blockquote>
+<h3 id="示例-1：同步最小示例（连接-SELECT-Hello-MySQL-）"><a href="#示例-1：同步最小示例（连接-SELECT-Hello-MySQL-）" class="headerlink" title="示例 1：同步最小示例（连接 + SELECT &#39;Hello MySQL&#39;）"></a>示例 1：同步最小示例（连接 + <code>SELECT &#39;Hello MySQL&#39;</code>）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：官方 Tutorial 1（tutorial_sync.cpp）最小化改写</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connect_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 用法: ./example1 &lt;username&gt; &lt;password&gt; &lt;server-hostname&gt;</span><br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">4</span>)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &quot;</span> &lt;&lt; argv[<span class="hljs-number">0</span>] &lt;&lt; <span class="hljs-string">&quot; &lt;username&gt; &lt;password&gt; &lt;server-hostname&gt;\n&quot;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-keyword">try</span><br>    &#123;<br>        asio::io_context ctx;                 <span class="hljs-comment">// 执行上下文</span><br>        <span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx)</span></span>;      <span class="hljs-comment">// 连接对象</span><br><br>        mysql::connect_params params;<br>        params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(argv[<span class="hljs-number">3</span>]);<br>        params.username = argv[<span class="hljs-number">1</span>];<br>        params.password = argv[<span class="hljs-number">2</span>];<br><br>        conn.<span class="hljs-built_in">connect</span>(params);                 <span class="hljs-comment">// 解析 + TCP + TLS + 握手 + 认证</span><br><br>        <span class="hljs-type">const</span> <span class="hljs-type">char</span>* sql = <span class="hljs-string">&quot;SELECT &#x27;Hello MySQL&#x27;&quot;</span>;<br>        mysql::results result;<br>        conn.<span class="hljs-built_in">execute</span>(sql, result);            <span class="hljs-comment">// 文本查询</span><br><br>        std::cout &lt;&lt; result.<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>) &lt;&lt; std::endl;   <span class="hljs-comment">// field_view 可直接输出</span><br><br>        conn.<span class="hljs-built_in">close</span>();                         <span class="hljs-comment">// 发送 QUIT 并关闭</span><br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> mysql::error_with_diagnostics&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;, code: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">code</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;Server diagnostics: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">get_diagnostics</span>().<span class="hljs-built_in">server_message</span>() &lt;&lt; std::endl;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-2：同步查询多行结果并遍历-results-rows-row"><a href="#示例-2：同步查询多行结果并遍历-results-rows-row" class="headerlink" title="示例 2：同步查询多行结果并遍历 results.rows() &#x2F; row"></a>示例 2：同步查询多行结果并遍历 <code>results.rows()</code> &#x2F; <code>row</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 演示：rows_view / row_view / field_view 遍历，以及 as_vector() 拷贝</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connect_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/field_view.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/row.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">4</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;host&gt;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">try</span><br>    &#123;<br>        asio::io_context ctx;<br>        <span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx)</span></span>;<br><br>        mysql::connect_params params;<br>        params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(argv[<span class="hljs-number">3</span>]);<br>        params.username = argv[<span class="hljs-number">1</span>];<br>        params.password = argv[<span class="hljs-number">2</span>];<br>        conn.<span class="hljs-built_in">connect</span>(params);<br><br>        <span class="hljs-comment">// 不需要建表：用 UNION ALL 造出多行数据</span><br>        mysql::results result;<br>        conn.<span class="hljs-built_in">execute</span>(<br>            <span class="hljs-string">&quot;SELECT 1 AS id, &#x27;Alice&#x27; AS name, 1200.5 AS salary &quot;</span><br>            <span class="hljs-string">&quot;UNION ALL SELECT 2, &#x27;Bob&#x27;, 900.0 &quot;</span><br>            <span class="hljs-string">&quot;UNION ALL SELECT 3, &#x27;Carol&#x27;, NULL&quot;</span>,<br>            result);<br><br>        <span class="hljs-comment">// 遍历（零拷贝视图）</span><br>        <span class="hljs-keyword">for</span> (mysql::row_view r : result.<span class="hljs-built_in">rows</span>())<br>        &#123;<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;id=&quot;</span> &lt;&lt; r.<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>) &lt;&lt; <span class="hljs-string">&quot; name=&quot;</span> &lt;&lt; r.<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>);<br>            <span class="hljs-keyword">if</span> (r.<span class="hljs-built_in">at</span>(<span class="hljs-number">2</span>).<span class="hljs-built_in">is_null</span>())<br>                std::cout &lt;&lt; <span class="hljs-string">&quot; salary=NULL&quot;</span>;<br>            <span class="hljs-keyword">else</span><br>                std::cout &lt;&lt; <span class="hljs-string">&quot; salary=&quot;</span> &lt;&lt; r.<span class="hljs-built_in">at</span>(<span class="hljs-number">2</span>).<span class="hljs-built_in">as_double</span>();<br>            std::cout &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        &#125;<br><br>        <span class="hljs-comment">// 需要把数据保存到 result 之外时，做一次拷贝</span><br>        std::vector&lt;mysql::row&gt; saved;<br>        <span class="hljs-keyword">for</span> (mysql::row_view r : result.<span class="hljs-built_in">rows</span>())<br>            saved.<span class="hljs-built_in">push_back</span>(mysql::<span class="hljs-built_in">row</span>(r));      <span class="hljs-comment">// row&#123;row_view&#125; 拥有数据</span><br>        std::cout &lt;&lt; <span class="hljs-string">&quot;saved rows: &quot;</span> &lt;&lt; saved.<span class="hljs-built_in">size</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        <span class="hljs-comment">// 也可以整体拷成 std::vector&lt;field&gt;</span><br>        std::vector&lt;mysql::field&gt; first_row = saved[<span class="hljs-number">0</span>].<span class="hljs-built_in">as_vector</span>();<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;first row fields: &quot;</span> &lt;&lt; first_row.<span class="hljs-built_in">size</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        conn.<span class="hljs-built_in">close</span>();<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-3：预处理语句-参数绑定"><a href="#示例-3：预处理语句-参数绑定" class="headerlink" title="示例 3：预处理语句 + 参数绑定"></a>示例 3：预处理语句 + 参数绑定</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：官方 example/prepared_statements（同步化最小改写）</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connect_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/statement.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">4</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;host&gt;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">try</span><br>    &#123;<br>        asio::io_context ctx;<br>        <span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx)</span></span>;<br><br>        mysql::connect_params params;<br>        params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(argv[<span class="hljs-number">3</span>]);<br>        params.username = argv[<span class="hljs-number">1</span>];<br>        params.password = argv[<span class="hljs-number">2</span>];<br>        conn.<span class="hljs-built_in">connect</span>(params);<br><br>        <span class="hljs-comment">// 1) 服务器端准备语句（二进制协议）</span><br>        mysql::statement stmt = conn.<span class="hljs-built_in">prepare_statement</span>(<span class="hljs-string">&quot;SELECT ? AS name, ? AS salary, ? AS hired&quot;</span>);<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;statement id=&quot;</span> &lt;&lt; stmt.<span class="hljs-built_in">id</span>()<br>                  &lt;&lt; <span class="hljs-string">&quot; num_params=&quot;</span> &lt;&lt; stmt.<span class="hljs-built_in">num_params</span>()<br>                  &lt;&lt; <span class="hljs-string">&quot; valid=&quot;</span> &lt;&lt; stmt.<span class="hljs-built_in">valid</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        <span class="hljs-comment">// 2) 绑定参数并执行；参数个数必须与 ? 个数一致</span><br>        mysql::results result;<br>        conn.<span class="hljs-built_in">execute</span>(stmt.<span class="hljs-built_in">bind</span>(<span class="hljs-string">&quot;Juan&quot;</span>, <span class="hljs-number">35000.0</span>, <span class="hljs-string">&quot;2024-01-15&quot;</span>), result);<br><br>        <span class="hljs-comment">// 3) 读结果</span><br>        mysql::row_view row = result.<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>);<br>        std::cout &lt;&lt; row.<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>) &lt;&lt; <span class="hljs-string">&quot; &quot;</span> &lt;&lt; row.<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>) &lt;&lt; <span class="hljs-string">&quot; &quot;</span> &lt;&lt; row.<span class="hljs-built_in">at</span>(<span class="hljs-number">2</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        <span class="hljs-comment">// 4) 同一语句可以复用（参数不同）</span><br>        mysql::results result2;<br>        conn.<span class="hljs-built_in">execute</span>(stmt.<span class="hljs-built_in">bind</span>(<span class="hljs-string">&quot;Pepito&quot;</span>, <span class="hljs-number">42000.5</span>, <span class="hljs-string">&quot;2023-11-02&quot;</span>), result2);<br>        std::cout &lt;&lt; result<span class="hljs-number">2.</span><span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        <span class="hljs-comment">// 5) 显式释放服务器端语句（连接关闭时也会自动释放）</span><br>        conn.<span class="hljs-built_in">close_statement</span>(stmt);<br><br>        conn.<span class="hljs-built_in">close</span>();<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> mysql::error_with_diagnostics&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;, code: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">code</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;Server diagnostics: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">get_diagnostics</span>().<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-4：C-20-协程异步（co-await-conn-async-execute-with-params）"><a href="#示例-4：C-20-协程异步（co-await-conn-async-execute-with-params）" class="headerlink" title="示例 4：C++20 协程异步（co_await conn-&gt;async_execute(...) + with_params）"></a>示例 4：C++20 协程异步（<code>co_await conn-&gt;async_execute(...)</code> + <code>with_params</code>）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：官方 tutorial_with_params / tutorial_async，需 C++20</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 -O2 -I/path/to/boost example4.cpp -o example4 -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connect_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/with_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/awaitable.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/this_coro.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string_view&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-function">asio::awaitable&lt;<span class="hljs-type">void</span>&gt; <span class="hljs-title">coro_main</span><span class="hljs-params">(std::string_view host, std::string_view user,</span></span><br><span class="hljs-params"><span class="hljs-function">                                std::string_view pass, std::<span class="hljs-type">int64_t</span> min_salary)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 使用与当前协程相同的执行器</span><br>    <span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(<span class="hljs-keyword">co_await</span> asio::this_coro::executor)</span></span>;<br><br>    mysql::connect_params params;<br>    params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(std::<span class="hljs-built_in">string</span>(host));<br>    params.username = user;<br>    params.password = pass;<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_connect</span>(params);           <span class="hljs-comment">// 出错抛 error_with_diagnostics</span><br><br>    <span class="hljs-comment">// with_params：客户端安全格式化，&#123;&#125; 占位符（Boost 1.87+）</span><br>    mysql::results result;<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_execute</span>(<br>        mysql::<span class="hljs-built_in">with_params</span>(<span class="hljs-string">&quot;SELECT ? + 1 AS next_value, &#123;&#125; AS min_salary&quot;</span>, <span class="hljs-number">41</span>, min_salary),<br>        result);<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;next_value=&quot;</span> &lt;&lt; result.<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>)<br>              &lt;&lt; <span class="hljs-string">&quot; min_salary=&quot;</span> &lt;&lt; result.<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_close</span>();                  <span class="hljs-comment">// QUIT + TLS shutdown + 关闭</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">main_impl</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">5</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;host&gt; &lt;min-salary&gt;\n&quot;</span>; <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>); &#125;<br><br>    asio::io_context ctx;<br>    asio::<span class="hljs-built_in">co_spawn</span>(ctx,<br>        [=] &#123; <span class="hljs-keyword">return</span> <span class="hljs-built_in">coro_main</span>(argv[<span class="hljs-number">3</span>], argv[<span class="hljs-number">1</span>], argv[<span class="hljs-number">2</span>], std::<span class="hljs-built_in">stoll</span>(argv[<span class="hljs-number">4</span>])); &#125;,<br>        [](std::exception_ptr ptr) &#123; <span class="hljs-keyword">if</span> (ptr) std::<span class="hljs-built_in">rethrow_exception</span>(ptr); &#125;);<br><br>    ctx.<span class="hljs-built_in">run</span>();                                    <span class="hljs-comment">// 必须运行事件循环</span><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Done\n&quot;</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">try</span> &#123; <span class="hljs-built_in">main_impl</span>(argc, argv); &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> mysql::error_with_diagnostics&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;, code: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">code</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;Server diagnostics: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">get_diagnostics</span>().<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-5：错误处理（error-code-diagnostics，含致命错误判断）"><a href="#示例-5：错误处理（error-code-diagnostics，含致命错误判断）" class="headerlink" title="示例 5：错误处理（error_code + diagnostics，含致命错误判断）"></a>示例 5：错误处理（<code>error_code</code> + <code>diagnostics</code>，含致命错误判断）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 演示四种错误处理方式中的「同步 + error_code + diagnostics」</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/client_errc.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connect_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_code.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">4</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;host&gt;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br><br>    asio::io_context ctx;<br>    <span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx)</span></span>;<br><br>    mysql::connect_params params;<br>    params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(argv[<span class="hljs-number">3</span>]);<br>    params.username = argv[<span class="hljs-number">1</span>];<br>    params.password = argv[<span class="hljs-number">2</span>];<br><br>    mysql::diagnostics diag;<br>    boost::system::error_code ec;<br><br>    <span class="hljs-comment">// 1) 带 error_code + diagnostics 的同步重载：不抛异常</span><br>    conn.<span class="hljs-built_in">connect</span>(params, ec, diag);<br>    <span class="hljs-keyword">if</span> (ec)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;connect failed: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="hljs-string">&quot; (&quot;</span> &lt;&lt; ec.<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;)\n&quot;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;  client_message: &quot;</span> &lt;&lt; diag.<span class="hljs-built_in">client_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;  server_message: &quot;</span> &lt;&lt; diag.<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br><br>    mysql::results result;<br>    diag.<span class="hljs-built_in">clear</span>();<br>    ec.<span class="hljs-built_in">clear</span>();<br><br>    <span class="hljs-comment">// 2) 故意访问不存在的表：服务器会返回 ER_NO_SUCH_TABLE（非致命错误）</span><br>    conn.<span class="hljs-built_in">execute</span>(<span class="hljs-string">&quot;SELECT * FROM no_such_table_here&quot;</span>, result, ec, diag);<br>    <span class="hljs-keyword">if</span> (ec)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;query failed: &quot;</span> &lt;&lt; ec &lt;&lt; <span class="hljs-string">&quot; (&quot;</span> &lt;&lt; ec.<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;)\n&quot;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;  server_message: &quot;</span> &lt;&lt; diag.<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        <span class="hljs-keyword">if</span> (mysql::<span class="hljs-built_in">is_fatal_error</span>(ec))<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;  =&gt; fatal: 连接状态未知，必须重连\n&quot;</span>;<br>        <span class="hljs-keyword">else</span><br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;  =&gt; non-fatal: 连接仍可继续使用\n&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 3) 非致命错误后连接仍然可用</span><br>    ec.<span class="hljs-built_in">clear</span>();<br>    diag.<span class="hljs-built_in">clear</span>();<br>    conn.<span class="hljs-built_in">execute</span>(<span class="hljs-string">&quot;SELECT 1&quot;</span>, result, ec, diag);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;still usable: &quot;</span> &lt;&lt; !ec &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>    <span class="hljs-comment">// 4) 客户端错误码示例</span><br>    boost::system::error_code client_err = mysql::client_errc::wrong_num_params;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;client_errc::wrong_num_params -&gt; &quot;</span> &lt;&lt; client_err.<span class="hljs-built_in">message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>    conn.<span class="hljs-built_in">close</span>(ec, diag);   <span class="hljs-comment">// close() 无参重载或 close(error_code&amp;, diagnostics&amp;)</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-6：SSL-连接（ssl-context-证书校验）"><a href="#示例-6：SSL-连接（ssl-context-证书校验）" class="headerlink" title="示例 6：SSL 连接（ssl::context + 证书校验）"></a>示例 6：SSL 连接（<code>ssl::context</code> + 证书校验）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：官方 example/tls_certificate_verification（同步化最小改写）</span><br><span class="hljs-comment">// 运行前提：服务器的证书由 ca.pem 签发，且 CN/SAN 与期望主机名一致</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connect_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/ssl_mode.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/ssl/context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/ssl/host_name_verification.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 用法: ./example6 &lt;username&gt; &lt;password&gt; &lt;host&gt; &lt;ca-cert-path&gt;</span><br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">5</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;host&gt; &lt;ca-cert-path&gt;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">try</span><br>    &#123;<br>        asio::io_context ctx;<br><br>        <span class="hljs-comment">// SSL 上下文：TLS 客户端 + 开启证书校验</span><br>        asio::<span class="hljs-function">ssl::context <span class="hljs-title">ssl_ctx</span><span class="hljs-params">(asio::ssl::context::tls_client)</span></span>;<br>        ssl_ctx.<span class="hljs-built_in">set_verify_mode</span>(asio::ssl::verify_peer);       <span class="hljs-comment">// 要求服务器提供可验证的证书</span><br>        ssl_ctx.<span class="hljs-built_in">load_verify_file</span>(argv[<span class="hljs-number">4</span>]);                     <span class="hljs-comment">// 受信任 CA</span><br>        <span class="hljs-comment">// 若想使用系统 CA：ssl_ctx.set_default_verify_paths();</span><br>        ssl_ctx.<span class="hljs-built_in">set_verify_callback</span>(asio::ssl::<span class="hljs-built_in">host_name_verification</span>(argv[<span class="hljs-number">3</span>])); <span class="hljs-comment">// 校验主机名</span><br><br>        <span class="hljs-comment">// ssl_ctx 必须在连接存活期间一直有效（连接不拥有它）</span><br>        <span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx, mysql::any_connection_params&#123;&amp;ssl_ctx&#125;)</span></span>;<br><br>        mysql::connect_params params;<br>        params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(argv[<span class="hljs-number">3</span>]);<br>        params.username = argv[<span class="hljs-number">1</span>];<br>        params.password = argv[<span class="hljs-number">2</span>];<br>        params.ssl = mysql::ssl_mode::require;   <span class="hljs-comment">// 强制 TLS，服务器不支持则失败</span><br><br>        conn.<span class="hljs-built_in">connect</span>(params);                    <span class="hljs-comment">// 证书校验失败会在这里抛异常</span><br>        std::cout &lt;&lt; <span class="hljs-string">&quot;connected, uses_ssl=&quot;</span> &lt;&lt; conn.<span class="hljs-built_in">uses_ssl</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        mysql::results result;<br>        conn.<span class="hljs-built_in">execute</span>(<span class="hljs-string">&quot;SELECT &#x27;Hello over TLS&#x27;&quot;</span>, result);<br>        std::cout &lt;&lt; result.<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>        conn.<span class="hljs-built_in">close</span>();<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> mysql::error_with_diagnostics&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;, code: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">code</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;Server diagnostics: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">get_diagnostics</span>().<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-7：连接池（connection-pool-pooled-connection，C-20）"><a href="#示例-7：连接池（connection-pool-pooled-connection，C-20）" class="headerlink" title="示例 7：连接池（connection_pool + pooled_connection，C++20）"></a>示例 7：连接池（<code>connection_pool</code> + <code>pooled_connection</code>，C++20）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：官方 Tutorial 6（tutorial_connection_pool.cpp）简化改写，需 C++20</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 -O2 -I/path/to/boost example7.cpp -o example7 -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connection_pool.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/pool_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/awaitable.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/cancel_after.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/detached.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/this_coro.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;chrono&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-comment">// 用池执行一次查询：连接在函数返回（conn 析构）时自动归还</span><br><span class="hljs-function">asio::awaitable&lt;std::<span class="hljs-type">int64_t</span>&gt; <span class="hljs-title">count_rows</span><span class="hljs-params">(mysql::connection_pool&amp; pool)</span></span><br><span class="hljs-function"></span>&#123;<br>    mysql::pooled_connection conn = <span class="hljs-keyword">co_await</span> pool.<span class="hljs-built_in">async_get_connection</span>(<br>        asio::<span class="hljs-built_in">cancel_after</span>(std::chrono::<span class="hljs-built_in">seconds</span>(<span class="hljs-number">5</span>)));   <span class="hljs-comment">// 超时保护</span><br>    mysql::results result;<br>    <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_execute</span>(<span class="hljs-string">&quot;SELECT COUNT(*) FROM information_schema.tables&quot;</span>, result);<br>    <span class="hljs-keyword">co_return</span> result.<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">as_int64</span>();<br>    <span class="hljs-comment">// conn 析构 -&gt; 连接归还池，并在后台执行 reset</span><br>&#125;<br><br><span class="hljs-function">asio::awaitable&lt;<span class="hljs-type">void</span>&gt; <span class="hljs-title">coro_main</span><span class="hljs-params">(mysql::connection_pool&amp; pool)</span></span><br><span class="hljs-function"></span>&#123;<br>    std::<span class="hljs-type">int64_t</span> n = <span class="hljs-keyword">co_await</span> <span class="hljs-built_in">count_rows</span>(pool);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;tables=&quot;</span> &lt;&lt; n &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>    <span class="hljs-comment">// 也可以显式跳过 reset（确定没有修改会话状态时）</span><br>    mysql::pooled_connection conn = <span class="hljs-keyword">co_await</span> pool.<span class="hljs-built_in">async_get_connection</span>();<br>    mysql::results r;<br>    <span class="hljs-keyword">co_await</span> conn-&gt;<span class="hljs-built_in">async_execute</span>(<span class="hljs-string">&quot;SELECT 1&quot;</span>, r);<br>    conn.<span class="hljs-built_in">return_without_reset</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">main_impl</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">4</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;host&gt;\n&quot;</span>; <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>); &#125;<br><br>    asio::io_context ctx;<br><br>    mysql::pool_params params;<br>    params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(argv[<span class="hljs-number">3</span>]);<br>    params.username = argv[<span class="hljs-number">1</span>];<br>    params.password = argv[<span class="hljs-number">2</span>];<br>    params.initial_size = <span class="hljs-number">2</span>;    <span class="hljs-comment">// 启动时建 2 条连接</span><br>    params.max_size     = <span class="hljs-number">10</span>;   <span class="hljs-comment">// 上限（不要超过服务器的 max_connections）</span><br>    params.thread_safe  = <span class="hljs-literal">false</span>;<br><br>    <span class="hljs-function">mysql::connection_pool <span class="hljs-title">pool</span><span class="hljs-params">(ctx, std::move(params))</span></span>;<br>    pool.<span class="hljs-built_in">async_run</span>(asio::detached);     <span class="hljs-comment">// 只能调用一次</span><br><br>    asio::<span class="hljs-built_in">co_spawn</span>(ctx,<br>        [&amp;pool] &#123; <span class="hljs-keyword">return</span> <span class="hljs-built_in">coro_main</span>(pool); &#125;,<br>        [](std::exception_ptr ptr) &#123; <span class="hljs-keyword">if</span> (ptr) std::<span class="hljs-built_in">rethrow_exception</span>(ptr); &#125;);<br><br>    ctx.<span class="hljs-built_in">run</span>();<br><br>    pool.<span class="hljs-built_in">cancel</span>();                      <span class="hljs-comment">// 停止池任务</span><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Done\n&quot;</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">try</span> &#123; <span class="hljs-built_in">main_impl</span>(argc, argv); &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> mysql::error_with_diagnostics&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;, code: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">code</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;Server diagnostics: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">get_diagnostics</span>().<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-8：旧-API（tcp-ssl-connection，Boost-1-82-1-84）"><a href="#示例-8：旧-API（tcp-ssl-connection，Boost-1-82-1-84）" class="headerlink" title="示例 8：旧 API（tcp_ssl_connection，Boost 1.82 ~ 1.84）"></a>示例 8：旧 API（<code>tcp_ssl_connection</code>，Boost 1.82 ~ 1.84）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：官方 Boost 1.84 Tutorial 1 完整程序</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/handshake_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/tcp_ssl.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/ip/tcp.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/ssl/context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">main_impl</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">4</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;server-hostname&gt;\n&quot;</span>; <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>); &#125;<br><br>    boost::asio::io_context ctx;<br>    boost::asio::<span class="hljs-function">ssl::context <span class="hljs-title">ssl_ctx</span><span class="hljs-params">(boost::asio::ssl::context::tls_client)</span></span>;<br><br>    <span class="hljs-comment">// 转发构造函数：等价于 connection&lt;ssl::stream&lt;tcp::socket&gt;&gt;(executor, ssl_ctx)</span><br>    boost::<span class="hljs-function">mysql::tcp_ssl_connection <span class="hljs-title">conn</span><span class="hljs-params">(ctx.get_executor(), ssl_ctx)</span></span>;<br><br>    <span class="hljs-comment">// 旧 API 需要自己解析域名</span><br>    boost::asio::ip::<span class="hljs-function">tcp::resolver <span class="hljs-title">resolver</span><span class="hljs-params">(ctx.get_executor())</span></span>;<br>    <span class="hljs-keyword">auto</span> endpoints = resolver.<span class="hljs-built_in">resolve</span>(argv[<span class="hljs-number">3</span>], boost::mysql::default_port_string);<br><br>    boost::<span class="hljs-function">mysql::handshake_params <span class="hljs-title">params</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">        argv[<span class="hljs-number">1</span>],                <span class="hljs-comment">// username</span></span></span><br><span class="hljs-params"><span class="hljs-function">        argv[<span class="hljs-number">2</span>],                <span class="hljs-comment">// password</span></span></span><br><span class="hljs-params"><span class="hljs-function">        <span class="hljs-string">&quot;boost_mysql_examples&quot;</span>  <span class="hljs-comment">// database（可留空）</span></span></span><br><span class="hljs-params"><span class="hljs-function">    )</span></span>;<br><br>    conn.<span class="hljs-built_in">connect</span>(*endpoints.<span class="hljs-built_in">begin</span>(), params);<br><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>* sql = <span class="hljs-string">&quot;SELECT &#x27;Hello world!&#x27;&quot;</span>;<br>    boost::mysql::results result;<br>    conn.<span class="hljs-built_in">execute</span>(sql, result);<br><br>    std::cout &lt;&lt; result.<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>) &lt;&lt; std::endl;<br><br>    conn.<span class="hljs-built_in">close</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">try</span> &#123; <span class="hljs-built_in">main_impl</span>(argc, argv); &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> boost::mysql::error_with_diagnostics&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;Server diagnostics: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">get_diagnostics</span>().<span class="hljs-built_in">server_message</span>() &lt;&lt; std::endl;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; std::endl; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="示例-9（可选）：分批读行（多函数操作）-流水线"><a href="#示例-9（可选）：分批读行（多函数操作）-流水线" class="headerlink" title="示例 9（可选）：分批读行（多函数操作）+ 流水线"></a>示例 9（可选）：分批读行（多函数操作）+ 流水线</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 出处：官方 example/multi_function 与 example/pipeline 简化，需 C++20</span><br><span class="hljs-comment">// 编译：g++ -std=c++20 -O2 -I/path/to/boost example9.cpp -o example9 -lssl -lcrypto -lpthread</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/any_connection.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/connect_params.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/error_with_diagnostics.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/execution_state.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/metadata_mode.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/pipeline.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/results.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/rows_view.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/mysql/statement.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/awaitable.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/co_spawn.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/io_context.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/asio/this_coro.hpp&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-keyword">namespace</span> mysql = boost::mysql;<br><span class="hljs-keyword">namespace</span> asio  = boost::asio;<br><br><span class="hljs-function">asio::awaitable&lt;<span class="hljs-type">void</span>&gt; <span class="hljs-title">coro_main</span><span class="hljs-params">(std::string_view host, std::string_view user, std::string_view pass)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">mysql::any_connection <span class="hljs-title">conn</span><span class="hljs-params">(<span class="hljs-keyword">co_await</span> asio::this_coro::executor)</span></span>;<br><br>    mysql::connect_params params;<br>    params.server_address.<span class="hljs-built_in">emplace_host_and_port</span>(std::<span class="hljs-built_in">string</span>(host));<br>    params.username = user;<br>    params.password = pass;<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_connect</span>(params);<br><br>    conn.<span class="hljs-built_in">set_meta_mode</span>(mysql::metadata_mode::full);   <span class="hljs-comment">// 需要列名时</span><br><br>    <span class="hljs-comment">// ---- 1) 多函数操作：分批读行（适合超大结果集） ----</span><br>    mysql::execution_state st;<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_start_execution</span>(<span class="hljs-string">&quot;SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3&quot;</span>, st);<br>    std::<span class="hljs-type">size_t</span> total = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">complete</span>())<br>    &#123;<br>        <span class="hljs-keyword">if</span> (st.<span class="hljs-built_in">should_read_rows</span>())<br>        &#123;<br>            mysql::rows_view batch = <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_read_some_rows</span>(st);  <span class="hljs-comment">// 视图！</span><br>            total += batch.<span class="hljs-built_in">size</span>();<br>            <span class="hljs-comment">// 注意：batch 在下一次网络操作后失效，需要保留请立刻拷贝</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (st.<span class="hljs-built_in">should_read_head</span>())<br>        &#123;<br>            <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_read_resultset_head</span>(st);<br>        &#125;<br>    &#125;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;rows read in batches: &quot;</span> &lt;&lt; total &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>    <span class="hljs-comment">// ---- 2) 实验性流水线 API（Boost 1.86+）：批量准备 + 批量执行 ----</span><br>    mysql::pipeline_request req;<br>    req.<span class="hljs-built_in">add_prepare_statement</span>(<span class="hljs-string">&quot;SELECT ? AS a&quot;</span>)<br>       .<span class="hljs-built_in">add_prepare_statement</span>(<span class="hljs-string">&quot;SELECT ? AS b&quot;</span>);<br>    std::vector&lt;mysql::stage_response&gt; pipe_res;<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_run_pipeline</span>(req, pipe_res);<br>    mysql::statement s0 = pipe_res.<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">get_statement</span>();<br>    mysql::statement s1 = pipe_res.<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>).<span class="hljs-built_in">get_statement</span>();<br><br>    req.<span class="hljs-built_in">clear</span>();<br>    req.<span class="hljs-built_in">add_execute</span>(s0, <span class="hljs-number">10</span>).<span class="hljs-built_in">add_execute</span>(s1, <span class="hljs-string">&quot;text&quot;</span>);<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_run_pipeline</span>(req, pipe_res);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;pipeline a=&quot;</span> &lt;&lt; pipe_res.<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">as_results</span>().<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>)<br>              &lt;&lt; <span class="hljs-string">&quot; b=&quot;</span> &lt;&lt; pipe_res.<span class="hljs-built_in">at</span>(<span class="hljs-number">1</span>).<span class="hljs-built_in">as_results</span>().<span class="hljs-built_in">rows</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>) &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br><br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_close_statement</span>(s0);<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_close_statement</span>(s1);<br>    <span class="hljs-keyword">co_await</span> conn.<span class="hljs-built_in">async_close</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">4</span>) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Usage: &lt;username&gt; &lt;password&gt; &lt;host&gt;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">try</span><br>    &#123;<br>        asio::io_context ctx;<br>        asio::<span class="hljs-built_in">co_spawn</span>(ctx, [=] &#123; <span class="hljs-keyword">return</span> <span class="hljs-built_in">coro_main</span>(argv[<span class="hljs-number">3</span>], argv[<span class="hljs-number">1</span>], argv[<span class="hljs-number">2</span>]); &#125;,<br>                       [](std::exception_ptr p) &#123; <span class="hljs-keyword">if</span> (p) std::<span class="hljs-built_in">rethrow_exception</span>(p); &#125;);<br>        ctx.<span class="hljs-built_in">run</span>();<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> mysql::error_with_diagnostics&amp; err)<br>    &#123;<br>        std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;, code: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">code</span>() &lt;&lt; <span class="hljs-string">&#x27;\n&#x27;</span><br>                  &lt;&lt; <span class="hljs-string">&quot;Server diagnostics: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">get_diagnostics</span>().<span class="hljs-built_in">server_message</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-built_in">catch</span> (<span class="hljs-type">const</span> std::exception&amp; err) &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: &quot;</span> &lt;&lt; err.<span class="hljs-built_in">what</span>() &lt;&lt; <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-常见问题与陷阱"><a href="#7-常见问题与陷阱" class="headerlink" title="7. 常见问题与陷阱"></a>7. 常见问题与陷阱</h2><p><strong>1. 问题：用 <code>rows_view</code> &#x2F; <code>row_view</code> &#x2F; <code>field_view</code> 保存了数据，稍后再读却拿到垃圾值。</strong></p>
+<ul>
+<li>原因：视图（<code>*_view</code>）不拥有内存，它指向 <code>results</code> 或连接内部缓冲区。<code>read_some_rows()</code> 返回的 <code>rows_view</code> 只在<strong>下一次网络操作之前</strong>有效；<code>results</code> 被复用后其视图也全部失效。</li>
+<li>解决：需要跨越下一次操作&#x2F;下一次执行时，立即做拥有型拷贝：<code>mysql::row r{row_view}</code>、<code>mysql::field f{field_view}</code>、<code>mysql::rows{rows_view}</code>，或 <code>row.as_vector()</code> 得到 <code>std::vector&lt;field&gt;</code>。</li>
+</ul>
+<p><strong>2. 问题：异步程序什么也不做，回调&#x2F;协程永远不执行。</strong></p>
+<ul>
+<li>原因：忘了 <code>ctx.run()</code>（或 <code>ctx.poll()</code>）驱动事件循环；或者在协程里忘了 <code>co_await</code>，把 <code>async_execute(...)</code> 的返回值（延迟操作对象）直接丢弃了。</li>
+<li>解决：确保 <code>io_context::run()</code> 被调用并在操作完成前保持运行；协程里必须 <code>co_await</code>；如果使用 <code>asio::deferred</code>，要显式用某个令牌去启动它。</li>
+</ul>
+<p><strong>3. 问题：异步操作返回后参数或 <code>results</code> 对象已失效（悬垂引用）。</strong></p>
+<ul>
+<li>原因：<code>async_execute(sql, result)</code> 会异步写入 <code>result</code>；如果把 <code>result</code> 放在会被提前销毁的作用域里（例如局部变量在回调触发前析构），就是 UB。同理 <code>stmt.bind(...)</code> 里的参数若用引用包装（<code>std::ref</code>）而原对象提前销毁也会出问题。</li>
+<li>解决：保证传给异步函数的 <code>results</code> &#x2F; <code>statement</code> &#x2F; 绑定参数的生命周期覆盖整个操作（放在成员变量或与 <code>co_await</code> 同一作用域）；<code>with_params</code> 默认按值拷贝参数，相对安全，但用 <code>std::ref</code> 时要自己保证生命周期。</li>
+</ul>
+<p><strong>4. 问题：<code>field::as_int64()</code> 抛 <code>bad_field_access</code>，或 <code>get_int64()</code> 返回乱值。</strong></p>
+<ul>
+<li>原因：<code>as_*()</code> 是<strong>checked</strong> 访问（类型不匹配抛异常），<code>get_*()</code> 是<strong>unchecked</strong>（类型不匹配是未定义行为）。另外值为 NULL 时 <code>is_int64()</code> 等全部返回 <code>false</code>，只有 <code>is_null()</code> 为真。</li>
+<li>解决：先用 <code>is_null()</code> 判空，再用 <code>is_int64()</code> &#x2F; <code>is_string()</code> 等判断类型，然后调用对应的 <code>as_*()</code>；只有在能静态保证类型（例如配合静态接口）时才用 <code>get_*()</code>。</li>
+</ul>
+<p><strong>5. 问题：多次执行查询后，之前的数据不见了 &#x2F; <code>affected_rows()</code> 数值看起来是上一次的。</strong></p>
+<ul>
+<li>原因：<code>results</code> 对象是可复用的容器，每次 <code>execute()</code> 会<strong>清空并覆盖</strong>它之前的内容（这是为了复用内存）。它没有公开的 <code>clear()</code> 成员。</li>
+<li>解决：把需要长期保留的数据拷贝出来（<code>as_vector()</code> &#x2F; <code>row{view}</code>），或者在每次执行前把上一次结果处理干净；不要把 <code>results</code> 当作历史缓存。</li>
+</ul>
+<p><strong>6. 问题：连接 MySQL 8.0 报认证错误（<code>unknown_auth_plugin</code> 或认证失败）。</strong></p>
+<ul>
+<li>原因：MySQL 8.0+ 默认认证插件是 <code>caching_sha2_password</code>。Boost.MySQL 在 1.88 及更早版本要求该插件<strong>必须通过 TLS</strong>；1.89+ 才支持明文连接。库也只实现了 <code>mysql_native_password</code> 与 <code>caching_sha2_password</code>，不支持其他插件与 MFA。</li>
+<li>解决：① 使用 TLS（默认 <code>ssl_mode::enable</code> 即可，服务器支持就会走加密）；② 或把用户改为 <code>ALTER USER &#39;u&#39;@&#39;%&#39; IDENTIFIED WITH mysql_native_password BY &#39;pwd&#39;;</code>；③ 或升级到 Boost 1.89+。注意：若服务器的 <code>default_authentication_plugin</code> 是库不支持的插件，即使该用户用的是别的插件也不受支持。</li>
+</ul>
+<p><strong>7. 问题：MySQL 8 上正常的代码在 MariaDB 上报错码无法识别。</strong></p>
+<ul>
+<li>原因：错误码分类不同。MySQL 专有码在 <code>&lt;boost/mysql/mysql_server_errc.hpp&gt;</code>，MariaDB 专有码在 <code>&lt;boost/mysql/mariadb_server_errc.hpp&gt;</code>，两者对应的 category 也不同（<code>get_mysql_server_category()</code> &#x2F; <code>get_mariadb_server_category()</code>）；两者共有的码在 <code>common_server_errc</code>。</li>
+<li>解决：不要硬编码服务器专有错误码的枚举值，改用 <code>common_server_errc</code> 或比较整数码&#x2F;category；对 MariaDB 避免使用 MySQL 8 特有语法与功能。</li>
+</ul>
+<p><strong>8. 问题：调用 <code>handshake()</code> 报错或卡住，而 <code>connect()</code> 正常。</strong></p>
+<ul>
+<li>原因：<code>handshake()</code> &#x2F; <code>async_handshake()</code> 是<strong>低层 API</strong>，只执行 MySQL 协议层握手与认证，<strong>不会</strong>建立 TCP 连接、不会解析域名、也<strong>不会</strong>做 TLS 握手；而 <code>connect()</code> 把这些全部做完（解析 + 传输连接 + TLS + 握手）。</li>
+<li>解决：普通场景用 <code>connect()</code> &#x2F; <code>async_connect()</code>；只有在自定义 stream（例如已连接的 UNIX socket、自定义 socket 类型，或旧 API 的 <code>connection&lt;Stream&gt;</code>）上才使用 <code>handshake()</code>。</li>
+</ul>
+<p><strong>9. 问题：在同一个连接上并发发起两个异步操作，第二个立即失败（<code>client_errc::operation_in_progress</code>）。</strong></p>
+<ul>
+<li>原因：<code>any_connection</code> 同一时刻只允许一个未完成的异步操作；并且连接对象<strong>非线程安全</strong>（不同对象可跨线程，共享同一对象不行）。</li>
+<li>解决：在同一个协程&#x2F;回调链里串行 <code>co_await</code> 各个操作；需要并发请使用多个连接（推荐 <code>connection_pool</code>，必要时配合 <code>pool_params::thread_safe = true</code>）。</li>
+</ul>
+<p><strong>10. 问题：查询 <code>SELECT 1 AS my_field</code> 后 <code>meta()[0].column_name()</code> 是空字符串。</strong></p>
+<ul>
+<li>原因：默认 <code>metadata_mode::minimal</code>，为省内存不保留列名&#x2F;库名&#x2F;表名等字符串元数据。</li>
+<li>解决：连接建立后调用 <code>conn.set_meta_mode(mysql::metadata_mode::full);</code>（只影响字符串成员，其他元数据始终可用）。</li>
+</ul>
+<p><strong>11. 问题：<code>execute(&quot;SELECT ...; SELECT ...&quot;)</code> 报语法错误。</strong></p>
+<ul>
+<li>原因：多语句（multi-queries）默认关闭（安全加固），单次 <code>execute</code> 只允许一条语句。</li>
+<li>解决：在 <code>connect_params::multi_queries = true</code> 后重连；注意多语句会放大 SQL 注入的破坏力，开启后必须使用 <code>with_params</code> &#x2F; 预处理语句等安全手段拼接 SQL。</li>
+</ul>
+<p><strong>12. 问题：读取超长行时报 <code>client_errc::max_buffer_size_exceeded</code>。</strong></p>
+<ul>
+<li>原因：连接内部缓冲区默认上限 64MB，且<strong>单行</strong>必须整体放进缓冲区（数据集总大小不受此限制）。</li>
+<li>解决：构造连接时调大 <code>mysql::any_connection_params{}.max_buffer_size</code>（例如 <code>0x20000000</code> 表示 512MB）；连接池则调整 <code>pool_params::initial_buffer_size</code>（以及连接自身默认上限）。</li>
+</ul>
+<p><strong>13. 问题：连接池 <code>async_get_connection()</code> 永远不返回 &#x2F; 报 <code>client_errc::pool_not_running</code>。</strong></p>
+<ul>
+<li>原因：池必须先用 <code>async_run()</code> 启动，且<strong>每个池只能调用一次</strong>；另外默认 <code>async_get_connection()</code> 会一直等到有连接可用（服务器不可达时会等很久），池被取消时返回 <code>pool_cancelled</code>。</li>
+<li>解决：确认已调用 <code>pool.async_run(asio::detached)</code>；给取连接加超时 <code>asio::cancel_after(std::chrono::seconds(5))</code>；程序退出前用 <code>pool.cancel()</code> 停止池；注意连接池只支持 <code>any_connection</code>。</li>
+</ul>
+<hr>
+<h2 id="8-参考资料"><a href="#8-参考资料" class="headerlink" title="8. 参考资料"></a>8. 参考资料</h2><p><strong>官方文档（章节级）</strong></p>
+<ul>
+<li>文档首页 &#x2F; 目录：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/index.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/index.html</a></li>
+<li>简介与集成说明（构建方式、header-only 与分离编译）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/integrating.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/integrating.html</a></li>
+<li>同步教程（Tutorial 1）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_sync.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_sync.html</a></li>
+<li>异步协程教程（Tutorial 2）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_async.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_async.html</a></li>
+<li>带参数的查询教程（Tutorial 3）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_with_params.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_with_params.html</a></li>
+<li>静态接口教程（Tutorial 4）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_static_interface.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_static_interface.html</a></li>
+<li>UPDATE &#x2F; 事务 &#x2F; 多语句教程（Tutorial 5）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_updates_transactions.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_updates_transactions.html</a></li>
+<li>连接池教程（Tutorial 6）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_connection_pool.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_connection_pool.html</a></li>
+<li>错误处理教程（Tutorial 7）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_error_handling.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/tutorial_error_handling.html</a></li>
+<li>连接建立与终止（认证、TLS、UNIX socket、多语句、重连）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/connection_establishment.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/connection_establishment.html</a></li>
+<li>文本查询：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/text_queries.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/text_queries.html</a></li>
+<li>预处理语句：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/prepared_statements.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/prepared_statements.html</a></li>
+<li>动态接口：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/dynamic_interface.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/dynamic_interface.html</a></li>
+<li>静态接口：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/static_interface.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/static_interface.html</a></li>
+<li>多结果集：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/multi_resultset.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/multi_resultset.html</a></li>
+<li>多函数操作（分批读行）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/multi_function.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/multi_function.html</a></li>
+<li>连接池概念与状态机：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/connection_pool.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/connection_pool.html</a></li>
+<li>异步模型与完成令牌：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/async.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/async.html</a></li>
+<li>错误处理与重载：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/error_handling.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/error_handling.html</a></li>
+<li>元数据：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/meta.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/meta.html</a></li>
+<li>字符集：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/charsets.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/charsets.html</a></li>
+<li>日期时间类型：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/time_types.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/time_types.html</a></li>
+<li>客户端 SQL 格式化（进阶）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/sql_formatting_advanced.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/sql_formatting_advanced.html</a></li>
+<li>流水线（实验性）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/pipeline.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/pipeline.html</a></li>
+<li>模板化连接（旧 API）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/templated_connection.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/templated_connection.html</a></li>
+<li>同步&#x2F;异步互操作：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/interfacing_sync_async.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/interfacing_sync_async.html</a></li>
+<li>完整参考手册（类与函数签名）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/ref.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/ref.html</a></li>
+</ul>
+<p><strong>官方 examples</strong></p>
+<ul>
+<li>示例总览与 Docker 环境准备：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples.html</a></li>
+<li>教程 1：<code>SELECT &#39;Hello world!&#39;</code>：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tutorial_sync.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tutorial_sync.html</a></li>
+<li>教程 2：C++20 协程：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tutorial_async.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tutorial_async.html</a></li>
+<li>教程 6：连接池：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tutorial_connection_pool.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tutorial_connection_pool.html</a></li>
+<li>预处理语句：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/prepared_statements.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/prepared_statements.html</a></li>
+<li>关闭 TLS：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/disable_tls.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/disable_tls.html</a></li>
+<li>开启证书校验：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tls_certificate_verification.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/tls_certificate_verification.html</a></li>
+<li>元数据：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/metadata.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/metadata.html</a></li>
+<li>分批读行（多函数）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/multi_function.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/multi_function.html</a></li>
+<li>回调（C++11 异步）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/callbacks.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/callbacks.html</a></li>
+<li>UNIX socket：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/unix_socket.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/unix_socket.html</a></li>
+<li>流水线：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/pipeline.html">https://www.boost.org/doc/libs/latest/libs/mysql/doc/html/mysql/examples/pipeline.html</a></li>
+<li>源码仓库（<code>example/</code> 目录含完整源码与 <code>db_setup.sql</code>）：<a target="_blank" rel="noopener" href="https://github.com/boostorg/mysql">https://github.com/boostorg/mysql</a></li>
+</ul>
+<p><strong>其他</strong></p>
+<ul>
+<li>Boost.Asio 文档（<code>io_context</code>、<code>co_spawn</code>、<code>cancel_after</code>、完成令牌）：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html">https://www.boost.org/doc/libs/latest/doc/html/boost_asio.html</a></li>
+<li>Boost.System 错误码文档：<a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/latest/doc/html/system.html">https://www.boost.org/doc/libs/latest/doc/html/system.html</a></li>
+</ul>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/boost-mysql/" class="tag-item">
+                    boost.mysql
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Cpp/" class="cate-item">
+                    C++
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/11/18/05-mysql/">https://narciostyx.github.io/2025/11/18/05-mysql/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2025/11/18/C++20%20concepts/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">C++20 concepts</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/11/18/chrono/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">C++时间库</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="to-top">
+    <a href="javascript: void(0)" onclick="delicate.toTop()">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
