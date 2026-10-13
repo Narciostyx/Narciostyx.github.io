@@ -6,12 +6,23 @@
   --container-bg: #fff;
   --color: #080808;
   --markdown-color: #24292f;
+  --toc-bg: rgba(255,255,255,0.88);
+  --toc-bg-hover: rgba(255,255,255,0.97);
+  --toc-text: #2f3a3f;
+  --toc-text-weak: #55636a;
+  --toc-shadow: rgba(17,24,28,0.22);
+  --toc-accent: #2eacd2;
 }
 .dark {
   --bg: #061a20;
   --container-bg: #002b36;
   --color: #fff;
   --markdown-color: #efefef;
+  --toc-bg: rgba(0,43,54,0.86);
+  --toc-bg-hover: rgba(0,43,54,0.96);
+  --toc-text: #d9e6ea;
+  --toc-text-weak: #a8bfc6;
+  --toc-shadow: rgba(0,0,0,0.55);
 }
 body,
 html {
@@ -479,6 +490,13 @@ hr {
 .article ::placeholder {
   color: #6e7781;
   opacity: 1;
+}
+.article .table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 16px 0;
+  -webkit-overflow-scrolling: touch;
 }
 .article table {
   border-spacing: 0;
@@ -1518,15 +1536,86 @@ nav {
   left: 100%;
   transform: translateX(calc(100% + 15px));
   width: calc((100vw - 100%) / 2 - 30px);
+  min-width: 120px;
   z-index: 10;
   height: 0;
+  font-size: 0.9rem;
+  color: var(--toc-text);
+}
+.toc-container .toc-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--toc-text);
+  background: var(--toc-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  -webkit-box-shadow: 0 2px 10px var(--toc-shadow);
+  -moz-box-shadow: 0 2px 10px var(--toc-shadow);
+  box-shadow: 0 2px 10px var(--toc-shadow);
+  cursor: pointer;
+  user-select: none;
+  -webkit-transition: 260ms;
+  -moz-transition: 260ms;
+  transition: 260ms;
+}
+html.ie8 .toc-container .toc-header,
+html.ie7 .toc-container .toc-header,
+html.ie6 .toc-container .toc-header {
+  border: 2px solid var(--toc-shadow);
+}
+.toc-container .toc-header:hover {
+  background: var(--toc-bg-hover);
+  color: var(--toc-accent);
+}
+.toc-container .toc-header .toc-title {
+  flex: 1;
+}
+.toc-container .toc-header .toc-arrow {
+  font-size: 1rem;
+  -webkit-transition: transform 260ms;
+  -moz-transition: transform 260ms;
+  transition: transform 260ms;
+}
+.toc-container .toc-body {
+  margin-top: 8px;
+  padding: 10px 10px 10px 12px;
+  box-sizing: border-box;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background: var(--toc-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  -webkit-box-shadow: 0 2px 10px var(--toc-shadow);
+  -moz-box-shadow: 0 2px 10px var(--toc-shadow);
+  box-shadow: 0 2px 10px var(--toc-shadow);
+  max-height: 72vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+html.ie8 .toc-container .toc-body,
+html.ie7 .toc-container .toc-body,
+html.ie6 .toc-container .toc-body {
+  border: 2px solid var(--toc-shadow);
+}
+.toc-container.collapsed .toc-body {
+  display: none;
+}
+.toc-container.collapsed .toc-arrow {
+  transform: rotate(-90deg);
 }
 .toc-container .toc {
   height: fit-content;
-  line-height: 1.3;
-  font-size: 0.9rem;
-  max-height: 90vh;
-  overflow-y: auto;
+  line-height: 1.45;
 }
 .toc-container .toc .toc-child {
   padding-left: 10px;
@@ -1534,6 +1623,9 @@ nav {
 .toc-container .toc .toc-link {
   display: inline-block;
   max-width: 100%;
+  box-sizing: border-box;
+  padding-left: 8px;
+  border-left: 2px solid transparent;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -1542,23 +1634,28 @@ nav {
   content: attr(title);
 }
 .toc-container .toc a {
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.65);
+  color: var(--toc-text);
+  text-decoration: none;
   -webkit-transition: 260ms;
   -moz-transition: 260ms;
   transition: 260ms;
 }
 .toc-container .toc a:hover {
-  color: #2eacd2 !important;
-  text-shadow: none;
+  color: var(--toc-accent);
+  border-left-color: var(--toc-accent);
 }
-.toc-container .toc:hover a {
-  color: rgba(255,255,255,0.85);
+.toc-container .toc .toc-child .toc-link {
+  color: var(--toc-text-weak);
 }
 .toc-container ul,
 .toc-container ol {
   list-style: none;
   padding-left: 0;
+}
+@media (max-width: 1024px) {
+  .toc-container {
+    display: none;
+  }
 }
 .archive {
   margin: 40px;

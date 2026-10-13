@@ -144,6 +144,13 @@ hr {
   color: #6e7781;
   opacity: 1;
 }
+.article .table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 16px 0;
+  -webkit-overflow-scrolling: touch;
+}
 .article table {
   border-spacing: 0;
   border-collapse: collapse;

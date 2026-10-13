@@ -3,10 +3,21 @@
   --container-bg: get-config('background.containerColor', "#ffffff");
   --color: get-config('background.textColor', "#080808");
   --markdown-color: get-config('background.markdownColor', "#24292f");
+  --toc-bg: rgba(255,255,255,0.88);
+  --toc-bg-hover: rgba(255,255,255,0.97);
+  --toc-text: #2f3a3f;
+  --toc-text-weak: #55636a;
+  --toc-shadow: rgba(17,24,28,0.22);
+  --toc-accent: get-config('color', "#2eacd2");
 }
 .dark {
   --bg: get-config('background.darkColor', "#061a20");
   --container-bg: get-config('background.darkContainerColor', "#002b36");
   --color: get-config('background.darkTextColor', "#ffffff");
   --markdown-color: get-config('background.darkMarkdownColor', "#efefef");
+  --toc-bg: rgba(0,43,54,0.86);
+  --toc-bg-hover: rgba(0,43,54,0.96);
+  --toc-text: #d9e6ea;
+  --toc-text-weak: #a8bfc6;
+  --toc-shadow: rgba(0,0,0,0.55);
 }
