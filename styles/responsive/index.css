@@ -133,9 +133,10 @@
     overflow-wrap: anywhere;
     word-break: break-all;
   }
-  .to-top {
-    right: 16px;
+  .float-actions {
+    right: 12px;
     bottom: 20px;
+    gap: 8px;
   }
   .book-viewer .book-frame {
     height: 70vh;

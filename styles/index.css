@@ -1826,29 +1826,71 @@ html.ie6 .toc-container .toc-body {
   font-size: 0.85em;
   opacity: 0.7;
 }
-.to-top {
+.float-actions {
   position: fixed;
   right: 50px;
   bottom: 40px;
-  cursor: pointer;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 20;
+}
+.to-top,
+.to-home {
   width: 40px;
+  height: 40px;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
+  cursor: pointer;
+  text-align: center;
+  line-height: 40px;
+  background: var(--container-bg);
+  -webkit-box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   -webkit-transition: all 250ms ease;
   -moz-transition: all 250ms ease;
   transition: all 250ms ease;
 }
-.to-top:hover {
-  background: var(--container-color);
+html.ie8 .to-top,
+html.ie8 .to-home,
+html.ie7 .to-top,
+html.ie7 .to-home,
+html.ie6 .to-top,
+html.ie6 .to-home {
+  border: 2px solid rgba(0,0,0,0.2);
 }
-.to-top a {
-  display: block;
-  height: 40px;
-  width: 40px;
+.to-top:hover,
+.to-home:hover {
+  transform: translateY(-2px);
+  -webkit-box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+  -moz-box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+}
+html.ie8 .to-top:hover,
+html.ie8 .to-home:hover,
+html.ie7 .to-top:hover,
+html.ie7 .to-home:hover,
+html.ie6 .to-top:hover,
+html.ie6 .to-home:hover {
+  border: 2px solid rgba(0,0,0,0.28);
+}
+.to-top a,
+.to-home a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color);
+  -webkit-transition: color 250ms ease;
+  -moz-transition: color 250ms ease;
+  transition: color 250ms ease;
+}
+.to-top:hover a,
+.to-home:hover a {
+  color: #2eacd2;
 }
 .back-link {
   display: inline-flex;
@@ -2024,9 +2066,10 @@ html.ie6 .toc-container .toc-body {
     overflow-wrap: anywhere;
     word-break: break-all;
   }
-  .to-top {
-    right: 16px;
+  .float-actions {
+    right: 12px;
     bottom: 20px;
+    gap: 8px;
   }
   .book-viewer .book-frame {
     height: 70vh;
