@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3ll0_h4h | Qt事件处理</title>
+
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Narciostyx">
+
+    <meta name="color-scheme" content="light dark">
+
+    
+    
+<link rel="stylesheet" href="/styles/index.css">
+
+    
+    <link rel="shortcut icon" href="/imgs/logo.png">
+
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/base16/solarized-light.css">
+    
+
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body id="delicate-app">
+    <main>
+        <div class="container">
+            <section class="page-top-badge flex-between w100">
+                <div class="flex-center" style="gap: 12px;">
+                    
+                    <a href="javascript:history.back()" class="back-link" title="返回上级">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    <a href="/">
+                        <span title="home"><i class="fa fa-home" aria-hidden="true"></i></span>
+                    </a>
+                </div>
+                <!-- <div>
+                    
+                </div> -->
+            </section>
+            
+
+<aside class="toc-container">
+    <!-- sticky toc -->
+    <div class="toc-header" id="toc-toggle" role="button" tabindex="0" aria-controls="toc-body" aria-expanded="true" title="收起 / 展开目录">
+        <i class="fa fa-list-ul" aria-hidden="true"></i>
+        <span class="toc-title">目录</span>
+        <i class="fa fa-angle-down toc-arrow" aria-hidden="true"></i>
+    </div>
+    <div class="toc-body" id="toc-body">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">事件过滤器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%96%E6%94%BE%E4%BA%8B%E4%BB%B6%E4%B8%8E%E6%8B%96%E6%94%BE%E6%93%8D%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text">拖放事件与拖放操作</span></a></li></ol>
+    </div>
+</aside>
+
+
+<article class="markdown-container">
+    <section>
+        <h1>Qt事件处理</h1>
+    </section>
+    <section class="article">
+        <p>Qt中的事件系统</p>
+<span id="more"></span>
+<ul>
+<li>事件表示应用程序中发生的操作或变化，按照事件来源分为以下三类：<ol>
+<li>自生事件，由<strong>窗口系统</strong>产生的事件，如<code>QKeyEvent</code>事件等，<strong>其会进入系统队列</strong>，然后被应用程序的事件循环逐个处理</li>
+<li>发布事件，由<strong>Qt或应用程序</strong>产生的事件，如<code>QTimer</code>定时器发生定时溢出时，Qt会自动发布<code>QTimerEvent</code>事件，然后应用程序使用静态函数<code>QCoreApplication::postEvent()</code>产生发布事件，<strong>进入Qt事件队列</strong>，由应用程序的事件循环进行处理</li>
+<li>发送事件，由Qt或应用程序发生给某个对象的事件，应用程序使用<code>QCoreApplication::sendEvent()</code>发生，由接收对象的<code>event()</code>函数之间处理（任何从<code>QObject</code>派生的类都可以重写<code>event()</code>）</li>
+</ol>
+<ul>
+<li><strong>自生事件与发布事件的处理是异步的，发送事件是同步的</strong></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 发布一个事件后立即退出</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">QCoreApplication::postEvent</span><span class="hljs-params">(QObject *receiver, QEvent *event, <span class="hljs-type">int</span> priority = Qt::NormalEventPriority)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 等待receiver处理完成</span></span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">QCoreApplication::sendEvent</span><span class="hljs-params">(QObject *receiver, QEvent *event)</span></span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>GUI程序的<code>main()</code>函数通常如下所示</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc,<span class="hljs-type">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-function">QApplication <span class="hljs-title">a</span><span class="hljs-params">(argc,argv)</span></span>;<br>	Widget w;<br>	w.<span class="hljs-built_in">show</span>();<br>	<span class="hljs-comment">// QApplication::exec()主要功能就是不断检查系统队列和Qt事件队列是否有未处理的自生事件与发布事件</span><br>	<span class="hljs-keyword">return</span> a.<span class="hljs-built_in">exec</span>();<br>&#125;<br><br><span class="hljs-comment">// 当在长时间占用CPU的情况下，窗口界面可能会出现延迟甚至无响应，考虑使用多线程或processEvents发送未处理的事件</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">QCoreApplication::processEvents</span><span class="hljs-params">(QEventLoop::ProcessEventsFlags flags = QEventLoop::AllEvents)</span></span><br><span class="hljs-function"><span class="hljs-comment">/*</span></span><br><span class="hljs-comment"><span class="hljs-function">QEventLoop::AllEvents：处理所有事件。</span></span><br><span class="hljs-comment"><span class="hljs-function">QEventLoop::ExcludeUserInputEvents：排除用户输入事件，如键盘和鼠标的事件。</span></span><br><span class="hljs-comment"><span class="hljs-function">QEventLoop::ExcludeSocketNotifiers：排除网络 socket 的通知事件。</span></span><br><span class="hljs-comment"><span class="hljs-function">QEventLoop::WaitForMoreEvents：如果没有未处理的事件，等待更多事件。</span></span><br><span class="hljs-comment"><span class="hljs-function">*/</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">// 将QCoreApplication::postEvent()发送到Qt事件队列的事件立刻派发出去</span></span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">QCoreApplication::sendPostedEvents</span><span class="hljs-params">(QObject *receiver = <span class="hljs-literal">nullptr</span>, <span class="hljs-type">int</span> event_type = <span class="hljs-number">0</span>)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 若不指定event_type，则派发所有给这个接收者的事件</span></span><br><span class="hljs-function"><span class="hljs-comment">// 若两者均不指定，则派发所有用QCoreApplication::postEvent()发布的事件</span></span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>QEvent</code>事件类</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// QEvent并不是一个抽象类，它也可以用于创建事件</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">accept</span><span class="hljs-params">()</span> <span class="hljs-comment">//接受事件，设置事件对象的接受标志（accept flag）</span></span><br><span class="hljs-function"><span class="hljs-comment">// 被忽略的的事件传播到事件接收者的父容器组件，这称为事件的传播</span></span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">ignore</span><span class="hljs-params">()</span> <span class="hljs-comment">//忽略事件，清除事件对象的接受标志</span></span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isAccepted</span><span class="hljs-params">()</span> <span class="hljs-comment">//是否接受事件，true 表示接受，false 表示忽略</span></span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isInputEvent</span><span class="hljs-params">()</span> <span class="hljs-comment">//事件对象是不是 QInputEvent 或其派生类的实例</span></span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isPointerEvent</span><span class="hljs-params">()</span> <span class="hljs-comment">//事件对象是不是 QPointerEvent 或其派生类的实例</span></span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isSinglePointEvent</span><span class="hljs-params">()</span> <span class="hljs-comment">//事件对象是不是 QSinglePointEvent 或其派生类的实例</span></span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">spontaneous</span><span class="hljs-params">()</span> <span class="hljs-comment">//是不是自生事件，也就是窗口系统的事件</span></span><br><span class="hljs-function">QEvent::Type <span class="hljs-title">type</span><span class="hljs-params">()</span> <span class="hljs-comment">//事件类型</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">/*</span></span><br><span class="hljs-comment"><span class="hljs-function">QEvent::Type枚举，每个事件对应唯一的事件类型以及事件类</span></span><br><span class="hljs-comment"><span class="hljs-function">class QMouseEvent-&gt;QEvent::MouseButtonDblClick...</span></span><br><span class="hljs-comment"><span class="hljs-function">class QWheelEvent-&gt;...</span></span><br><span class="hljs-comment"><span class="hljs-function">class QEvent-&gt;QEvent::Leave</span></span><br><span class="hljs-comment"><span class="hljs-function">class QKeyEvent-&gt;...</span></span><br><span class="hljs-comment"><span class="hljs-function">class QInputEvent-&gt;...</span></span><br><span class="hljs-comment"><span class="hljs-function">...</span></span><br><span class="hljs-comment"><span class="hljs-function">*/</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-comment">// QWidget重新实现了event()，针对一些典型类型事件专门定义了对应的事件处理函数，如：</span></span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">QWidget::mouseMoveEvent</span><span class="hljs-params">(QMouseEvent* event)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 因此针对典型事件处理函数，我们可以重写而非再次重新实现event()函数</span></span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>事件通常是由窗口系统或应用程序产生，而信号则是Qt定义或用户自定义的（<strong>Qt为界面组件定义的信号通常是对事件的封装</strong>，如<code>QPushButton</code>的<code>clicked</code>信号可以看作对<code>QEvent::MouseButtonRelease</code>类型事件的封装）</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// e.g.</span><br><span class="hljs-comment">// 自定义事件处理函数</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TMyLabel</span> : <span class="hljs-keyword">public</span> QLabel<br><br>&#123;<br>	Q_OBJECT<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-built_in">TMyLabel</span>(QWidget *parent = <span class="hljs-literal">nullptr</span>); <span class="hljs-comment">//构造函数需要按此参数改写</span><br>	<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">event</span><span class="hljs-params">(QEvent *e)</span></span>; <span class="hljs-comment">//重新实现 event()函数</span><br><span class="hljs-keyword">protected</span>:<br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">mouseDoubleClickEvent</span><span class="hljs-params">(QMouseEvent *event)</span></span>; <span class="hljs-comment">//重新实现鼠标双击事件的默认处理函数</span><br>signals:<br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">doubleClicked</span><span class="hljs-params">()</span></span>; <span class="hljs-comment">//自定义信号</span><br>&#125;;<br><br>TMyLabel::<span class="hljs-built_in">TMyLabel</span>(QWidget *parent):<span class="hljs-built_in">QLabel</span>(parent)<br>&#123;<br>	<span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">setAttribute</span>(Qt::WA_Hover,<span class="hljs-literal">true</span>); <span class="hljs-comment">//必须设置这个属性，才能产生 hover 事件</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">TMyLabel::event</span><span class="hljs-params">(QEvent *e)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">if</span>(e-&gt;<span class="hljs-built_in">type</span>()== QEvent::HoverEnter) <span class="hljs-comment">//鼠标光标移入</span><br>	&#123;<br>		QPalette plet= <span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">palette</span>();<br>		plet.<span class="hljs-built_in">setColor</span>(QPalette::WindowText, Qt::red);<br>		<span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">setPalette</span>(plet);<br>	&#125;<br>	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (e-&gt;<span class="hljs-built_in">type</span>()== QEvent::HoverLeave) <span class="hljs-comment">//鼠标光标移出</span><br>	&#123;<br>		QPalette plet= <span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">palette</span>();<br>		plet.<span class="hljs-built_in">setColor</span>(QPalette::WindowText, Qt::black);<br>		<span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">setPalette</span>(plet);<br>	&#125;<br>	<span class="hljs-keyword">return</span> QLabel::<span class="hljs-built_in">event</span>(e); <span class="hljs-comment">//运行父类的 event()，处理其他类型事件</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">TMyLabel::mouseDoubleClickEvent</span><span class="hljs-params">(QMouseEvent *event)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-built_in">Q_UNUSED</span>(event);<br>	<span class="hljs-function">emit <span class="hljs-title">doubleClicked</span><span class="hljs-params">()</span></span>; <span class="hljs-comment">//发射信号</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="事件过滤器"><a href="#事件过滤器" class="headerlink" title="事件过滤器"></a>事件过滤器</h3><ul>
+<li>即：将一个对象的事件委托给另外一个对象来监视并处理（<code>QObject</code>类提供）</li>
+<li>要实现事件过滤器功能，需要完成两项操作：</li>
+</ul>
+<ol>
+<li><strong>被监视对象使用函数<code>installEventFilter()</code>将自己注册给监视对象，监视对象就是事件过滤器</strong></li>
+<li><strong>监视对象重新实现函数<code>eventFilter()</code>，对监视到的事件进行处理</strong></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">QObject::installEventFilter</span><span class="hljs-params">(QObject *filterObj)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 返回若为true，事件就不会传播给其他对象，事件处理结束，反之，事件会继续传播给事件接收者做进一步处理</span></span><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">QObject::eventFilter</span><span class="hljs-params">(QObject *watched, QEvent *event)</span></span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>e.g.</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Widget</span> : <span class="hljs-keyword">public</span> QWidget<br>&#123;<br>    Q_OBJECT<br><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Widget</span>(QWidget *parent = <span class="hljs-literal">nullptr</span>);<br>    ~<span class="hljs-built_in">Widget</span>();<br><br>   <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">eventFilter</span><span class="hljs-params">(QObject *watched, QEvent *event)</span></span>;<br><br><span class="hljs-keyword">private</span>:<br>    Ui::Widget *ui;<br>&#125;;<br><br>Widget::<span class="hljs-built_in">Widget</span>(QWidget *parent)<br>    : <span class="hljs-built_in">QWidget</span>(parent)<br>    , <span class="hljs-built_in">ui</span>(<span class="hljs-keyword">new</span> Ui::Widget)<br>&#123;<br>    ui-&gt;<span class="hljs-built_in">setupUi</span>(<span class="hljs-keyword">this</span>);<br>    ui-&gt;labHover-&gt;<span class="hljs-built_in">installEventFilter</span>(<span class="hljs-keyword">this</span>);     <span class="hljs-comment">//安装事件滤波器</span><br>    ui-&gt;labDBClick-&gt;<span class="hljs-built_in">installEventFilter</span>(<span class="hljs-keyword">this</span>);   <span class="hljs-comment">//安装事件滤波器</span><br>&#125;<br><br>Widget::~<span class="hljs-built_in">Widget</span>()<br>&#123;<br>    <span class="hljs-keyword">delete</span> ui;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">Widget::eventFilter</span><span class="hljs-params">(QObject *watched, QEvent *event)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (watched==ui-&gt;labHover) <span class="hljs-comment">//上面的QLabel组件</span><br>    &#123;<br>        <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">type</span>()==QEvent::Enter)       <span class="hljs-comment">//鼠标移入</span><br>            ui-&gt;labHover-&gt;<span class="hljs-built_in">setStyleSheet</span>(<span class="hljs-string">&quot;background-color: rgb(170, 255, 255);&quot;</span>);<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">type</span>()==QEvent::Leave)  <span class="hljs-comment">//鼠标离开</span><br>        &#123;<br>            ui-&gt;labHover-&gt;<span class="hljs-built_in">setStyleSheet</span>(<span class="hljs-string">&quot;&quot;</span>);<br>            ui-&gt;labHover-&gt;<span class="hljs-built_in">setText</span>(<span class="hljs-string">&quot;靠近我，点击我&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">type</span>()==QEvent::MouseButtonPress)   <span class="hljs-comment">//鼠标键按下</span><br>            ui-&gt;labHover-&gt;<span class="hljs-built_in">setText</span>(<span class="hljs-string">&quot;button pressed&quot;</span>);<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">type</span>()==QEvent::MouseButtonRelease) <span class="hljs-comment">//鼠标键释放</span><br>            ui-&gt;labHover-&gt;<span class="hljs-built_in">setText</span>(<span class="hljs-string">&quot;button released&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (watched==ui-&gt;labDBClick)    <span class="hljs-comment">//下面的QLabel组件</span><br>    &#123;<br>        <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">type</span>()==QEvent::Enter)       <span class="hljs-comment">//鼠标移入</span><br>            ui-&gt;labDBClick-&gt;<span class="hljs-built_in">setStyleSheet</span>(<span class="hljs-string">&quot;background-color: rgb(85, 255, 127);&quot;</span>);<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">type</span>()==QEvent::Leave)  <span class="hljs-comment">//鼠标离开</span><br>        &#123;<br>            ui-&gt;labDBClick-&gt;<span class="hljs-built_in">setStyleSheet</span>(<span class="hljs-string">&quot;&quot;</span>);<br>            ui-&gt;labDBClick-&gt;<span class="hljs-built_in">setText</span>(<span class="hljs-string">&quot;可双击的标签&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">type</span>()==QEvent::MouseButtonDblClick)    <span class="hljs-comment">//鼠标双击</span><br>            ui-&gt;labDBClick-&gt;<span class="hljs-built_in">setText</span>(<span class="hljs-string">&quot;double clicked&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> QWidget::<span class="hljs-built_in">eventFilter</span>(watched,event);     <span class="hljs-comment">//执行父类的eventFilter()函数</span><br>    <span class="hljs-comment">//    return true;      //有问题，不能直接返回true</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="拖放事件与拖放操作"><a href="#拖放事件与拖放操作" class="headerlink" title="拖放事件与拖放操作"></a>拖放事件与拖放操作</h3><ul>
+<li>拖放操作由两个操作组成：拖动与放置，<strong>被拖动的组件称为拖动点，接收拖动操作的组件称为放置点</strong>（两者可以是不同的组件，甚至是不同的应用程序，也可以是同一个组件）</li>
+<li>整个拖放操作可以分解为两个过程：</li>
+</ul>
+<ol>
+<li>拖动点启动拖动操作：被拖动组件通过<code>mousePressEvent()</code>与<code>mouseMoveEvent()</code>这两个事件处理函数的处理，启动拖动操作需要创建一个<code>QDrag</code>对象描述拖动操作，以及创建一个<code>QMimeData</code>类的对象用于存储拖动操作的格式信息与数据，并将其值赋予<code>QDrag</code>对象的<code>mimeData</code>属性</li>
+<li>放置点处理放置操作：当拖动操作移动到放置点范围内时，首先触发<code>dragEnterEvent()</code>事件处理函数（一般通过<code>QDrag</code>对象的<code>mimeData</code>数据判断操作来源与参数，以决定是否接受此拖动操作），<strong>只有被接受的拖动操作才可以被放置，并触发<code>dropEvent()</code>事件处理函数</strong></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// M(ultipurpose)I(nternet)M(ail)E(xtensions)，多用途互联网邮件拓展，设计之初的目的是在发送电子邮件时附加多媒体数据，使邮件客户端程序能根据其类型进行处理</span><br><span class="hljs-comment">// QMimeData类是对MIME数据的封装，在拖放与剪贴板操作中都使用其描述传输的数据</span><br><span class="hljs-comment">// 一个QMimeData对象可能用多种格式存储同一数据，QMimeData::formats()返回对象支持的MIME格式字符串列表，如：</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;Shell IDList Array&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;UsingDefaultDragImage&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;DragImageBits&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;DragContext&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;DragSourceHelperFlags&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;InShellDragLoop&quot;</span><br>text/uri-list<br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;FileName&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;FileContents&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;FileNameW&quot;</span><br>application/x-qt-windows-mime;value=<span class="hljs-string">&quot;FileGroupDescriptorW&quot;</span><br><br><span class="hljs-comment">// application/x-qt-windows-mime代表Windows平台上自定义的MIME格式</span><br><span class="hljs-comment">// text/uri-list是标准的MIME格式，表示URL或本机上的文件来源</span><br><span class="hljs-comment">// 使用QMimeData::urls()（返回类型为QUrl类）获取text/uri-list的列表</span><br><span class="hljs-comment">// QUrl::path()返回其路径</span><br><span class="hljs-comment">// QMimeData对常见的MIME格式有对应的判断函数、获取数据与设置函数，如下图所示：</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2025/12/19/Qt%E4%BA%8B%E4%BB%B6/Pasted_image_20261023160445.png"></p>
+<ul>
+<li>e.g.</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Widget</span> : <span class="hljs-keyword">public</span> QWidget<br>&#123;<br>    Q_OBJECT<br><br><span class="hljs-keyword">protected</span>:<br>	<span class="hljs-comment">// 重新实现下面3个事件处理函数</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">dragEnterEvent</span><span class="hljs-params">(QDragEnterEvent *event)</span></span>;<br><br>    <span class="hljs-comment">//   void dragMoveEvent(QDragMoveEvent *event);</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">resizeEvent</span><span class="hljs-params">(QResizeEvent *event)</span></span>;<br><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">dropEvent</span><span class="hljs-params">(QDropEvent *event)</span></span>;<br><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Widget</span>(QWidget *parent = <span class="hljs-number">0</span>);<br>    ~<span class="hljs-built_in">Widget</span>();<br><br><span class="hljs-keyword">private</span> slots:<br><br><span class="hljs-keyword">private</span>:<br>    Ui::Widget *ui;<br>&#125;;<br><br><span class="hljs-comment">// dragEnterEvent主要功能一般是通过读取拖动事件的mimeData属性内容，判断该拖动操作是不是所需来源，以此决定是否允许此拖动被放置</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Widget::dragEnterEvent</span><span class="hljs-params">(QDragEnterEvent *event)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">//显示MIME信息</span><br>    ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">clear</span>();<br>    ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">appendPlainText</span>(<span class="hljs-string">&quot;dragEnterEvent事件 mimeData()-&gt;formats()&quot;</span>);<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>;i&lt;event-&gt;<span class="hljs-built_in">mimeData</span>()-&gt;formats().<span class="hljs-built_in">size</span>();i++)<br>        ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">appendPlainText</span>(event-&gt;<span class="hljs-built_in">mimeData</span>()-&gt;formats().<span class="hljs-built_in">at</span>(i));<br><br>    ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">appendPlainText</span>(<span class="hljs-string">&quot;\n dragEnterEvent事件 mimeData()-&gt;urls()&quot;</span>);<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>;i&lt;event-&gt;<span class="hljs-built_in">mimeData</span>()-&gt;<span class="hljs-built_in">urls</span>().<span class="hljs-built_in">size</span>();i++)<br>    &#123;<br>        QUrl url=event-&gt;<span class="hljs-built_in">mimeData</span>()-&gt;<span class="hljs-built_in">urls</span>().<span class="hljs-built_in">at</span>(i);<span class="hljs-comment">//带路径文件名</span><br>        ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">appendPlainText</span>(url.<span class="hljs-built_in">path</span>());<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (event-&gt;<span class="hljs-built_in">mimeData</span>()-&gt;<span class="hljs-built_in">hasUrls</span>())<br>    &#123;<br>        QString filename=event-&gt;<span class="hljs-built_in">mimeData</span>()-&gt;<span class="hljs-built_in">urls</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">fileName</span>();<span class="hljs-comment">//获取文件名</span><br>        <span class="hljs-function">QFileInfo <span class="hljs-title">fileInfo</span><span class="hljs-params">(filename)</span></span>;       <span class="hljs-comment">//获取文件信息</span><br>        QString ext=fileInfo.<span class="hljs-built_in">suffix</span>().<span class="hljs-built_in">toUpper</span>();    <span class="hljs-comment">//获取文件后缀</span><br>        <span class="hljs-keyword">if</span> (ext ==<span class="hljs-string">&quot;JPG&quot;</span>)<br>            event-&gt;<span class="hljs-built_in">acceptProposedAction</span>();  <span class="hljs-comment">//接受拖动操作</span><br>        <span class="hljs-keyword">else</span><br>            event-&gt;<span class="hljs-built_in">ignore</span>();        <span class="hljs-comment">//忽略事件</span><br>    &#125;<br>    <span class="hljs-keyword">else</span><br>        event-&gt;<span class="hljs-built_in">ignore</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Widget::resizeEvent</span><span class="hljs-params">(QResizeEvent *event)</span></span><br><span class="hljs-function"></span>&#123;<br>    QSize sz=ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">size</span>();<br>    ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">resize</span>(<span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">width</span>()<span class="hljs-number">-10</span>,sz.<span class="hljs-built_in">height</span>());    <span class="hljs-comment">//只改变宽度</span><br>    ui-&gt;labPic-&gt;<span class="hljs-built_in">resize</span>(<span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">width</span>()<span class="hljs-number">-10</span>,<span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">height</span>()-sz.<span class="hljs-built_in">height</span>()<span class="hljs-number">-20</span>); <span class="hljs-comment">//改变宽度和高度</span><br>    event-&gt;<span class="hljs-built_in">accept</span>();<br>&#125;<br><br><span class="hljs-comment">//void Widget::dragMoveEvent(QDragMoveEvent *event)</span><br><span class="hljs-comment">//&#123;//不是必须的</span><br><span class="hljs-comment">//   if (event-&gt;mimeData()-&gt;hasUrls())</span><br><span class="hljs-comment">//      event-&gt;acceptProposedAction();</span><br><span class="hljs-comment">//&#125;</span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Widget::dropEvent</span><span class="hljs-params">(QDropEvent *event)</span></span><br><span class="hljs-function"></span>&#123;<br>    QString filename=event-&gt;<span class="hljs-built_in">mimeData</span>()-&gt;<span class="hljs-built_in">urls</span>().<span class="hljs-built_in">at</span>(<span class="hljs-number">0</span>).<span class="hljs-built_in">path</span>(); <span class="hljs-comment">//完整文件名</span><br>    filename=filename.<span class="hljs-built_in">right</span>(filename.<span class="hljs-built_in">length</span>()<span class="hljs-number">-1</span>); <span class="hljs-comment">//去掉最左边的“/”</span><br>    <span class="hljs-function">QPixmap <span class="hljs-title">pixmap</span><span class="hljs-params">(filename)</span></span>;<br>    ui-&gt;labPic-&gt;<span class="hljs-built_in">setPixmap</span>(pixmap);<br>    event-&gt;<span class="hljs-built_in">accept</span>();<br>&#125;<br><br>Widget::<span class="hljs-built_in">Widget</span>(QWidget *parent) :<br>    <span class="hljs-built_in">QWidget</span>(parent),<br>    <span class="hljs-built_in">ui</span>(<span class="hljs-keyword">new</span> Ui::Widget)<br>&#123;<br>    ui-&gt;<span class="hljs-built_in">setupUi</span>(<span class="hljs-keyword">this</span>);<br><br>    ui-&gt;labPic-&gt;<span class="hljs-built_in">setScaledContents</span>(<span class="hljs-literal">true</span>);     <span class="hljs-comment">//图片适应组件大小</span><br><br>    <span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">setAcceptDrops</span>(<span class="hljs-literal">true</span>);  <span class="hljs-comment">//由窗口接受drop操作</span><br>    ui-&gt;plainTextEdit-&gt;<span class="hljs-built_in">setAcceptDrops</span>(<span class="hljs-literal">false</span>);    <span class="hljs-comment">//不接受drop，由窗口去处理</span><br>    ui-&gt;labPic-&gt;<span class="hljs-built_in">setAcceptDrops</span>(<span class="hljs-literal">false</span>);           <span class="hljs-comment">//不接受drop,由窗口去处理</span><br>&#125;<br><br>Widget::~<span class="hljs-built_in">Widget</span>()<br>&#123;<br>    <span class="hljs-keyword">delete</span> ui;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>Qt类库中的一些类实现了完整的拖放操作功能，如<code>QLineEdit</code>等类都有一个函数<code>setDragEnabled(bool)</code>，当设置为true时，组件可以作为一个拖动点，具有默认的启动拖动的操作</li>
+<li><code>QAbstractItemView::DragDropMode</code>枚举类型（函数<code>dragDropMode</code>的返回类型，表示拖放操作模式）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>枚举值</th>
+<th>数值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>QAbstractItemView::NoDragDrop</td>
+<td>0</td>
+<td>组件不支持拖放操作</td>
+</tr>
+<tr>
+<td>QAbstractItemView::DragOnly</td>
+<td>1</td>
+<td>组件只支持拖动操作</td>
+</tr>
+<tr>
+<td>QAbstractItemView::DropOnly</td>
+<td>2</td>
+<td>组件只支持放置操作</td>
+</tr>
+<tr>
+<td>QAbstractItemView::DragDrop</td>
+<td>3</td>
+<td>组件支持拖放操作</td>
+</tr>
+<tr>
+<td>QAbstractItemView::InternalMove</td>
+<td>4</td>
+<td>组件只支持内部项的移动操作，例如目录树内节点的移动操作</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>Qt::DropAction</code>枚举类型（函数<code>defaultDropAction</code>的返回类型，表示在完成拖放是数据操作的模式）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>枚举值</th>
+<th>数值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Qt::CopyAction</td>
+<td>1</td>
+<td>将数据复制到放置点组件处</td>
+</tr>
+<tr>
+<td>Qt::MoveAction</td>
+<td>2</td>
+<td>将数据从拖动点组件处移动到放置点组件处</td>
+</tr>
+<tr>
+<td>Qt::LinkAction</td>
+<td>4</td>
+<td>在拖动点组件和放置点组件之间建立数据连接</td>
+</tr>
+<tr>
+<td>Qt::IgnoreAction</td>
+<td>0</td>
+<td>对数据不进行任何操作</td>
+</tr>
+</tbody></table>
+
+    </section>
+
+    
+        <section class="post-tag">
+            <a href="/tags"><i class="fa fa-tags"></i></a>
+            
+                <a href="/tags/Qt%E4%BA%8B%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="tag-item">
+                    Qt事件系统
+                </a>
+            
+        </section>
+    
+    
+        <section class="post-cate">
+            <a href="/categories"><i class="fa fa-inbox"></i></a>
+            
+                <a href="/categories/Qt/" class="cate-item">
+                    Qt
+                </a>
+            
+        </section>
+    
+
+    <section class="post-cc">
+        <div class="post-cc-author">
+            <span class="bold">作者：</span><a href="mailto:jjack_chen3@163.com" title="Narciostyx">Narciostyx</a>
+        </div>
+        <div class="post-cc-link">
+            <span class="bold">链接：</span><a href="/2025/12/19/Qt%E4%BA%8B%E4%BB%B6/">https://narciostyx.github.io/2025/12/19/Qt事件/</a>
+        </div>
+        <div class="post-cc-source">
+            <span class="bold">来源：</span><a href="/">H3ll0_h4h</a>
+        </div>
+        <div class="ppost-cc-declare">
+            <span class="bold">版权声明: </span>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a> 许可协议。著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。 
+        </div>
+    </section>
+
+    <section class="flex-between" style="margin: 20px 0;">
+        <div class="pre">
+            
+                <a href="/2026/01/02/TCP%E5%8D%8F%E8%AE%AE%E6%97%8F/" class="change-link">
+                    <span class="icon"><i class="fa fa-angle-double-left"></i></span>
+                    <span class="text">
+                        <span class="identify">上一篇</span>
+                        <span class="text-title">TCP/IP协议族</span>
+                    </span>
+                </a>
+            
+        </div>
+        <div class="next">
+            
+                <a href="/2025/12/18/%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%A7%86%E5%9B%BE%E7%BB%93%E6%9E%84/" class="change-link">
+                    <span class="text">
+                        <span class="identify" style="text-align: right;">下一篇</span>
+                        <span class="text-title" style="text-align: right;">模型/视图结构</span>
+                    </span>
+                    <span class="icon"><i class="fa fa-angle-double-right"></i></span>
+                </a>
+            
+        </div>
+    </section>
+
+    <!-- comment -->
+    <section class="comment-container">
+        <!-- giscus -->
+        
+    </section>
+</article>
+
+
+
+
+            <section class="article-bottom flex-between">
+                <div class="flex-center">
+                    <img src="/imgs/logo.png" class="logo">
+                    <span>(╯°□°）╯︵ ┻━┻</span>
+                </div>
+                <div class="flex-center">
+                    <a href="mailto:jjack_chen3@163.com">
+                        <span title="envelope">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                    <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">
+                        <span title="github" style="font-size: 18px;">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="float-actions">
+    <div class="to-top" title="返回顶部">
+        <a href="javascript: void(0)" onclick="delicate.toTop()" aria-label="返回顶部">
+            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+        </a>
+    </div>
+    
+    <div class="to-home" title="返回主页">
+        <a href="/" aria-label="返回主页">
+            <i class="fa fa-home" aria-hidden="true"></i>
+        </a>
+    </div>
+    
+</div>
+
+    <footer>
+        <div class="footer-info gray">
+    <div>
+        <span><a target="_blank" rel="noopener" href="https://github.com/can-dy-jack/hexo-theme-delicate">Delicate</a> theme designed with ❤️ by <a target="_blank" rel="noopener" href="https://github.com/can-dy-jack">can-dy-jack</a></span>
+    </div>
+    <div>
+        <span>Copyright Ⓒ 2026. All rights reserved.</span>
+    </div>
+</div>
+    </footer>
+
+    
+
+
+<script src="/js/index.js"></script>
+
+
+</body>
+
+</html>
